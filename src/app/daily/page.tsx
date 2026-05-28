@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { DAILY_REFLECTIONS, TWELVE_STEPS } from "@/lib/recovery-content";
+import { TWELVE_STEPS } from "@/lib/recovery-content";
 import { formatDate, getDayOfYear } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import {
@@ -16,11 +16,27 @@ const EMOTIONS = [
   "Irritable", "Content",
 ];
 
+interface DailyReflection {
+  title: string;
+  date: string;
+  quote: string;
+  source: string;
+  body: string;
+}
+
 export default function DailyRecoveryPage() {
   const today = new Date();
   const dayOfYear = getDayOfYear(today);
-  const reflection = DAILY_REFLECTIONS[dayOfYear % DAILY_REFLECTIONS.length];
   const step = TWELVE_STEPS[dayOfYear % 12];
+
+  const [reflection, setReflection] = useState<DailyReflection | null>(null);
+
+  useEffect(() => {
+    fetch("/api/daily-reflection")
+      .then((r) => r.json())
+      .then((data) => { if (data.title) setReflection(data); })
+      .catch(() => {});
+  }, []);
 
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
   const [sobrietyDays, setSobrietyDays] = useState(0);
@@ -76,12 +92,30 @@ export default function DailyRecoveryPage() {
           <div className="flex items-center gap-2">
             <Sun className="w-4 h-4 text-[var(--accent-serenity)]" aria-hidden />
             <span className="text-sm font-medium text-[var(--text-primary)]">Daily Reflection</span>
+            {reflection && (
+              <span className="ml-auto text-xs text-[var(--text-muted)]">{reflection.date}</span>
+            )}
           </div>
-          <h2 className="text-lg font-light text-[var(--text-primary)]">{reflection.title}</h2>
-          <p className="text-[var(--text-secondary)] italic leading-relaxed text-sm">
-            &ldquo;{reflection.text}&rdquo;
-          </p>
-          <p className="text-xs text-[var(--text-muted)]">{reflection.source}</p>
+          {reflection ? (
+            <>
+              <h2 className="text-lg font-light text-[var(--text-primary)]">{reflection.title}</h2>
+              <p className="text-[var(--text-secondary)] italic leading-relaxed text-sm">
+                &ldquo;{reflection.quote}&rdquo;
+              </p>
+              <p className="text-xs text-[var(--text-muted)]">{reflection.source}</p>
+              {reflection.body && (
+                <p className="text-sm text-[var(--text-secondary)] leading-relaxed border-t border-[var(--border-soft)] pt-3">
+                  {reflection.body.split("\n\n")[0]}
+                </p>
+              )}
+            </>
+          ) : (
+            <div className="space-y-2 animate-pulse">
+              <div className="h-4 bg-[var(--border-soft)] rounded w-3/4" />
+              <div className="h-3 bg-[var(--border-soft)] rounded w-full" />
+              <div className="h-3 bg-[var(--border-soft)] rounded w-5/6" />
+            </div>
+          )}
         </Card>
 
         {/* Step of the day */}
