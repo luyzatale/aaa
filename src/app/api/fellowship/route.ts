@@ -12,13 +12,23 @@ interface Member {
 const BLOB_PATH = "fellowship/members.json";
 
 async function readMembers(): Promise<Member[]> {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    console.error("[fellowship] BLOB_READ_WRITE_TOKEN is not set");
+    return [];
+  }
   try {
     const { blobs } = await list({ prefix: "fellowship/members" });
     if (!blobs.length) return [];
+    // Sort by uploadedAt descending — always read the most recent file
+    blobs.sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
     const res = await fetch(blobs[0].downloadUrl);
-    if (!res.ok) return [];
+    if (!res.ok) {
+      console.error("[fellowship] Failed to fetch blob:", res.status);
+      return [];
+    }
     return await res.json();
-  } catch {
+  } catch (err) {
+    console.error("[fellowship] readMembers error:", err);
     return [];
   }
 }
