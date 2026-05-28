@@ -7,10 +7,23 @@ import { X, Wind, Heart, Phone, Users, BookOpen } from "lucide-react";
 import Link from "next/link";
 
 const BREATHING_PHASES = [
-  { label: "Breathe in", duration: 4000, scale: 1.15 },
-  { label: "Hold", duration: 4000, scale: 1.15 },
-  { label: "Breathe out", duration: 6000, scale: 1.0 },
-  { label: "Rest", duration: 2000, scale: 1.0 },
+  { label: "Breathe in",  duration: 4000, scale: 1.18 },
+  { label: "Hold",        duration: 4000, scale: 1.18 },
+  { label: "Breathe out", duration: 6000, scale: 1.0  },
+  { label: "Rest",        duration: 2000, scale: 1.0  },
+];
+
+const MOON_STARS = [
+  { cx: 12,  cy: 18,  r: 0.9, d: 0.0 },
+  { cx: 96,  cy: 12,  r: 1.2, d: 0.7 },
+  { cx: 115, cy: 42,  r: 0.7, d: 1.4 },
+  { cx: 18,  cy: 88,  r: 1.0, d: 0.4 },
+  { cx: 108, cy: 95,  r: 0.8, d: 2.0 },
+  { cx: 52,  cy: 8,   r: 0.6, d: 1.1 },
+  { cx: 38,  cy: 112, r: 0.9, d: 1.8 },
+  { cx: 118, cy: 68,  r: 0.7, d: 0.9 },
+  { cx: 22,  cy: 48,  r: 0.8, d: 2.5 },
+  { cx: 88,  cy: 118, r: 1.1, d: 0.3 },
 ];
 
 const CALM_MESSAGES = [
@@ -67,6 +80,7 @@ export default function OverwhelmButton() {
   }, [active]);
 
   const currentPhase = BREATHING_PHASES[breathPhase];
+  const moonScale = 1 + (currentPhase.scale - 1) * breathProgress;
 
   return (
     <>
@@ -93,7 +107,6 @@ export default function OverwhelmButton() {
           aria-label="Calm support panel"
           aria-modal="true"
         >
-          {/* Dimmed overlay */}
           <div className="absolute inset-0 bg-[#0d0c09]/80 backdrop-blur-md" />
 
           <div className={cn(
@@ -110,20 +123,56 @@ export default function OverwhelmButton() {
               <X className="w-4 h-4" />
             </button>
 
-            {/* Breathing circle */}
+            {/* Space breathing visual */}
             <div className="flex flex-col items-center gap-4">
-              <div
-                className="relative w-32 h-32 rounded-full flex items-center justify-center"
-                style={{
-                  background: "radial-gradient(circle, rgba(93,130,93,0.25) 0%, rgba(93,130,93,0.05) 100%)",
-                  transform: `scale(${1 + (currentPhase.scale - 1) * breathProgress})`,
-                  transition: "transform 100ms ease-out",
-                }}
-                aria-hidden
-              >
-                <div className="w-20 h-20 rounded-full bg-[var(--accent-sage)]/20 flex items-center justify-center">
-                  <Wind className="w-8 h-8 text-[var(--accent-sage)]" />
-                </div>
+              <div aria-hidden>
+                <svg width="128" height="128" viewBox="0 0 128 128" aria-hidden="true">
+                  <defs>
+                    <radialGradient id="overwhelm-spaceBg" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stopColor="#150d30" />
+                      <stop offset="100%" stopColor="#060310" />
+                    </radialGradient>
+                    <radialGradient id="overwhelm-moonFill" cx="38%" cy="32%" r="65%">
+                      <stop offset="0%" stopColor="#dce8ff" />
+                      <stop offset="45%" stopColor="#94b4e8" />
+                      <stop offset="100%" stopColor="#3a5a88" />
+                    </radialGradient>
+                    <radialGradient id="overwhelm-moonGlow" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stopColor="rgba(120,160,255,0.4)" />
+                      <stop offset="100%" stopColor="rgba(120,160,255,0)" />
+                    </radialGradient>
+                  </defs>
+
+                  <circle cx="64" cy="64" r="62" fill="url(#overwhelm-spaceBg)" />
+
+                  {MOON_STARS.map((s, i) => (
+                    <circle
+                      key={i}
+                      cx={s.cx}
+                      cy={s.cy}
+                      r={s.r}
+                      fill="white"
+                      style={{
+                        animation: `twinkle ${2.5 + (i % 3) * 0.7}s ease-in-out ${s.d}s infinite`,
+                      }}
+                    />
+                  ))}
+
+                  <g
+                    style={{
+                      transform: `scale(${moonScale})`,
+                      transformOrigin: "64px 64px",
+                      transition: "transform 80ms ease-out",
+                    }}
+                  >
+                    <circle cx="64" cy="64" r="33" fill="url(#overwhelm-moonGlow)" />
+                    <circle cx="64" cy="64" r="20" fill="url(#overwhelm-moonFill)" />
+                    <circle cx="59" cy="61" r="1.8" fill="rgba(40,70,110,0.22)" />
+                    <circle cx="67" cy="67" r="1.2" fill="rgba(40,70,110,0.18)" />
+                  </g>
+
+                  <circle cx="64" cy="64" r="62" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+                </svg>
               </div>
               <p className="text-[#c3bfb2] text-lg font-light" aria-live="polite">
                 {currentPhase.label}
@@ -171,11 +220,11 @@ export default function OverwhelmButton() {
                 Crisis support
               </Link>
               <a
-                href="tel:116123"
+                href="tel:08000113"
                 className="flex items-center gap-2 p-3 rounded-2xl bg-[#252419] border border-[#363529] text-[#c3bfb2] text-sm hover:bg-[#2d2c1f] transition-calm"
               >
                 <Phone className="w-4 h-4 text-[#7da07d]" aria-hidden />
-                Samaritans 116 123
+                Bel 0800 0113
               </a>
             </div>
 

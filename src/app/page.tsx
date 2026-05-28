@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   BookOpen, Users, Headphones, Wind, Heart, Star, Calendar,
-  ChevronRight, Sun, Moon, Leaf
+  ChevronRight, Sun, Moon
 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -95,34 +95,10 @@ const quickActions = [
 
 const sectionLinks = [
   {
-    href: "/new-to-aa",
-    icon: <Star className="w-5 h-5" />,
-    title: "New to AA",
-    desc: "What to expect, your questions answered gently",
-    color: "text-[var(--accent-amber)]",
-    bg: "bg-[var(--accent-amber-light)]",
-  },
-  {
-    href: "/literature",
-    icon: <BookOpen className="w-5 h-5" />,
-    title: "AA Literature",
-    desc: "Big Book, 12 Steps, Daily Reflections",
-    color: "text-[var(--accent-sage)]",
-    bg: "bg-[var(--accent-sage-light)]",
-  },
-  {
-    href: "/prayers",
-    icon: <Leaf className="w-5 h-5" />,
-    title: "Prayers & Meditation",
-    desc: "Calming prayers with text-to-speech",
-    color: "text-[var(--accent-serenity)]",
-    bg: "bg-[var(--accent-serenity-light)]",
-  },
-  {
     href: "/meetings",
     icon: <Users className="w-5 h-5" />,
     title: "Meetings",
-    desc: "Online & in-person, beginner-friendly",
+    desc: "Online & in-person, available now",
     color: "text-[var(--accent-sage)]",
     bg: "bg-[var(--accent-sage-light)]",
   },
@@ -135,20 +111,12 @@ const sectionLinks = [
     bg: "bg-[var(--accent-serenity-light)]",
   },
   {
-    href: "/daily",
-    icon: <Sun className="w-5 h-5" />,
-    title: "Daily Recovery",
-    desc: "Check-ins, HALT, sobriety tracker",
+    href: "/new-to-aa",
+    icon: <Star className="w-5 h-5" />,
+    title: "New to AA",
+    desc: "Your questions answered gently",
     color: "text-[var(--accent-amber)]",
     bg: "bg-[var(--accent-amber-light)]",
-  },
-  {
-    href: "/steps",
-    icon: <ChevronRight className="w-5 h-5" />,
-    title: "Step Work",
-    desc: "Private journal with guided prompts",
-    color: "text-[var(--accent-sage)]",
-    bg: "bg-[var(--accent-sage-light)]",
   },
   {
     href: "/crisis",
@@ -266,7 +234,7 @@ export default function HomePage() {
         >
           Recovery Resources
         </h2>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid sm:grid-cols-2 gap-4">
           {sectionLinks.map((section) => (
             <Link
               key={section.href}
