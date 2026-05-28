@@ -21,7 +21,9 @@ async function readMembers(): Promise<Member[]> {
     if (!blobs.length) return [];
     // Sort by uploadedAt descending — always read the most recent file
     blobs.sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
-    const res = await fetch(blobs[0].downloadUrl);
+    const res = await fetch(blobs[0].downloadUrl, {
+      headers: { Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}` },
+    });
     if (!res.ok) {
       console.error("[fellowship] Failed to fetch blob:", res.status);
       return [];
@@ -35,7 +37,7 @@ async function readMembers(): Promise<Member[]> {
 
 async function saveMembers(members: Member[]): Promise<void> {
   const result = await put(BLOB_PATH, JSON.stringify(members), {
-    access: "public",
+    access: "private",
     allowOverwrite: true,
     addRandomSuffix: false,
     contentType: "application/json",
