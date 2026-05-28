@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { Users, Video, Globe, Heart, Clock, Shield, ChevronRight, Info } from "lucide-react";
+import { Users, Video, Globe, Heart, Clock, Shield, ChevronRight, Info, ExternalLink } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Meetings",
@@ -104,7 +104,58 @@ const anxietyGuide = [
   "You can attend the same meeting repeatedly — familiarity helps.",
 ];
 
-export default function MeetingsPage() {
+// AA Nederland online meetings
+interface AANLMeeting {
+  id: number;
+  name: string;
+  day: number;
+  time: string;
+  end_time: string;
+  conference_url: string;
+  conference_url_notes?: string;
+  notes?: string;
+  types: string[];
+  attendance_option: string;
+}
+
+const TYPE_LABELS: Record<string, string> = {
+  O: "Open", C: "Gesloten", EN: "English", NL: "NL",
+  W: "Vrouwen", B: "Beginners", SP: "Speaker", "12x12": "12×12", TPC: "Thema",
+};
+const SKIP_TYPES = new Set(["ONL", "RGNW", "RGZ", "RGZW"]);
+const DAY_NAMES = ["Zondag", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag"];
+
+function cleanName(name: string) {
+  return name.replace(new RegExp(` - (${DAY_NAMES.join("|")})$`, "i"), "").trim();
+}
+
+async function getAANLOnlineMeetings(): Promise<AANLMeeting[]> {
+  try {
+    const res = await fetch("https://aa-nederland.nl/wp-json/tsml/meetings", {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return [];
+    const data: AANLMeeting[] = await res.json();
+    return data.filter((m) => m.attendance_option === "online" && m.conference_url);
+  } catch {
+    return [];
+  }
+}
+
+export default async function MeetingsPage() {
+  const nlMeetings = await getAANLOnlineMeetings();
+
+  const dayStr = new Intl.DateTimeFormat("en-US", {
+    weekday: "short",
+    timeZone: "Europe/Amsterdam",
+  }).format(new Date());
+  const todayDay = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(dayStr);
+  const todayDayName = DAY_NAMES[todayDay] ?? "";
+
+  const todayNLMeetings = nlMeetings
+    .filter((m) => m.day === todayDay)
+    .sort((a, b) => a.time.localeCompare(b.time));
+
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16">
       <div className="mb-10">
@@ -183,6 +234,95 @@ export default function MeetingsPage() {
           ))}
         </ul>
       </Card>
+
+      {/* AA Nederland Online Meetings – Today */}
+      {nlMeetings.length > 0 && (
+        <section aria-labelledby="aa-nl-heading" className="mb-12">
+          <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
+            <div>
+              <h2
+                id="aa-nl-heading"
+                className="text-xl font-semibold text-[var(--text-primary)]"
+              >
+                AA Nederland Online — {todayDayName}
+              </h2>
+              <p className="text-sm text-[var(--text-secondary)] mt-1">
+                Live online meetings via Zoom, direct vanuit Nederland.
+              </p>
+            </div>
+            <a
+              href="https://aa-nederland.nl/vind-een-meeting/#/?type=ONL"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-sm text-[var(--accent-sage)] hover:opacity-80 transition-calm"
+            >
+              Alle days <ExternalLink className="w-3.5 h-3.5" aria-hidden />
+            </a>
+          </div>
+
+          {todayNLMeetings.length === 0 ? (
+            <Card padding="md" className="text-center text-sm text-[var(--text-muted)] py-8">
+              Geen online meetings vandaag gepland.{" "}
+              <a
+                href="https://aa-nederland.nl/vind-een-meeting/#/?type=ONL"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[var(--accent-sage)] underline underline-offset-2"
+              >
+                Bekijk de volledige agenda →
+              </a>
+            </Card>
+          ) : (
+            <div className="grid sm:grid-cols-2 gap-4">
+              {todayNLMeetings.map((meeting) => {
+                const visibleTypes = meeting.types.filter(
+                  (t) => !SKIP_TYPES.has(t) && TYPE_LABELS[t]
+                );
+                return (
+                  <Card key={meeting.id} padding="md" className="space-y-3">
+                    <div>
+                      <div className="flex items-center gap-2 mb-2 flex-wrap">
+                        <span className="text-lg font-light text-[var(--accent-sage)] tabular-nums">
+                          {meeting.time}
+                        </span>
+                        {visibleTypes.map((t) => (
+                          <Badge key={t} variant="muted">{TYPE_LABELS[t]}</Badge>
+                        ))}
+                      </div>
+                      <h3 className="font-medium text-[var(--text-primary)] text-sm leading-snug">
+                        {cleanName(meeting.name)}
+                      </h3>
+                      {meeting.end_time && (
+                        <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                          tot {meeting.end_time}
+                        </p>
+                      )}
+                    </div>
+                    {(meeting.conference_url_notes || meeting.notes) && (
+                      <div className="flex items-start gap-2 text-xs text-[var(--text-muted)] bg-[var(--bg-muted)] rounded-xl p-2.5">
+                        <Info className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" aria-hidden />
+                        <span>{meeting.conference_url_notes ?? meeting.notes}</span>
+                      </div>
+                    )}
+                    <a
+                      href={meeting.conference_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl
+                        bg-[var(--accent-sage-light)] text-[var(--accent-sage)] text-sm font-medium
+                        hover:bg-[var(--accent-sage)]/20 transition-calm
+                        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
+                    >
+                      <Video className="w-3.5 h-3.5" aria-hidden />
+                      Deelnemen via Zoom
+                    </a>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+        </section>
+      )}
 
       {/* Other online meetings */}
       <section aria-labelledby="online-meetings-heading" className="mb-12">
