@@ -38,10 +38,10 @@ function NavDropdown({
   pathname: string;
 }) {
   const isGroupActive = group.items.some((item) => pathname === item.href);
-  const closeTimer = useRef<number>(0);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleMouseEnter = () => {
-    clearTimeout(closeTimer.current);
+    if (closeTimer.current !== null) clearTimeout(closeTimer.current);
     onOpen();
   };
 
@@ -49,7 +49,7 @@ function NavDropdown({
     closeTimer.current = setTimeout(onClose, 150);
   };
 
-  useEffect(() => () => clearTimeout(closeTimer.current), []);
+  useEffect(() => () => { if (closeTimer.current !== null) clearTimeout(closeTimer.current); }, []);
 
   return (
     <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
