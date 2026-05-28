@@ -256,31 +256,6 @@ export default function HomePage() {
       {/* Reading with neurodivergent needs */}
       <NeurodivergentReadingPanel />
 
-      {/* Gentle reminder */}
-      <section className="px-4 sm:px-6 pb-24 max-w-3xl mx-auto text-center">
-        <Card variant="serenity" padding="lg">
-          <Headphones className="w-6 h-6 text-[var(--accent-serenity)] mx-auto mb-4" aria-hidden />
-          <p className="text-[var(--text-primary)] text-lg font-light leading-relaxed italic mb-3">
-            &ldquo;The most important thing is that we do not pick up a drink today.
-            Everything else can wait.&rdquo;
-          </p>
-          <p className="text-xs text-[var(--text-muted)]">AA Program</p>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <Link
-              href="/meetings"
-              className="px-5 py-2.5 rounded-2xl bg-[var(--accent-serenity)] text-white text-sm font-medium hover:opacity-90 transition-calm"
-            >
-              Find a meeting now
-            </Link>
-            <Link
-              href="/daily"
-              className="px-5 py-2.5 rounded-2xl bg-[var(--accent-serenity-light)] text-[var(--accent-serenity)] text-sm font-medium hover:bg-[var(--accent-serenity)]/20 transition-calm"
-            >
-              Daily reflection
-            </Link>
-          </div>
-        </Card>
-      </section>
     </div>
   );
 }
