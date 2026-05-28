@@ -28,7 +28,7 @@ export default function AccessibilityBar() {
         >
           <SlidersHorizontal className="w-5 h-5" />
         </button>
-        <span className="text-[10px] text-[var(--text-muted)] font-medium whitespace-nowrap leading-tight text-center max-w-[72px]">
+        <span className="text-[10px] text-[var(--text-muted)] font-medium whitespace-nowrap leading-tight text-center">
           Neurodivergent needs
         </span>
       </div>
