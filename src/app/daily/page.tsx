@@ -39,7 +39,9 @@ export default function DailyRecoveryPage() {
   }, []);
 
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
-  const [sobrietyDays, setSobrietyDays] = useState(0);
+  const [sobrietyDays, setSobrietyDays] = useState(() => {
+    try { return Number(localStorage.getItem("aa-sobriety-days") ?? 0); } catch { return 0; }
+  });
   const [gratitude, setGratitude] = useState(["", "", ""]);
   const [emotions, setEmotions] = useState<Set<string>>(new Set());
 
@@ -51,6 +53,10 @@ export default function DailyRecoveryPage() {
       return next;
     });
   };
+
+  useEffect(() => {
+    try { localStorage.setItem("aa-sobriety-days", String(sobrietyDays)); } catch {}
+  }, [sobrietyDays]);
 
   const toggleEmotion = (e: string) => {
     setEmotions((prev) => {
