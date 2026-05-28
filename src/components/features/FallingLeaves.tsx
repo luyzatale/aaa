@@ -1,48 +1,67 @@
 "use client";
 
-const ORBS = [
-  { left: 4,  top: 65, size: 18, duration: 10, delay: 0,   opacity: 0.35, sage: true  },
-  { left: 13, top: 28, size: 11, duration: 14, delay: 2,   opacity: 0.28, sage: false },
-  { left: 22, top: 82, size: 22, duration: 8,  delay: 5,   opacity: 0.38, sage: true  },
-  { left: 30, top: 45, size: 9,  duration: 12, delay: 1,   opacity: 0.25, sage: false },
-  { left: 40, top: 15, size: 15, duration: 15, delay: 4,   opacity: 0.32, sage: true  },
-  { left: 48, top: 70, size: 12, duration: 9,  delay: 7,   opacity: 0.30, sage: true  },
-  { left: 56, top: 38, size: 8,  duration: 13, delay: 0.5, opacity: 0.26, sage: false },
-  { left: 63, top: 88, size: 20, duration: 11, delay: 6,   opacity: 0.34, sage: true  },
-  { left: 72, top: 22, size: 10, duration: 16, delay: 3,   opacity: 0.28, sage: true  },
-  { left: 80, top: 55, size: 14, duration: 10, delay: 8,   opacity: 0.36, sage: false },
-  { left: 87, top: 75, size: 9,  duration: 14, delay: 2.5, opacity: 0.27, sage: true  },
-  { left: 93, top: 40, size: 16, duration: 12, delay: 5.5, opacity: 0.31, sage: true  },
-  { left: 18, top: 50, size: 12, duration: 9,  delay: 9,   opacity: 0.24, sage: false },
-  { left: 44, top: 92, size: 18, duration: 15, delay: 11,  opacity: 0.29, sage: true  },
-  { left: 68, top: 18, size: 8,  duration: 11, delay: 4.5, opacity: 0.26, sage: false },
+type Leaf = {
+  left: number;
+  size: number;
+  duration: number;
+  delay: number;
+  opacity: number;
+  shape: 0 | 1 | 2;
+  anim: "a" | "b" | "c";
+  flip: boolean;
+};
+
+const LEAVES: Leaf[] = [
+  { left:  4, size: 18, duration: 14, delay: 0,    opacity: 0.42, shape: 0, anim: "a", flip: false },
+  { left: 12, size: 13, duration: 19, delay: 3.5,  opacity: 0.33, shape: 1, anim: "b", flip: true  },
+  { left: 22, size: 22, duration: 12, delay: 7,    opacity: 0.46, shape: 2, anim: "a", flip: false },
+  { left: 32, size: 15, duration: 17, delay: 1.5,  opacity: 0.36, shape: 0, anim: "c", flip: true  },
+  { left: 42, size: 20, duration: 15, delay: 5,    opacity: 0.40, shape: 1, anim: "b", flip: false },
+  { left: 51, size: 12, duration: 20, delay: 9.5,  opacity: 0.30, shape: 2, anim: "c", flip: true  },
+  { left: 60, size: 24, duration: 13, delay: 2,    opacity: 0.44, shape: 0, anim: "a", flip: false },
+  { left: 69, size: 16, duration: 18, delay: 6.5,  opacity: 0.37, shape: 1, anim: "b", flip: true  },
+  { left: 78, size: 19, duration: 11, delay: 4,    opacity: 0.43, shape: 2, anim: "c", flip: false },
+  { left: 86, size: 14, duration: 16, delay: 10,   opacity: 0.32, shape: 0, anim: "a", flip: true  },
+  { left: 93, size: 17, duration: 14, delay: 8,    opacity: 0.38, shape: 1, anim: "b", flip: false },
+  { left: 17, size: 21, duration: 17, delay: 12.5, opacity: 0.35, shape: 2, anim: "c", flip: true  },
+  { left: 38, size: 11, duration: 13, delay: 0.5,  opacity: 0.29, shape: 0, anim: "b", flip: false },
+  { left: 56, size: 16, duration: 19, delay: 14,   opacity: 0.34, shape: 1, anim: "a", flip: true  },
 ];
+
+const PATHS = [
+  // Rounded teardrop leaf
+  "M12 3C8 3 4 6.5 4 11c0 5 8 10 8 10s8-5 8-10c0-4.5-4-8-8-8z",
+  // Classic pointed leaf
+  "M12 2C7 4 3 8 3 13c0 4 3.5 6.5 9 9 5.5-2.5 9-5 9-9 0-5-4-9-9-11z",
+  // Elongated slim leaf
+  "M12 1C9 4 5 8 5 13s4 8 7 10c3-2 7-5 7-10S15 4 12 1z",
+];
+
+function LeafSVG({ size, shape }: { size: number; shape: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="var(--accent-sage)" aria-hidden>
+      <path d={PATHS[shape]} />
+    </svg>
+  );
+}
 
 export default function FallingLeaves() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden>
-      {ORBS.map((orb, i) => (
+      {LEAVES.map((leaf, i) => (
         <div
           key={i}
           style={{
             position: "absolute",
-            left: `${orb.left}%`,
-            top: `${orb.top}%`,
-            opacity: orb.opacity,
+            top: "-5%",
+            left: `${leaf.left}%`,
+            opacity: leaf.opacity,
+            transform: leaf.flip ? "scaleX(-1)" : undefined,
+            animation: `leaf-fall-${leaf.anim} ${leaf.duration}s ease-in-out ${leaf.delay}s infinite`,
+            filter: "blur(0.4px)",
           }}
         >
-          <div
-            style={{
-              width: orb.size,
-              height: orb.size,
-              borderRadius: "50%",
-              backgroundColor: orb.sage
-                ? "var(--accent-sage)"
-                : "var(--accent-serenity)",
-              filter: `blur(${Math.ceil(orb.size * 0.35)}px)`,
-              animation: `orb-float ${orb.duration}s ease-in-out ${orb.delay}s infinite`,
-            }}
-          />
+          <LeafSVG size={leaf.size} shape={leaf.shape} />
         </div>
       ))}
     </div>
