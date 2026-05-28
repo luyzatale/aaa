@@ -7,50 +7,8 @@ import { DAILY_REFLECTIONS, TWELVE_STEPS } from "@/lib/recovery-content";
 import { formatDate, getDayOfYear } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import {
-  Sun, Moon, Heart, AlertTriangle, CheckCircle, Circle, Star, Minus, Plus,
+  Sun, Moon, Heart, CheckCircle, Circle, Star, Minus, Plus,
 } from "lucide-react";
-
-type Level = 1 | 2 | 3 | 4 | 5;
-const LEVELS: { value: Level; label: string; color: string }[] = [
-  { value: 1, label: "Very low", color: "bg-[var(--accent-sage)]" },
-  { value: 2, label: "Low", color: "bg-[var(--accent-sage)]/70" },
-  { value: 3, label: "Moderate", color: "bg-[var(--accent-amber)]" },
-  { value: 4, label: "High", color: "bg-[var(--accent-amber)]/80" },
-  { value: 5, label: "Very high", color: "bg-red-400" },
-];
-
-function LevelPicker({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: Level;
-  onChange: (v: Level) => void;
-}) {
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <span className="text-sm text-[var(--text-secondary)]">{label}</span>
-        <span className="text-xs text-[var(--text-muted)]">{LEVELS[value - 1].label}</span>
-      </div>
-      <div className="flex gap-1.5" role="group" aria-label={`${label} level`}>
-        {LEVELS.map((level) => (
-          <button
-            key={level.value}
-            onClick={() => onChange(level.value)}
-            aria-pressed={value === level.value}
-            aria-label={`${label}: ${level.label}`}
-            className={cn(
-              "flex-1 h-2 rounded-full transition-calm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)] focus-visible:ring-offset-1",
-              value >= level.value ? level.color : "bg-[var(--border-soft)]"
-            )}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
 
 const EMOTIONS = [
   "Grateful", "Anxious", "Serene", "Frustrated", "Hopeful",
@@ -68,12 +26,6 @@ export default function DailyRecoveryPage() {
   const [sobrietyDays, setSobrietyDays] = useState(0);
   const [gratitude, setGratitude] = useState(["", "", ""]);
   const [emotions, setEmotions] = useState<Set<string>>(new Set());
-  const [levels, setLevels] = useState({
-    energy: 3 as Level,
-    sensory: 2 as Level,
-    craving: 1 as Level,
-    anxiety: 2 as Level,
-  });
 
   const toggleCheck = (id: string) => {
     setCheckedItems((prev) => {
@@ -215,45 +167,6 @@ export default function DailyRecoveryPage() {
           </div>
         </Card>
       </div>
-
-      {/* Regulation levels */}
-      <Card padding="lg" className="mb-6">
-        <div className="flex items-center gap-2 mb-4">
-          <AlertTriangle className="w-4 h-4 text-[var(--accent-amber)]" aria-hidden />
-          <span className="text-sm font-medium text-[var(--text-primary)]">Nervous System Check</span>
-        </div>
-        <div className="grid sm:grid-cols-2 gap-5">
-          <LevelPicker
-            label="Energy level"
-            value={levels.energy}
-            onChange={(v) => setLevels((l) => ({ ...l, energy: v }))}
-          />
-          <LevelPicker
-            label="Sensory overload"
-            value={levels.sensory}
-            onChange={(v) => setLevels((l) => ({ ...l, sensory: v }))}
-          />
-          <LevelPicker
-            label="Craving intensity"
-            value={levels.craving}
-            onChange={(v) => setLevels((l) => ({ ...l, craving: v }))}
-          />
-          <LevelPicker
-            label="Anxiety level"
-            value={levels.anxiety}
-            onChange={(v) => setLevels((l) => ({ ...l, anxiety: v }))}
-          />
-        </div>
-        {levels.craving >= 4 && (
-          <div className="mt-4 p-3 rounded-2xl bg-[var(--accent-serenity-light)] text-sm text-[var(--accent-serenity)] flex items-start gap-2">
-            <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-            <span>
-              High craving. Please reach out — call a sponsor, join a meeting, or visit{" "}
-              <a href="/crisis" className="underline">Crisis Support</a>.
-            </span>
-          </div>
-        )}
-      </Card>
 
       {/* Daily checklist */}
       <Card padding="lg" className="mb-6">
