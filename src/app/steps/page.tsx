@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { TWELVE_STEPS } from "@/lib/recovery-content";
 import { cn } from "@/lib/utils";
-import { BookOpen, Lock, Save, ChevronDown, ChevronUp, AlertTriangle, Mail } from "lucide-react";
+import { BookOpen, Lock, Save, ChevronDown, ChevronUp, AlertTriangle, Mail, Send, X } from "lucide-react";
 
 const STEP_PROMPTS: Record<number, string[]> = {
   1: [
@@ -74,6 +74,10 @@ export default function StepWorkPage() {
   const [activeStep, setActiveStep] = useState<number | null>(null);
   const [entries, setEntries] = useState<Record<string, string>>({});
   const [saved, setSaved] = useState<Record<string, boolean>>({});
+  const [emailPrompt, setEmailPrompt] = useState<number | null>(null);
+  const [emailTo, setEmailTo] = useState("");
+  const [emailStatus, setEmailStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [emailError, setEmailError] = useState("");
 
   const saveEntry = (key: string) => {
     try {
@@ -94,17 +98,23 @@ export default function StepWorkPage() {
     }
   };
 
-  const emailStep = (stepNum: number) => {
-    const step = TWELVE_STEPS[stepNum - 1];
-    const prompts = STEP_PROMPTS[stepNum] || [];
-    const subject = `Step Work — Step ${stepNum}: ${step.shortText}`;
-    const body = prompts
-      .map((prompt, idx) => {
-        const answer = entries[`step-${stepNum}-${idx}`]?.trim() || "(no answer yet)";
-        return `${prompt}\n${answer}`;
-      })
-      .join("\n\n");
-    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  const sendStepEmail = async (stepNum: number) => {
+    setEmailStatus("sending");
+    setEmailError("");
+    try {
+      const res = await fetch("/api/send-step-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ to: emailTo, stepNumber: stepNum, entries }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setEmailStatus("error"); setEmailError(data.error ?? "Something went wrong."); return; }
+      setEmailStatus("sent");
+      setTimeout(() => { setEmailPrompt(null); setEmailStatus("idle"); setEmailTo(""); }, 3000);
+    } catch {
+      setEmailStatus("error");
+      setEmailError("Could not connect. Please try again.");
+    }
   };
 
   const handleOpen = (stepNum: number) => {
@@ -260,18 +270,62 @@ export default function StepWorkPage() {
                     </div>
 
                     {/* Email step */}
-                    <div className="pt-2 border-t border-[var(--border-soft)] flex justify-end">
-                      <button
-                        onClick={() => emailStep(step.number)}
-                        className={cn(
-                          "flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-calm",
-                          "bg-[var(--accent-serenity-light)] text-[var(--accent-serenity)] hover:opacity-80",
-                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-serenity)]"
-                        )}
-                      >
-                        <Mail className="w-3 h-3" aria-hidden />
-                        Email this step
-                      </button>
+                    <div className="pt-2 border-t border-[var(--border-soft)]">
+                      {emailPrompt !== step.number ? (
+                        <div className="flex justify-end">
+                          <button
+                            onClick={() => { setEmailPrompt(step.number); setEmailStatus("idle"); setEmailError(""); }}
+                            className={cn(
+                              "flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-calm",
+                              "bg-[var(--accent-serenity-light)] text-[var(--accent-serenity)] hover:opacity-80",
+                              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-serenity)]"
+                            )}
+                          >
+                            <Mail className="w-3 h-3" aria-hidden />
+                            Email this step
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs text-[var(--text-muted)]">Send Step {step.number} to your email</p>
+                            <button onClick={() => setEmailPrompt(null)} className="text-[var(--text-muted)] hover:text-[var(--text-secondary)]" aria-label="Cancel">
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                          <div className="flex gap-2">
+                            <input
+                              type="email"
+                              value={emailTo}
+                              onChange={(e) => setEmailTo(e.target.value)}
+                              placeholder="your@email.com"
+                              autoFocus
+                              className={cn(
+                                "flex-1 px-3 py-2 rounded-xl text-sm",
+                                "bg-[var(--bg-secondary)] border border-[var(--border-soft)]",
+                                "text-[var(--text-primary)] placeholder:text-[var(--text-muted)]",
+                                "focus:outline-none focus:ring-2 focus:ring-[var(--accent-serenity)] transition-calm"
+                              )}
+                              onKeyDown={(e) => e.key === "Enter" && sendStepEmail(step.number)}
+                            />
+                            <button
+                              onClick={() => sendStepEmail(step.number)}
+                              disabled={emailStatus === "sending" || !emailTo.trim()}
+                              className={cn(
+                                "flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-calm",
+                                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-serenity)]",
+                                emailStatus === "sent"
+                                  ? "bg-[var(--accent-sage-light)] text-[var(--accent-sage)]"
+                                  : "bg-[var(--accent-serenity)] text-white hover:opacity-90 disabled:opacity-50"
+                              )}
+                            >
+                              <Send className="w-3 h-3" aria-hidden />
+                              {emailStatus === "sending" ? "Sending…" : emailStatus === "sent" ? "Sent!" : "Send"}
+                            </button>
+                          </div>
+                          {emailStatus === "error" && <p className="text-xs text-red-500">{emailError}</p>}
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
