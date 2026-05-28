@@ -34,16 +34,18 @@ async function readMembers(): Promise<Member[]> {
 }
 
 async function saveMembers(members: Member[]): Promise<void> {
-  await put(BLOB_PATH, JSON.stringify(members), {
-    access: "private",
+  const result = await put(BLOB_PATH, JSON.stringify(members), {
+    access: "public",
     allowOverwrite: true,
     addRandomSuffix: false,
     contentType: "application/json",
   });
+  console.log("[fellowship] saved blob:", result.url);
 }
 
 export async function GET() {
   const members = await readMembers();
+  console.log("[fellowship] GET returning", members.length, "members");
   return NextResponse.json({ members });
 }
 
@@ -62,6 +64,11 @@ export async function POST(req: Request) {
     joinedAt: new Date().toISOString().split("T")[0],
   };
   const updated = [newMember, ...members];
-  await saveMembers(updated);
+  try {
+    await saveMembers(updated);
+  } catch (err) {
+    console.error("[fellowship] saveMembers failed:", err);
+    return NextResponse.json({ error: "Failed to save. Please try again." }, { status: 500 });
+  }
   return NextResponse.json({ members: updated });
 }
