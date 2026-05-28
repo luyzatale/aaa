@@ -61,7 +61,7 @@ export default function Footer() {
             <ul className="space-y-2">
               {[
                 { href: "https://www.aa.org", label: "AA.org" },
-                { href: "https://www.alcoholics-anonymous.org.uk", label: "AA UK" },
+                { href: "https://www.aa-nederland.nl", label: "AA Nederland" },
                 { href: "https://www.aa.org/the-big-book", label: "Big Book" },
               ].map((link) => (
                 <li key={link.href}>
@@ -85,9 +85,11 @@ export default function Footer() {
             It is an independent recovery resource.
           </p>
           <p className="text-xs text-[var(--text-muted)]">
-            If you are in crisis, please call{" "}
-            <a href="tel:116123" className="underline text-[var(--accent-sage)]">116 123</a> (Samaritans UK) or{" "}
-            <a href="tel:988" className="underline text-[var(--accent-sage)]">988</a> (US)
+            In crisis? Bel{" "}
+            <a href="tel:08000113" className="underline text-[var(--accent-sage)]">0800 0113</a>{" "}
+            (113 Zelfmoordpreventie) of{" "}
+            <a href="tel:09000767" className="underline text-[var(--accent-sage)]">0900 0767</a>{" "}
+            (Sensoor) — 24/7
           </p>
         </div>
       </div>

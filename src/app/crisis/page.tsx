@@ -14,39 +14,39 @@ export const metadata: Metadata = {
 
 const helplines = [
   {
-    name: "Samaritans",
-    number: "116 123",
-    tel: "116123",
-    desc: "UK. Free. 24/7. For anyone in emotional distress.",
-    region: "UK",
+    name: "113 Zelfmoordpreventie",
+    number: "0800 0113",
+    tel: "08000113",
+    desc: "Nederland. Gratis. 24/7. Suïcidepreventie — bel of chat op 113.nl.",
+    region: "NL",
   },
   {
-    name: "Drinkline",
-    number: "0300 123 1110",
-    tel: "03001231110",
-    desc: "UK. Free. For people worried about their drinking.",
-    region: "UK",
+    name: "Sensoor",
+    number: "0900 0767",
+    tel: "09000767",
+    desc: "Nederland. 24/7. Luisterlijn voor emotionele steun en verdriet.",
+    region: "NL",
   },
   {
-    name: "988 Suicide & Crisis Lifeline",
-    number: "988",
-    tel: "988",
-    desc: "US. Free. 24/7. Call or text.",
-    region: "US",
+    name: "AA Nederland",
+    number: "0900 2020 (AA-lijn)",
+    tel: "09002020",
+    desc: "Nederland. Hulplijn voor mensen met een drankprobleem. Zie ook aa-nederland.nl.",
+    region: "NL",
   },
   {
-    name: "SAMHSA Helpline",
-    number: "1-800-662-4357",
-    tel: "18006624357",
-    desc: "US. Free. 24/7. Substance use support.",
-    region: "US",
+    name: "Jellinek Alcohol & Drugs",
+    number: "088 505 1220",
+    tel: "0885051220",
+    desc: "Nederland. Gratis advies over alcohol- en drugsgebruik.",
+    region: "NL",
   },
   {
-    name: "Crisis Text Line",
-    number: "Text HOME to 741741",
-    tel: null,
-    desc: "US, UK, CA. Free. For people who prefer text.",
-    region: "Text",
+    name: "Landelijke hulplijn GGZ",
+    number: "0900 1450",
+    tel: "09001450",
+    desc: "Nederland. Geestelijke gezondheidszorg, voor mensen in psychische nood.",
+    region: "NL",
   },
 ];
 
@@ -221,16 +221,19 @@ export default function CrisisPage() {
               If you are having suicidal thoughts
             </h2>
             <p className="text-sm text-[var(--text-secondary)] leading-relaxed mb-3">
-              Please reach out right now. Samaritans (116 123 in the UK) are available 24 hours
-              a day. You can also text HOME to 741741 in the US, UK, and Canada.
-              You do not have to be in immediate danger to call. Feeling this way is reason enough.
+              Bel nu 113 Zelfmoordpreventie — gratis, 24 uur per dag, 7 dagen per week.
+              Je kunt ook chatten via{" "}
+              <a href="https://www.113.nl" target="_blank" rel="noopener noreferrer" className="underline">
+                113.nl
+              </a>.
+              Je hoeft niet in onmiddellijk gevaar te zijn om te bellen. Zo voelen is reden genoeg.
             </p>
             <a
-              href="tel:116123"
+              href="tel:08000113"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[var(--accent-amber)] text-white text-sm font-medium hover:opacity-90 transition-calm"
             >
               <Phone className="w-4 h-4" aria-hidden />
-              Call 116 123 now
+              Bel 0800 0113 nu
             </a>
           </div>
         </div>
