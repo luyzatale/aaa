@@ -79,8 +79,8 @@
     line-height: 2.1 !important;
   }
 
-  .large-text { font-size: 120%; }
-  .extra-large-text { font-size: 140%; }
+  html.large-text { font-size: 120%; }
+  html.extra-large-text { font-size: 140%; }
 
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {

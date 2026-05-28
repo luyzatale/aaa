@@ -90,8 +90,8 @@ export function AccessibilityProvider({ children }: { children: React.ReactNode 
     root.classList.toggle("dark", darkMode);
     root.classList.toggle("night-mode", nightMode);
     body.classList.toggle("dyslexia-mode", dyslexiaMode);
-    body.classList.toggle("large-text", largeText);
-    body.classList.toggle("extra-large-text", extraLargeText);
+    root.classList.toggle("large-text", largeText);
+    root.classList.toggle("extra-large-text", extraLargeText);
     body.classList.toggle("reduce-motion", reduceMotion);
     body.classList.toggle("high-contrast", highContrast);
     body.classList.toggle("calm-mode", calmMode);
