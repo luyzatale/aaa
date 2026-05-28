@@ -20,8 +20,8 @@ export async function POST(req: NextRequest) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         input: { text: text.slice(0, 5000) },
-        voice: { languageCode: "en-US", name: "en-US-Studio-O" },
-        audioConfig: { audioEncoding: "MP3", speakingRate: 0.9, pitch: -1.0 },
+        voice: { languageCode: "en-US", name: "en-US-Neural2-F" },
+        audioConfig: { audioEncoding: "MP3", speakingRate: 0.85, pitch: -1.5 },
       }),
     }
   );
