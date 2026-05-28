@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/Badge";
 import { formatDate, getDayOfYear } from "@/lib/utils";
 import { DAILY_REFLECTIONS, TWELVE_STEPS } from "@/lib/recovery-content";
 import NeurodivergentReadingPanel from "@/components/features/NeurodivergentReadingPanel";
+import FellowshipSection from "@/components/features/FellowshipSection";
 
 export const metadata: Metadata = {
   title: "Home",
@@ -260,6 +261,9 @@ export default function HomePage() {
           ))}
         </div>
       </section>
+
+      {/* Fellowship */}
+      <FellowshipSection />
 
       {/* Reading with neurodivergent needs */}
       <NeurodivergentReadingPanel />
