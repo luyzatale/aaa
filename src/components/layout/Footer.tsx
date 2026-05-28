@@ -12,7 +12,7 @@ export default function Footer() {
           <div>
             <div className="flex items-center gap-2 mb-3">
               <Heart className="w-4 h-4 text-[var(--accent-sage)]" aria-hidden />
-              <span className="font-semibold text-[var(--text-primary)] text-sm">Serenity Path</span>
+              <span className="font-semibold text-[var(--text-primary)] text-sm">A@AA Serenity Path</span>
             </div>
             <p className="text-xs text-[var(--text-muted)] leading-relaxed">
               A peaceful digital recovery sanctuary for exhausted minds.

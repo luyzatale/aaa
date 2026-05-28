@@ -188,12 +188,12 @@ export default function Header() {
         <Link
           href="/"
           className="flex items-center gap-2.5 font-semibold text-[var(--text-primary)] hover:opacity-80 transition-calm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)] rounded-lg p-1"
-          aria-label="Serenity Path — AA Recovery Home"
+          aria-label="A@AA Serenity Path — AA Recovery Home"
         >
           <span className="w-7 h-7 rounded-xl bg-[var(--accent-sage-light)] flex items-center justify-center" aria-hidden>
             <Heart className="w-4 h-4 text-[var(--accent-sage)]" />
           </span>
-          <span className="text-base">Serenity Path</span>
+          <span className="text-base">A@AA Serenity Path</span>
         </Link>
 
         {/* Desktop nav */}
