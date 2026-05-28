@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { formatDate, getDayOfYear } from "@/lib/utils";
 import { DAILY_REFLECTIONS, TWELVE_STEPS } from "@/lib/recovery-content";
+import NeurodivergentReadingPanel from "@/components/features/NeurodivergentReadingPanel";
 
 export const metadata: Metadata = {
   title: "Home",
@@ -259,6 +260,9 @@ export default function HomePage() {
           ))}
         </div>
       </section>
+
+      {/* Reading with neurodivergent needs */}
+      <NeurodivergentReadingPanel />
 
       {/* Gentle reminder */}
       <section className="px-4 sm:px-6 pb-24 max-w-3xl mx-auto text-center">
