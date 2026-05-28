@@ -231,6 +231,18 @@ export default function Header() {
               pathname={pathname}
             />
           ))}
+          <Link
+            href="/fellowship"
+            className={cn(
+              "px-3 py-1.5 rounded-xl text-sm transition-calm",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-amber)]",
+              pathname === "/fellowship"
+                ? "text-[var(--accent-amber)] bg-[var(--accent-amber-light)] font-medium"
+                : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-muted)]"
+            )}
+          >
+            Fellowship
+          </Link>
         </div>
 
         <div className="hidden lg:flex items-center gap-2">
@@ -309,6 +321,19 @@ export default function Header() {
               onClose={() => setMobileOpen(false)}
             />
           ))}
+          <Link
+            href="/fellowship"
+            onClick={() => setMobileOpen(false)}
+            className={cn(
+              "block px-4 py-3 rounded-2xl text-sm transition-calm",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-amber)]",
+              pathname === "/fellowship"
+                ? "text-[var(--accent-amber)] bg-[var(--accent-amber-light)] font-medium"
+                : "text-[var(--text-secondary)] hover:bg-[var(--bg-muted)]"
+            )}
+          >
+            Fellowship
+          </Link>
           <Link
             href="/crisis"
             onClick={() => setMobileOpen(false)}

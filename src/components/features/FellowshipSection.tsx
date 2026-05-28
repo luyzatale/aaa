@@ -89,7 +89,7 @@ export default function FellowshipSection() {
   };
 
   return (
-    <section aria-labelledby="fellowship-heading" className="px-4 sm:px-6 pb-20 max-w-6xl mx-auto">
+    <section aria-labelledby="fellowship-heading">
       {/* Header */}
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div className="flex items-center gap-3">
