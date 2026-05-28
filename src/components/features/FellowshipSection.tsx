@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { HeartHandshake, X, MapPin, Phone, Plus, Users, Eye, EyeOff } from "lucide-react";
+import { HeartHandshake, X, MapPin, Phone, Plus, Users, Eye, EyeOff, Trash2 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
 
@@ -45,6 +45,22 @@ export default function FellowshipSection() {
   const [joined, setJoined] = useState(false);
   const [error, setError] = useState("");
   const [revealed, setRevealed] = useState<Set<string>>(new Set());
+  const [removing, setRemoving] = useState<string | null>(null);
+
+  const removeMember = async (id: string) => {
+    setRemoving(id);
+    try {
+      const res = await fetch("/api/fellowship", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      const data = await res.json();
+      if (res.ok) setMembers(data.members ?? []);
+    } finally {
+      setRemoving(null);
+    }
+  };
 
   const toggleReveal = (id: string) => {
     setRevealed((prev) => {
@@ -156,6 +172,14 @@ export default function FellowshipSection() {
                 </button>
               </div>
             </div>
+            <button
+              onClick={() => removeMember(m.id)}
+              disabled={removing === m.id}
+              className="flex-shrink-0 p-1.5 rounded-lg text-[var(--text-muted)] hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-calm focus-visible:outline-none disabled:opacity-40"
+              aria-label={`Remove ${m.nickname}`}
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
           </Card>
         ))}
       </div>

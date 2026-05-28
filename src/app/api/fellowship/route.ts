@@ -51,6 +51,23 @@ export async function GET() {
   return NextResponse.json({ members });
 }
 
+export async function DELETE(req: Request) {
+  const { id } = (await req.json()) ?? {};
+  if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
+  const members = await readMembers();
+  const updated = members.filter((m) => m.id !== id);
+  if (updated.length === members.length) {
+    return NextResponse.json({ error: "Member not found" }, { status: 404 });
+  }
+  try {
+    await saveMembers(updated);
+  } catch (err) {
+    console.error("[fellowship] saveMembers failed:", err);
+    return NextResponse.json({ error: "Failed to remove." }, { status: 500 });
+  }
+  return NextResponse.json({ members: updated });
+}
+
 export async function POST(req: Request) {
   const body = await req.json();
   const { nickname, phone, city } = body ?? {};
