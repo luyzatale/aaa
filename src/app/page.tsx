@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/Badge";
 import { formatDate, getDayOfYear } from "@/lib/utils";
 import { DAILY_REFLECTIONS, TWELVE_STEPS } from "@/lib/recovery-content";
 import NeurodivergentReadingPanel from "@/components/features/NeurodivergentReadingPanel";
+import FallingLeaves from "@/components/features/FallingLeaves";
 
 export const metadata: Metadata = {
   title: "Home",
@@ -181,6 +182,8 @@ export default function HomePage() {
             ))}
           </div>
         </div>
+
+        <FallingLeaves />
 
         {/* Decorative soft orbs */}
         <div
