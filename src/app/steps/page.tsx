@@ -154,8 +154,8 @@ export default function StepWorkPage() {
         <Lock className="w-4 h-4 text-[var(--accent-sage)] flex-shrink-0 mt-0.5" aria-hidden />
         <div className="text-sm text-[var(--text-secondary)]">
           <span className="font-medium text-[var(--text-primary)]">Privacy: </span>
-          All your writing stays on your device in local storage. Nothing is sent to a server.
-          For deep personal inventory work, sharing with a sponsor or therapist is encouraged.
+          All your writing stays on your device in local storage. Nothing is sent to a server unless you choose to email a step.
+          For deep personal inventory work, you can use the <strong>Email this step</strong> button to send your reflections to yourself or your sponsor.
         </div>
       </Card>
 

@@ -62,7 +62,7 @@ export async function POST(req: Request) {
   const { error } = await resend.emails.send({
     from: "A@AA Serenity Path <onboarding@resend.dev>",
     to,
-    subject: `Step Work — Step ${step.number}: ${step.shortText}`,
+    subject: `Step Work / ${step.shortText}`,
     html,
   });
 
