@@ -7,7 +7,7 @@ import { TWELVE_STEPS } from "@/lib/recovery-content";
 import { formatDate, getDayOfYear } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import {
-  Sun, Moon, Heart, CheckCircle, Circle, Star, Minus, Plus,
+  Sun, Moon, Heart, CheckCircle, Circle, Star, Minus, Plus, Trash2,
 } from "lucide-react";
 
 const EMOTIONS = [
@@ -15,6 +15,12 @@ const EMOTIONS = [
   "Lonely", "Tired", "Present", "Overwhelmed", "Peaceful",
   "Irritable", "Content",
 ];
+
+interface GratitudeEntry {
+  id: string;
+  date: string;
+  items: string[];
+}
 
 interface DailyReflection {
   title: string;
@@ -43,6 +49,12 @@ export default function DailyRecoveryPage() {
     try { return Number(localStorage.getItem("aa-sobriety-days") ?? 0); } catch { return 0; }
   });
   const [gratitude, setGratitude] = useState(["", "", ""]);
+  const [savedGratitudes, setSavedGratitudes] = useState<GratitudeEntry[]>(() => {
+    try {
+      const stored = localStorage.getItem("aa-gratitudes");
+      return stored ? JSON.parse(stored) : [];
+    } catch { return []; }
+  });
   const [emotions, setEmotions] = useState<Set<string>>(new Set());
 
   const toggleCheck = (id: string) => {
@@ -57,6 +69,26 @@ export default function DailyRecoveryPage() {
   useEffect(() => {
     try { localStorage.setItem("aa-sobriety-days", String(sobrietyDays)); } catch {}
   }, [sobrietyDays]);
+
+  const saveGratitudeEntry = () => {
+    const filled = gratitude.filter((g) => g.trim());
+    if (filled.length === 0) return;
+    const entry: GratitudeEntry = {
+      id: Date.now().toString(),
+      date: formatDate(new Date()),
+      items: filled,
+    };
+    const updated = [entry, ...savedGratitudes];
+    setSavedGratitudes(updated);
+    try { localStorage.setItem("aa-gratitudes", JSON.stringify(updated)); } catch {}
+    setGratitude(["", "", ""]);
+  };
+
+  const removeGratitudeEntry = (id: string) => {
+    const updated = savedGratitudes.filter((e) => e.id !== id);
+    setSavedGratitudes(updated);
+    try { localStorage.setItem("aa-gratitudes", JSON.stringify(updated)); } catch {}
+  };
 
   const toggleEmotion = (e: string) => {
     setEmotions((prev) => {
@@ -269,7 +301,8 @@ export default function DailyRecoveryPage() {
                   next[i] = e.target.value;
                   setGratitude(next);
                 }}
-                placeholder={`I am grateful for...`}
+                onKeyDown={(e) => { if (e.key === "Enter") saveGratitudeEntry(); }}
+                placeholder="I am grateful for..."
                 aria-label={`Gratitude ${i + 1}`}
                 className={cn(
                   "flex-1 px-3 py-2 rounded-xl text-sm",
@@ -281,6 +314,49 @@ export default function DailyRecoveryPage() {
             </div>
           ))}
         </div>
+
+        <button
+          onClick={saveGratitudeEntry}
+          disabled={gratitude.every((g) => !g.trim())}
+          className={cn(
+            "mt-4 w-full py-2.5 rounded-xl text-sm font-medium transition-calm",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-amber)]",
+            "bg-[var(--accent-amber)] text-white hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
+          )}
+        >
+          Save gratitudes
+        </button>
+
+        {savedGratitudes.length > 0 && (
+          <div className="mt-6 space-y-3">
+            <p className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-medium">Saved entries</p>
+            {savedGratitudes.map((entry) => (
+              <div
+                key={entry.id}
+                className="rounded-2xl border border-[var(--accent-amber)]/20 bg-[var(--bg-card)] p-3"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs text-[var(--text-muted)]">{entry.date}</span>
+                  <button
+                    onClick={() => removeGratitudeEntry(entry.id)}
+                    className="p-1 rounded-lg text-[var(--text-muted)] hover:text-red-400 hover:bg-[var(--bg-muted)] transition-calm"
+                    aria-label="Remove entry"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+                <ul className="space-y-1">
+                  {entry.items.map((item, j) => (
+                    <li key={j} className="text-sm text-[var(--text-secondary)] flex items-start gap-2">
+                      <span className="text-[var(--accent-amber)] mt-0.5 flex-shrink-0">·</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
       </Card>
     </div>
   );
