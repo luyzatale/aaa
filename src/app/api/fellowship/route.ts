@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { put, list } from "@vercel/blob";
+import { put, list, get } from "@vercel/blob";
 
 interface Member {
   id: string;
@@ -17,19 +17,11 @@ async function readMembers(): Promise<Member[]> {
     return [];
   }
   try {
-    const { blobs } = await list({ prefix: "fellowship/members" });
-    if (!blobs.length) return [];
-    // Sort by uploadedAt descending — always read the most recent file
-    blobs.sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
-    const res = await fetch(blobs[0].downloadUrl, {
-      headers: { Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}` },
-    });
-    if (!res.ok) {
-      console.error("[fellowship] Failed to fetch blob:", res.status);
-      return [];
-    }
+    const res = await get(BLOB_PATH, { access: "private" });
     return await res.json();
-  } catch (err) {
+  } catch (err: unknown) {
+    // BlobNotFoundError is expected on first use
+    if (err instanceof Error && err.constructor.name === "BlobNotFoundError") return [];
     console.error("[fellowship] readMembers error:", err);
     return [];
   }
