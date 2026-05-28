@@ -69,27 +69,11 @@ const quickActions = [
     badge: "Live",
   },
   {
-    href: "/prayers",
-    icon: <BookOpen className="w-5 h-5" />,
-    label: "Serenity Prayer",
-    description: "Read or listen",
-    variant: "serenity" as const,
-    badge: null,
-  },
-  {
     href: "/daily",
     icon: <Calendar className="w-5 h-5" />,
     label: "Daily Reflection",
     description: "Today's meditation",
     variant: "amber" as const,
-    badge: null,
-  },
-  {
-    href: "/literature",
-    icon: <BookOpen className="w-5 h-5" />,
-    label: "Big Book",
-    description: "AA literature library",
-    variant: "sage" as const,
     badge: null,
   },
 ];
