@@ -234,11 +234,9 @@ export default function Header() {
           <Link
             href="/fellowship"
             className={cn(
-              "px-3 py-1.5 rounded-xl text-sm transition-calm flex items-center gap-1.5",
+              "px-3 py-1.5 rounded-xl text-sm transition-calm flex items-center gap-1.5 font-medium",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-amber)]",
-              pathname === "/fellowship"
-                ? "text-[var(--accent-amber)] bg-[var(--accent-amber-light)] font-medium"
-                : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-muted)]"
+              "text-[var(--accent-amber)] bg-[var(--accent-amber-light)] hover:opacity-80"
             )}
           >
             <HeartHandshake className="w-4 h-4" aria-hidden />
@@ -326,11 +324,9 @@ export default function Header() {
             href="/fellowship"
             onClick={() => setMobileOpen(false)}
             className={cn(
-              "flex items-center gap-1.5 px-4 py-3 rounded-2xl text-sm transition-calm",
+              "flex items-center gap-1.5 px-4 py-3 rounded-2xl text-sm transition-calm font-medium",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-amber)]",
-              pathname === "/fellowship"
-                ? "text-[var(--accent-amber)] bg-[var(--accent-amber-light)] font-medium"
-                : "text-[var(--text-secondary)] hover:bg-[var(--bg-muted)]"
+              "text-[var(--accent-amber)] bg-[var(--accent-amber-light)] hover:opacity-80"
             )}
           >
             <HeartHandshake className="w-4 h-4" aria-hidden />
