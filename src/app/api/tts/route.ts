@@ -14,14 +14,14 @@ export async function POST(req: NextRequest) {
   }
 
   const res = await fetch(
-    `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`,
+    `https://texttospeech.googleapis.com/v1beta1/text:synthesize?key=${apiKey}`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         input: { text: text.slice(0, 5000) },
-        voice: { languageCode: "en-US", name: "en-US-Neural2-F" },
-        audioConfig: { audioEncoding: "MP3", speakingRate: 0.85, pitch: -1.5 },
+        voice: { languageCode: "en-US", name: "en-US-Journey-D" },
+        audioConfig: { audioEncoding: "MP3", speakingRate: 0.85 },
       }),
     }
   );
