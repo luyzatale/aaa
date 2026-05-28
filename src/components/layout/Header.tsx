@@ -63,7 +63,7 @@ function NavDropdown({
   return (
     <div ref={containerRef} className="relative" onMouseEnter={onOpen}>
       <button
-        onClick={() => (isOpen ? onClose() : onOpen())}
+        onClick={onOpen}
         aria-expanded={isOpen}
         aria-haspopup="menu"
         className={cn(
