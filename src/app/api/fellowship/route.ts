@@ -68,7 +68,7 @@ export async function POST(req: Request) {
     await saveMembers(updated);
   } catch (err) {
     console.error("[fellowship] saveMembers failed:", err);
-    return NextResponse.json({ error: "Failed to save. Please try again." }, { status: 500 });
+    return NextResponse.json({ error: "Failed to save. Please try again.", debug: String(err) }, { status: 500 });
   }
   return NextResponse.json({ members: updated });
 }
