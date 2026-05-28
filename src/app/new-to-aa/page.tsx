@@ -273,30 +273,6 @@ export default function NewToAAPage() {
         <Accordion items={faqItems} allowMultiple />
       </section>
 
-      {/* UK Starter Pack */}
-      <Card variant="sage" padding="lg" className="mt-12">
-        <div className="flex items-start gap-4">
-          <div className="w-10 h-10 rounded-2xl bg-[var(--accent-sage)] text-white flex items-center justify-center flex-shrink-0" aria-hidden>
-            <BookOpen className="w-5 h-5" />
-          </div>
-          <div>
-            <h3 className="font-semibold text-[var(--text-primary)] mb-1">UK Starter Pack</h3>
-            <p className="text-sm text-[var(--text-secondary)] leading-relaxed mb-3">
-              AA UK offers a free starter pack with essential information for newcomers.
-              It covers what AA is, how it works, and what to expect.
-            </p>
-            <a
-              href="https://www.alcoholics-anonymous.org.uk/about-aa/newcomers/starter-pack"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--accent-sage)] hover:opacity-80 transition-calm"
-            >
-              Get the UK Starter Pack ↗
-            </a>
-          </div>
-        </div>
-      </Card>
-
       {/* Next steps */}
       <div className="mt-12 text-center space-y-4">
         <p className="text-[var(--text-muted)] text-sm">Ready to take a next step?</p>
