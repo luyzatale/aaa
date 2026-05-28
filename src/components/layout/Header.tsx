@@ -38,21 +38,30 @@ function NavDropdown({
   pathname: string;
 }) {
   const isGroupActive = group.items.some((item) => pathname === item.href);
-  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleMouseEnter = () => {
-    if (closeTimer.current !== null) clearTimeout(closeTimer.current);
-    onOpen();
-  };
+  // Close on click outside
+  useEffect(() => {
+    if (!isOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        onClose();
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [isOpen, onClose]);
 
-  const handleMouseLeave = () => {
-    closeTimer.current = setTimeout(onClose, 150);
-  };
-
-  useEffect(() => () => { if (closeTimer.current !== null) clearTimeout(closeTimer.current); }, []);
+  // Close on Escape
+  useEffect(() => {
+    if (!isOpen) return;
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [isOpen, onClose]);
 
   return (
-    <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+    <div ref={containerRef} className="relative" onMouseEnter={onOpen}>
       <button
         onClick={() => (isOpen ? onClose() : onOpen())}
         aria-expanded={isOpen}
@@ -73,7 +82,7 @@ function NavDropdown({
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 w-60 z-50 pt-2">
+        <div className="absolute top-full left-0 w-60 z-50 pt-1.5">
           <div
             className="rounded-2xl bg-[var(--bg-card)] border border-[var(--border-soft)] shadow-calm-md p-2 animate-fade-in"
             role="menu"
