@@ -11,21 +11,18 @@ interface Member {
 
 const BLOB_PATH = "fellowship/members.json";
 
-async function readMembers(): Promise<Member[]> {
+async function readMembers(): Promise<{ members: Member[]; debug?: string }> {
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    console.error("[fellowship] BLOB_READ_WRITE_TOKEN is not set");
-    return [];
+    return { members: [], debug: "no token" };
   }
   try {
     const res = await get(BLOB_PATH, { access: "private" });
-    if (!res) return [];
+    if (!res) return { members: [], debug: "get returned null" };
     const text = await new Response(res.stream).text();
-    return JSON.parse(text);
+    return { members: JSON.parse(text) };
   } catch (err: unknown) {
-    // BlobNotFoundError is expected on first use
-    if (err instanceof Error && err.constructor.name === "BlobNotFoundError") return [];
-    console.error("[fellowship] readMembers error:", err);
-    return [];
+    const msg = err instanceof Error ? err.constructor.name + ": " + err.message : String(err);
+    return { members: [], debug: msg };
   }
 }
 
@@ -40,15 +37,15 @@ async function saveMembers(members: Member[]): Promise<void> {
 }
 
 export async function GET() {
-  const members = await readMembers();
-  console.log("[fellowship] GET returning", members.length, "members");
-  return NextResponse.json({ members });
+  const { members, debug } = await readMembers();
+  console.log("[fellowship] GET returning", members.length, "members", debug ?? "");
+  return NextResponse.json({ members, debug });
 }
 
 export async function DELETE(req: Request) {
   const { id } = (await req.json()) ?? {};
   if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
-  const members = await readMembers();
+  const { members } = await readMembers();
   const updated = members.filter((m) => m.id !== id);
   if (updated.length === members.length) {
     return NextResponse.json({ error: "Member not found" }, { status: 404 });
@@ -68,7 +65,7 @@ export async function POST(req: Request) {
   if (!nickname?.trim() || !phone?.trim() || !city?.trim()) {
     return NextResponse.json({ error: "All fields required" }, { status: 400 });
   }
-  const members = await readMembers();
+  const { members } = await readMembers();
   const newMember: Member = {
     id: Date.now().toString(),
     nickname: nickname.trim(),
