@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { TWELVE_STEPS } from "@/lib/recovery-content";
 import { cn } from "@/lib/utils";
-import { BookOpen, Lock, Save, ChevronDown, ChevronUp, AlertTriangle } from "lucide-react";
+import { BookOpen, Lock, Save, ChevronDown, ChevronUp, AlertTriangle, Mail } from "lucide-react";
 
 const STEP_PROMPTS: Record<number, string[]> = {
   1: [
@@ -92,6 +92,19 @@ export default function StepWorkPage() {
     } catch {
       return "";
     }
+  };
+
+  const emailStep = (stepNum: number) => {
+    const step = TWELVE_STEPS[stepNum - 1];
+    const prompts = STEP_PROMPTS[stepNum] || [];
+    const subject = `Step Work — Step ${stepNum}: ${step.shortText}`;
+    const body = prompts
+      .map((prompt, idx) => {
+        const answer = entries[`step-${stepNum}-${idx}`]?.trim() || "(no answer yet)";
+        return `${prompt}\n${answer}`;
+      })
+      .join("\n\n");
+    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
   const handleOpen = (stepNum: number) => {
@@ -244,6 +257,21 @@ export default function StepWorkPage() {
                           </div>
                         );
                       })}
+                    </div>
+
+                    {/* Email step */}
+                    <div className="pt-2 border-t border-[var(--border-soft)] flex justify-end">
+                      <button
+                        onClick={() => emailStep(step.number)}
+                        className={cn(
+                          "flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-calm",
+                          "bg-[var(--accent-serenity-light)] text-[var(--accent-serenity)] hover:opacity-80",
+                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-serenity)]"
+                        )}
+                      >
+                        <Mail className="w-3 h-3" aria-hidden />
+                        Email this step
+                      </button>
                     </div>
                   </div>
                 )}
