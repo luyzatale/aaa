@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -38,9 +38,21 @@ function NavDropdown({
   pathname: string;
 }) {
   const isGroupActive = group.items.some((item) => pathname === item.href);
+  const closeTimer = useRef<ReturnType<typeof setTimeout>>();
+
+  const handleMouseEnter = () => {
+    clearTimeout(closeTimer.current);
+    onOpen();
+  };
+
+  const handleMouseLeave = () => {
+    closeTimer.current = setTimeout(onClose, 150);
+  };
+
+  useEffect(() => () => clearTimeout(closeTimer.current), []);
 
   return (
-    <div className="relative" onMouseEnter={onOpen} onMouseLeave={onClose}>
+    <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       <button
         onClick={() => (isOpen ? onClose() : onOpen())}
         aria-expanded={isOpen}
@@ -61,29 +73,31 @@ function NavDropdown({
       </button>
 
       {isOpen && (
-        <div
-          className="absolute top-full left-0 mt-1.5 w-60 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-soft)] shadow-calm-md p-2 z-50 animate-fade-in"
-          role="menu"
-          aria-label={`${group.label} submenu`}
-        >
-          {group.items.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              role="menuitem"
-              onClick={onClose}
-              className={cn(
-                "block px-3 py-2.5 rounded-xl transition-calm",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]",
-                pathname === item.href
-                  ? "text-[var(--accent-sage)] bg-[var(--accent-sage-light)]"
-                  : "text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
-              )}
-            >
-              <span className="block text-sm font-medium">{item.label}</span>
-              <span className="block text-xs text-[var(--text-muted)] mt-0.5">{item.desc}</span>
-            </Link>
-          ))}
+        <div className="absolute top-full left-0 w-60 z-50 pt-2">
+          <div
+            className="rounded-2xl bg-[var(--bg-card)] border border-[var(--border-soft)] shadow-calm-md p-2 animate-fade-in"
+            role="menu"
+            aria-label={`${group.label} submenu`}
+          >
+            {group.items.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                role="menuitem"
+                onClick={onClose}
+                className={cn(
+                  "block px-3 py-2.5 rounded-xl transition-calm",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]",
+                  pathname === item.href
+                    ? "text-[var(--accent-sage)] bg-[var(--accent-sage-light)]"
+                    : "text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
+                )}
+              >
+                <span className="block text-sm font-medium">{item.label}</span>
+                <span className="block text-xs text-[var(--text-muted)] mt-0.5">{item.desc}</span>
+              </Link>
+            ))}
+          </div>
         </div>
       )}
     </div>
