@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useAccessibility } from "@/lib/accessibility-context";
 import { cn } from "@/lib/utils";
 import {
-  Moon, Sun, Type, Eye, Zap, BookOpen, Focus, Settings2, X, MoonStar, Contrast,
+  Moon, Sun, Type, Eye, Zap, BookOpen, Focus, SlidersHorizontal, X, MoonStar, Contrast,
 } from "lucide-react";
 
 export default function AccessibilityBar() {
@@ -13,20 +13,25 @@ export default function AccessibilityBar() {
 
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        className={cn(
-          "fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full shadow-calm-lg",
-          "bg-[var(--bg-card)] border border-[var(--border-soft)]",
-          "flex items-center justify-center text-[var(--text-secondary)]",
-          "hover:bg-[var(--bg-muted)] transition-calm",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
-        )}
-        aria-label="Accessibility settings"
-        aria-expanded={open}
-      >
-        <Settings2 className="w-5 h-5" />
-      </button>
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-1.5">
+        <button
+          onClick={() => setOpen(true)}
+          className={cn(
+            "w-12 h-12 rounded-full shadow-calm-lg",
+            "bg-[var(--bg-card)] border border-[var(--border-soft)]",
+            "flex items-center justify-center text-[var(--text-secondary)]",
+            "hover:bg-[var(--bg-muted)] transition-calm",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
+          )}
+          aria-label="Reading with neurodivergent needs"
+          aria-expanded={open}
+        >
+          <SlidersHorizontal className="w-5 h-5" />
+        </button>
+        <span className="text-[10px] text-[var(--text-muted)] font-medium whitespace-nowrap leading-tight text-center max-w-[72px]">
+          Neurodivergent needs
+        </span>
+      </div>
 
       {open && (
         <div
