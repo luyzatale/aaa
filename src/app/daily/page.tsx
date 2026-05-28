@@ -49,12 +49,9 @@ export default function DailyRecoveryPage() {
     try { return Number(localStorage.getItem("aa-sobriety-days") ?? 0); } catch { return 0; }
   });
   const [gratitude, setGratitude] = useState(["", "", ""]);
-  const [savedGratitudes, setSavedGratitudes] = useState<GratitudeEntry[]>(() => {
-    try {
-      const stored = localStorage.getItem("aa-gratitudes");
-      return stored ? JSON.parse(stored) : [];
-    } catch { return []; }
-  });
+  const [savedGratitudes, setSavedGratitudes] = useState<GratitudeEntry[]>([]);
+  const [gratitudesLoading, setGratitudesLoading] = useState(true);
+  const [gratitudeSaving, setGratitudeSaving] = useState(false);
   const [emotions, setEmotions] = useState<Set<string>>(new Set());
 
   const toggleCheck = (id: string) => {
@@ -70,24 +67,46 @@ export default function DailyRecoveryPage() {
     try { localStorage.setItem("aa-sobriety-days", String(sobrietyDays)); } catch {}
   }, [sobrietyDays]);
 
-  const saveGratitudeEntry = () => {
+  useEffect(() => {
+    fetch("/api/gratitudes")
+      .then((r) => r.json())
+      .then((data) => { if (Array.isArray(data.entries)) setSavedGratitudes(data.entries); })
+      .catch(() => {})
+      .finally(() => setGratitudesLoading(false));
+  }, []);
+
+  const saveGratitudeEntry = async () => {
     const filled = gratitude.filter((g) => g.trim());
-    if (filled.length === 0) return;
-    const entry: GratitudeEntry = {
-      id: Date.now().toString(),
-      date: formatDate(new Date()),
-      items: filled,
-    };
-    const updated = [entry, ...savedGratitudes];
-    setSavedGratitudes(updated);
-    try { localStorage.setItem("aa-gratitudes", JSON.stringify(updated)); } catch {}
-    setGratitude(["", "", ""]);
+    if (filled.length === 0 || gratitudeSaving) return;
+    setGratitudeSaving(true);
+    try {
+      const res = await fetch("/api/gratitudes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items: filled, date: formatDate(new Date()) }),
+      });
+      const data = await res.json();
+      if (data.entries) {
+        setSavedGratitudes(data.entries);
+        setGratitude(["", "", ""]);
+      }
+    } catch {}
+    setGratitudeSaving(false);
   };
 
-  const removeGratitudeEntry = (id: string) => {
-    const updated = savedGratitudes.filter((e) => e.id !== id);
-    setSavedGratitudes(updated);
-    try { localStorage.setItem("aa-gratitudes", JSON.stringify(updated)); } catch {}
+  const removeGratitudeEntry = async (id: string) => {
+    const prev = savedGratitudes;
+    setSavedGratitudes((g) => g.filter((e) => e.id !== id));
+    try {
+      const res = await fetch("/api/gratitudes", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      const data = await res.json();
+      if (data.entries) setSavedGratitudes(data.entries);
+      else setSavedGratitudes(prev);
+    } catch { setSavedGratitudes(prev); }
   };
 
   const toggleEmotion = (e: string) => {
@@ -317,17 +336,24 @@ export default function DailyRecoveryPage() {
 
         <button
           onClick={saveGratitudeEntry}
-          disabled={gratitude.every((g) => !g.trim())}
+          disabled={gratitude.every((g) => !g.trim()) || gratitudeSaving}
           className={cn(
             "mt-4 w-full py-2.5 rounded-xl text-sm font-medium transition-calm",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-amber)]",
             "bg-[var(--accent-amber)] text-white hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
           )}
         >
-          Save gratitudes
+          {gratitudeSaving ? "Saving…" : "Save gratitudes"}
         </button>
 
-        {savedGratitudes.length > 0 && (
+        {gratitudesLoading && (
+          <div className="mt-6 space-y-2 animate-pulse">
+            <div className="h-3 bg-[var(--border-soft)] rounded w-24" />
+            <div className="h-16 bg-[var(--border-soft)] rounded-2xl" />
+          </div>
+        )}
+
+        {!gratitudesLoading && savedGratitudes.length > 0 && (
           <div className="mt-6 space-y-3">
             <p className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-medium">Saved entries</p>
             {savedGratitudes.map((entry) => (
