@@ -184,7 +184,7 @@ export default function TTSPlayer({ text, title, className }: TTSPlayerProps) {
             {s}×
           </button>
         ))}
-        <span className="ml-auto text-xs text-[var(--text-muted)]">nl-NL · WaveNet-D</span>
+        <span className="ml-auto text-xs text-[var(--text-muted)]">en-US · WaveNet-D</span>
       </div>
     </div>
   );

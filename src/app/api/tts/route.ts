@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         input: { text: text.slice(0, 5000) },
-        voice: { languageCode: "nl-NL", name: "nl-NL-Wavenet-D" },
+        voice: { languageCode: "en-US", name: "en-US-Wavenet-D" },
         audioConfig: { audioEncoding: "MP3" },
       }),
     }
