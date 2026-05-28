@@ -76,6 +76,14 @@ const quickActions = [
     variant: "amber" as const,
     badge: null,
   },
+  {
+    href: "/literature",
+    icon: <BookOpen className="w-5 h-5" />,
+    label: "Literature",
+    description: "Big Book & AA texts",
+    variant: "serenity" as const,
+    badge: null,
+  },
 ];
 
 const sectionLinks = [
