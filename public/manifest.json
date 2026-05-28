@@ -1,0 +1,48 @@
+{
+  "name": "Serenity Path — AA Recovery",
+  "short_name": "Serenity Path",
+  "description": "A peaceful digital recovery sanctuary for people in AA.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fefdf8",
+  "theme_color": "#5d825d",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["health", "lifestyle"],
+  "lang": "en",
+  "shortcuts": [
+    {
+      "name": "Daily Recovery",
+      "url": "/daily",
+      "description": "Today's check-in and reflection"
+    },
+    {
+      "name": "Meetings",
+      "url": "/meetings",
+      "description": "Find an AA meeting"
+    },
+    {
+      "name": "Serenity Prayer",
+      "url": "/prayers",
+      "description": "Prayers and meditation"
+    },
+    {
+      "name": "Crisis Support",
+      "url": "/crisis",
+      "description": "Emergency support tools"
+    }
+  ]
+}
