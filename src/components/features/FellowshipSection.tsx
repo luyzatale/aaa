@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { HeartHandshake, X, MapPin, Phone, Plus, Users } from "lucide-react";
+import { HeartHandshake, X, MapPin, Phone, Plus, Users, Eye, EyeOff } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
 
@@ -44,6 +44,15 @@ export default function FellowshipSection() {
   const [submitting, setSubmitting] = useState(false);
   const [joined, setJoined] = useState(false);
   const [error, setError] = useState("");
+  const [revealed, setRevealed] = useState<Set<string>>(new Set());
+
+  const toggleReveal = (id: string) => {
+    setRevealed((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
 
   useEffect(() => {
     fetch("/api/fellowship")
@@ -125,16 +134,27 @@ export default function FellowshipSection() {
         {members.map((m) => (
           <Card key={m.id} padding="md" className="flex items-center gap-3">
             <Avatar name={m.nickname} />
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="text-sm font-medium text-[var(--text-primary)] truncate">{m.nickname}</p>
               <p className="text-xs text-[var(--text-muted)] flex items-center gap-1 mt-0.5">
                 <MapPin className="w-3 h-3 flex-shrink-0" aria-hidden />
                 {m.city}
               </p>
-              <p className="text-xs text-[var(--text-muted)] flex items-center gap-1 mt-0.5 font-mono">
-                <Phone className="w-3 h-3 flex-shrink-0" aria-hidden />
-                {maskPhone(m.phone)}
-              </p>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <Phone className="w-3 h-3 flex-shrink-0 text-[var(--text-muted)]" aria-hidden />
+                <span className="text-xs text-[var(--text-muted)] font-mono">
+                  {revealed.has(m.id) ? m.phone : maskPhone(m.phone)}
+                </span>
+                <button
+                  onClick={() => toggleReveal(m.id)}
+                  className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-calm focus-visible:outline-none"
+                  aria-label={revealed.has(m.id) ? "Hide phone number" : "Reveal phone number"}
+                >
+                  {revealed.has(m.id)
+                    ? <EyeOff className="w-3 h-3" />
+                    : <Eye className="w-3 h-3" />}
+                </button>
+              </div>
             </div>
           </Card>
         ))}
