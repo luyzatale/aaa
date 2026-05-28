@@ -177,4 +177,48 @@
     40% { opacity: 0.75; }
     50% { transform: translate(215px, -22px) rotate(-28deg); opacity: 0; }
   }
+
+  @keyframes cometFly2 {
+    0%, 50%, 100% { transform: translate(-52px, 105px) rotate(-22deg); opacity: 0; }
+    5%  { opacity: 0.95; }
+    40% { opacity: 0.65; }
+    48% { transform: translate(272px, -32px) rotate(-22deg); opacity: 0; }
+  }
+
+  @keyframes ringRipple {
+    0%   { transform: scale(1);    opacity: 0.40; }
+    100% { transform: scale(1.72); opacity: 0; }
+  }
+
+  @keyframes nebulaDrift {
+    0%, 100% { opacity: 1;    transform: translateX(0px)  translateY(0px); }
+    40%       { opacity: 0.65; transform: translateX(6px)  translateY(-4px); }
+    70%       { opacity: 0.85; transform: translateX(-4px) translateY(5px); }
+  }
+
+  @keyframes stardriftA {
+    0%, 100% { transform: translate(0px,  0px); }
+    35%       { transform: translate(3px,  -2px); }
+    70%       { transform: translate(-2px,  3px); }
+  }
+
+  @keyframes stardriftB {
+    0%, 100% { transform: translate(0px,  0px); }
+    35%       { transform: translate(-3px,  2px); }
+    70%       { transform: translate(2px, -3px); }
+  }
+
+  @keyframes auroraDrift {
+    0%, 100% { transform: translateX(0px)  scaleX(1);    opacity: 1; }
+    45%       { transform: translateX(8px)  scaleX(1.04); opacity: 0.70; }
+    75%       { transform: translateX(-5px) scaleX(0.97); opacity: 0.85; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-breathing] * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
