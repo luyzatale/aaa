@@ -18,7 +18,9 @@ async function readMembers(): Promise<Member[]> {
   }
   try {
     const res = await get(BLOB_PATH, { access: "private" });
-    return await res.json();
+    if (!res) return [];
+    const text = await new Response(res.stream).text();
+    return JSON.parse(text);
   } catch (err: unknown) {
     // BlobNotFoundError is expected on first use
     if (err instanceof Error && err.constructor.name === "BlobNotFoundError") return [];
