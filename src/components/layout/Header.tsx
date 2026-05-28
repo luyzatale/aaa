@@ -38,7 +38,7 @@ function NavDropdown({
   pathname: string;
 }) {
   const isGroupActive = group.items.some((item) => pathname === item.href);
-  const closeTimer = useRef<ReturnType<typeof setTimeout>>();
+  const closeTimer = useRef<number>(0);
 
   const handleMouseEnter = () => {
     clearTimeout(closeTimer.current);
