@@ -209,16 +209,6 @@ export default function Header() {
           >
             Home
           </Link>
-          {navGroups.map((group) => (
-            <NavDropdown
-              key={group.id}
-              group={group}
-              isOpen={openGroup === group.id}
-              onOpen={() => setOpenGroup(group.id)}
-              onClose={() => setOpenGroup(null)}
-              pathname={pathname}
-            />
-          ))}
           <Link
             href="/new-to-aa"
             className={cn(
@@ -231,6 +221,16 @@ export default function Header() {
           >
             New to AA
           </Link>
+          {navGroups.map((group) => (
+            <NavDropdown
+              key={group.id}
+              group={group}
+              isOpen={openGroup === group.id}
+              onOpen={() => setOpenGroup(group.id)}
+              onClose={() => setOpenGroup(null)}
+              pathname={pathname}
+            />
+          ))}
         </div>
 
         <div className="hidden lg:flex items-center gap-2">
@@ -288,14 +288,6 @@ export default function Header() {
           >
             Home
           </Link>
-          {navGroups.map((group) => (
-            <MobileNavGroup
-              key={group.id}
-              group={group}
-              pathname={pathname}
-              onClose={() => setMobileOpen(false)}
-            />
-          ))}
           <Link
             href="/new-to-aa"
             onClick={() => setMobileOpen(false)}
@@ -309,6 +301,14 @@ export default function Header() {
           >
             New to AA
           </Link>
+          {navGroups.map((group) => (
+            <MobileNavGroup
+              key={group.id}
+              group={group}
+              pathname={pathname}
+              onClose={() => setMobileOpen(false)}
+            />
+          ))}
           <Link
             href="/crisis"
             onClick={() => setMobileOpen(false)}
