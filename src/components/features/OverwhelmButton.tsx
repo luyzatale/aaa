@@ -7,10 +7,18 @@ import { X, Wind, Heart, Phone, Users, BookOpen } from "lucide-react";
 import Link from "next/link";
 
 const BREATHING_PHASES = [
-  { label: "Breathe in",  duration: 4000, scale: 1.18 },
-  { label: "Hold",        duration: 4000, scale: 1.18 },
-  { label: "Breathe out", duration: 6000, scale: 1.0  },
-  { label: "Rest",        duration: 2000, scale: 1.0  },
+  { label: "Breathe in",  duration: 4000, scale: 1.28,
+    glow: "rgba(88,148,255,0.55)", outerGlow: "rgba(60,110,255,0.22)",
+    c0: "#e8f2ff", c1: "#90bef8", c2: "#224ea8" },
+  { label: "Hold",        duration: 4000, scale: 1.28,
+    glow: "rgba(148,100,255,0.50)", outerGlow: "rgba(120,60,255,0.20)",
+    c0: "#ede8ff", c1: "#b098f8", c2: "#4a28a0" },
+  { label: "Breathe out", duration: 6000, scale: 0.82,
+    glow: "rgba(60,180,255,0.45)", outerGlow: "rgba(40,148,220,0.17)",
+    c0: "#dcf5ff", c1: "#88cef8", c2: "#206888" },
+  { label: "Rest",        duration: 2000, scale: 0.82,
+    glow: "rgba(80,100,220,0.38)", outerGlow: "rgba(60,80,180,0.14)",
+    c0: "#dde0ff", c1: "#9098e8", c2: "#282858" },
 ];
 
 const MOON_STARS = [
@@ -80,7 +88,9 @@ export default function OverwhelmButton() {
   }, [active]);
 
   const currentPhase = BREATHING_PHASES[breathPhase];
-  const moonScale = 1 + (currentPhase.scale - 1) * breathProgress;
+  const coreScale  = 0.82 + (currentPhase.scale - 0.82) * breathProgress;
+  const innerScale = coreScale * 1.14;
+  const outerScale = coreScale * 1.30;
 
   return (
     <>
@@ -124,54 +134,53 @@ export default function OverwhelmButton() {
             </button>
 
             {/* Space breathing visual */}
-            <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-col items-center gap-3">
               <div aria-hidden>
-                <svg width="128" height="128" viewBox="0 0 128 128" aria-hidden="true">
+                <svg width="140" height="140" viewBox="0 0 140 140" aria-hidden="true">
                   <defs>
-                    <radialGradient id="overwhelm-spaceBg" cx="50%" cy="50%" r="50%">
-                      <stop offset="0%" stopColor="#150d30" />
-                      <stop offset="100%" stopColor="#060310" />
+                    <radialGradient id="ow-space" cx="45%" cy="45%" r="58%">
+                      <stop offset="0%" stopColor="#180938" />
+                      <stop offset="100%" stopColor="#05020e" />
                     </radialGradient>
-                    <radialGradient id="overwhelm-moonFill" cx="38%" cy="32%" r="65%">
-                      <stop offset="0%" stopColor="#dce8ff" />
-                      <stop offset="45%" stopColor="#94b4e8" />
-                      <stop offset="100%" stopColor="#3a5a88" />
-                    </radialGradient>
-                    <radialGradient id="overwhelm-moonGlow" cx="50%" cy="50%" r="50%">
-                      <stop offset="0%" stopColor="rgba(120,160,255,0.4)" />
-                      <stop offset="100%" stopColor="rgba(120,160,255,0)" />
-                    </radialGradient>
+                    {BREATHING_PHASES.map((p, i) => (
+                      <radialGradient key={i} id={`ow-core-${i}`} cx="38%" cy="32%" r="65%">
+                        <stop offset="0%"   stopColor={p.c0} />
+                        <stop offset="42%"  stopColor={p.c1} />
+                        <stop offset="100%" stopColor={p.c2} />
+                      </radialGradient>
+                    ))}
+                    <clipPath id="ow-clip">
+                      <circle cx="70" cy="70" r="67" />
+                    </clipPath>
                   </defs>
 
-                  <circle cx="64" cy="64" r="62" fill="url(#overwhelm-spaceBg)" />
+                  <circle cx="70" cy="70" r="70" fill="url(#ow-space)" />
 
-                  {MOON_STARS.map((s, i) => (
-                    <circle
-                      key={i}
-                      cx={s.cx}
-                      cy={s.cy}
-                      r={s.r}
-                      fill="white"
-                      style={{
-                        animation: `twinkle ${2.5 + (i % 3) * 0.7}s ease-in-out ${s.d}s infinite`,
-                      }}
+                  <g clipPath="url(#ow-clip)">
+                    {MOON_STARS.map((s, i) => (
+                      <circle key={i} cx={s.cx} cy={s.cy} r={s.r} fill="white"
+                        style={{ animation: `twinkle ${2.5 + (i % 3) * 0.7}s ease-in-out ${s.d}s infinite` }}
+                      />
+                    ))}
+
+                    {/* Outer atmospheric bloom */}
+                    <circle cx="70" cy="70" r="48" fill={currentPhase.outerGlow}
+                      style={{ transform: `scale(${outerScale})`, transformOrigin: "70px 70px", transition: "transform 80ms ease-out" }}
                     />
-                  ))}
-
-                  <g
-                    style={{
-                      transform: `scale(${moonScale})`,
-                      transformOrigin: "64px 64px",
-                      transition: "transform 80ms ease-out",
-                    }}
-                  >
-                    <circle cx="64" cy="64" r="33" fill="url(#overwhelm-moonGlow)" />
-                    <circle cx="64" cy="64" r="20" fill="url(#overwhelm-moonFill)" />
-                    <circle cx="59" cy="61" r="1.8" fill="rgba(40,70,110,0.22)" />
-                    <circle cx="67" cy="67" r="1.2" fill="rgba(40,70,110,0.18)" />
+                    {/* Inner halo */}
+                    <circle cx="70" cy="70" r="36" fill={currentPhase.glow}
+                      style={{ transform: `scale(${innerScale})`, transformOrigin: "70px 70px", transition: "transform 80ms ease-out" }}
+                    />
+                    {/* Core */}
+                    <circle cx="70" cy="70" r="22" fill={`url(#ow-core-${breathPhase})`}
+                      style={{ transform: `scale(${coreScale})`, transformOrigin: "70px 70px", transition: "transform 80ms ease-out" }}
+                    />
+                    <ellipse cx="63" cy="62" rx="7" ry="5" fill="rgba(255,255,255,0.2)"
+                      style={{ transform: `scale(${coreScale})`, transformOrigin: "70px 70px", transition: "transform 80ms ease-out" }}
+                    />
                   </g>
 
-                  <circle cx="64" cy="64" r="62" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+                  <circle cx="70" cy="70" r="69" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
                 </svg>
               </div>
               <p className="text-[#c3bfb2] text-lg font-light" aria-live="polite">
