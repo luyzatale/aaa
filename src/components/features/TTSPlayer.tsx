@@ -16,7 +16,7 @@ export default function TTSPlayer({ text, title, className }: TTSPlayerProps) {
   const [playing, setPlaying] = useState(false);
   const [loading, setLoading] = useState(false);
   const [muted, setMuted] = useState(false);
-  const [speed, setSpeed] = useState(1.0);
+  const [speed, setSpeed] = useState(0.75);
   const [progress, setProgress] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const blobUrlRef = useRef<string | null>(null);
