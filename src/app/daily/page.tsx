@@ -7,7 +7,7 @@ import { TWELVE_STEPS } from "@/lib/recovery-content";
 import { formatDate, getDayOfYear } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import {
-  Sun, Moon, Heart, CheckCircle, Circle, Star, Minus, Plus, Trash2, BookOpen, ExternalLink,
+  Sun, Moon, Heart, CheckCircle, Circle, Star, Trash2, BookOpen, ExternalLink, RefreshCw,
 } from "lucide-react";
 
 const EMOTIONS = [
@@ -50,9 +50,51 @@ export default function DailyRecoveryPage() {
   }, []);
 
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
-  const [sobrietyDays, setSobrietyDays] = useState(() => {
-    try { return Number(localStorage.getItem("aa-sobriety-days") ?? 0); } catch { return 0; }
-  });
+
+  // Sobriety
+  const [sobrietyStartDate, setSobrietyStartDate] = useState<string | null>(null);
+  const [sobrietyLoading, setSobrietyLoading] = useState(true);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [newSobrietyDate, setNewSobrietyDate] = useState("");
+  const [sobrietySaving, setSobrietySaving] = useState(false);
+
+  const sobrietyDays = sobrietyStartDate
+    ? (() => {
+        const [y, m, d] = sobrietyStartDate.split("-").map(Number);
+        const start = new Date(y, m - 1, d);
+        const now = new Date();
+        const today0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        return Math.max(0, Math.floor((today0.getTime() - start.getTime()) / 86400000));
+      })()
+    : 0;
+
+  useEffect(() => {
+    fetch("/api/sobriety")
+      .then((r) => r.json())
+      .then((data) => { if (data.startDate) setSobrietyStartDate(data.startDate); })
+      .catch(() => {})
+      .finally(() => setSobrietyLoading(false));
+  }, []);
+
+  const saveSobrietyDate = async () => {
+    if (!newSobrietyDate || sobrietySaving) return;
+    setSobrietySaving(true);
+    try {
+      const res = await fetch("/api/sobriety", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ startDate: newSobrietyDate }),
+      });
+      const data = await res.json();
+      if (data.startDate) {
+        setSobrietyStartDate(data.startDate);
+        setShowDatePicker(false);
+        setNewSobrietyDate("");
+      }
+    } catch {}
+    setSobrietySaving(false);
+  };
+
   const [gratitude, setGratitude] = useState(["", "", ""]);
   const [savedGratitudes, setSavedGratitudes] = useState<GratitudeEntry[]>([]);
   const [gratitudesLoading, setGratitudesLoading] = useState(true);
@@ -67,10 +109,6 @@ export default function DailyRecoveryPage() {
       return next;
     });
   };
-
-  useEffect(() => {
-    try { localStorage.setItem("aa-sobriety-days", String(sobrietyDays)); } catch {}
-  }, [sobrietyDays]);
 
   useEffect(() => {
     fetch("/api/gratitudes")
@@ -220,38 +258,78 @@ export default function DailyRecoveryPage() {
             <Heart className="w-4 h-4 text-[var(--accent-sage)]" aria-hidden />
             <span className="text-sm font-medium text-[var(--text-primary)]">Sobriety Counter</span>
           </div>
-          <div className="flex items-center justify-center gap-6 py-4">
-            <button
-              onClick={() => setSobrietyDays(Math.max(0, sobrietyDays - 1))}
-              className="w-10 h-10 rounded-full border border-[var(--border-soft)] flex items-center justify-center text-[var(--text-muted)] hover:bg-[var(--bg-muted)] transition-calm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
-              aria-label="Decrease days"
-            >
-              <Minus className="w-4 h-4" />
-            </button>
-            <div className="text-center">
-              <div className="text-5xl font-light text-[var(--accent-sage)]" aria-live="polite">
-                {sobrietyDays}
+
+          {sobrietyLoading ? (
+            <div className="py-6 flex flex-col items-center gap-2 animate-pulse">
+              <div className="h-12 w-20 bg-[var(--border-soft)] rounded-xl" />
+              <div className="h-3 w-24 bg-[var(--border-soft)] rounded" />
+            </div>
+          ) : !showDatePicker ? (
+            <>
+              <div className="text-center py-4">
+                <div className="text-5xl font-light text-[var(--accent-sage)]" aria-live="polite">
+                  {sobrietyDays}
+                </div>
+                <div className="text-sm text-[var(--text-muted)] mt-1">
+                  {sobrietyDays === 1 ? "day sober" : "days sober"}
+                </div>
+                {sobrietyStartDate && (() => {
+                  const [y,m,d] = sobrietyStartDate.split("-").map(Number);
+                  return (
+                    <p className="text-xs text-[var(--text-muted)] mt-2">
+                      Since {formatDate(new Date(y, m - 1, d))}
+                    </p>
+                  );
+                })()}
               </div>
-              <div className="text-sm text-[var(--text-muted)] mt-1">
-                {sobrietyDays === 1 ? "day sober" : "days sober"}
+              {sobrietyDays > 0 && (
+                <p className="text-center text-xs text-[var(--text-muted)] mb-4">
+                  {sobrietyDays < 7 && "Every day matters. You are doing it."}
+                  {sobrietyDays >= 7 && sobrietyDays < 30 && "One week or more. That is real."}
+                  {sobrietyDays >= 30 && sobrietyDays < 90 && "A month or more. Keep going."}
+                  {sobrietyDays >= 90 && sobrietyDays < 365 && "Three months or more. You are building a life."}
+                  {sobrietyDays >= 365 && "A year or more. That is extraordinary."}
+                </p>
+              )}
+              <button
+                onClick={() => {
+                  setNewSobrietyDate(sobrietyStartDate ?? "");
+                  setShowDatePicker(true);
+                }}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs text-[var(--text-muted)] border border-[var(--border-soft)] hover:bg-[var(--bg-muted)] transition-calm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
+              >
+                <RefreshCw className="w-3 h-3" aria-hidden />
+                {sobrietyStartDate ? "Reset / change date" : "Set my sober date"}
+              </button>
+            </>
+          ) : (
+            <div className="space-y-3 py-2">
+              <p className="text-sm text-[var(--text-secondary)]">
+                {sobrietyStartDate ? "Set a new sobriety start date:" : "When did you get sober?"}
+              </p>
+              <input
+                type="date"
+                value={newSobrietyDate}
+                max={new Date().toISOString().split("T")[0]}
+                onChange={(e) => setNewSobrietyDate(e.target.value)}
+                className="w-full px-3 py-2 rounded-xl border border-[var(--border-soft)] bg-[var(--bg-card)] text-[var(--text-primary)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-sage)] transition-calm"
+              />
+              <div className="flex gap-2">
+                <button
+                  onClick={saveSobrietyDate}
+                  disabled={!newSobrietyDate || sobrietySaving}
+                  className="flex-1 py-2.5 rounded-xl bg-[var(--accent-sage)] text-white text-sm font-medium hover:opacity-90 transition-calm disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
+                >
+                  {sobrietySaving ? "Saving…" : "Save"}
+                </button>
+                <button
+                  onClick={() => { setShowDatePicker(false); setNewSobrietyDate(""); }}
+                  className="flex-1 py-2.5 rounded-xl bg-[var(--bg-muted)] text-[var(--text-secondary)] text-sm hover:bg-[var(--border-soft)] transition-calm"
+                >
+                  Cancel
+                </button>
               </div>
             </div>
-            <button
-              onClick={() => setSobrietyDays(sobrietyDays + 1)}
-              className="w-10 h-10 rounded-full border border-[var(--border-soft)] flex items-center justify-center text-[var(--text-muted)] hover:bg-[var(--bg-muted)] transition-calm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
-              aria-label="Increase days"
-            >
-              <Plus className="w-4 h-4" />
-            </button>
-          </div>
-          {sobrietyDays > 0 && (
-            <p className="text-center text-xs text-[var(--text-muted)]">
-              {sobrietyDays < 7 && "Every day matters. You are doing it."}
-              {sobrietyDays >= 7 && sobrietyDays < 30 && "One week or more. That is real."}
-              {sobrietyDays >= 30 && sobrietyDays < 90 && "A month or more. Keep going."}
-              {sobrietyDays >= 90 && sobrietyDays < 365 && "Three months or more. You are building a life."}
-              {sobrietyDays >= 365 && "A year or more. That is extraordinary."}
-            </p>
           )}
         </Card>
 
