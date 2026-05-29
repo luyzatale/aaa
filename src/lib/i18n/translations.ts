@@ -215,6 +215,7 @@ const en = {
     saving: "Saving…", saveEntry: "Save entry", cancel: "Cancel",
     noEntries: "No entries yet. Start by adding today's note.",
     showLess: "Show less", showMore: "Show more", deleteEntry: "Delete entry",
+    gratitudesList: "Gratitudes List",
   },
   literature: {
     badge: "Literature Library", title: "AA Literature",
@@ -640,6 +641,7 @@ const pt: typeof en = {
     saving: "Salvando…", saveEntry: "Salvar entrada", cancel: "Cancelar",
     noEntries: "Nenhuma entrada ainda. Comece adicionando a nota de hoje.",
     showLess: "Mostrar menos", showMore: "Mostrar mais", deleteEntry: "Excluir entrada",
+    gratitudesList: "Lista de Gratidões",
   },
   literature: {
     badge: "Biblioteca de Literatura", title: "Literatura do AA",

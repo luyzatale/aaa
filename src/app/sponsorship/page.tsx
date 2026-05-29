@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { BookHeart, Plus, Trash2, ChevronDown, ChevronUp, Phone, Lock, X } from "lucide-react";
+import { BookHeart, Plus, Trash2, ChevronDown, ChevronUp, Phone, Lock, X, Star } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
 import { useT } from "@/lib/i18n";
@@ -10,6 +10,12 @@ interface SponsorshipEntry {
   id: string;
   date: string;
   notes: string;
+}
+
+interface GratitudeEntry {
+  id: string;
+  date: string;
+  items: string[];
 }
 
 function todayString() {
@@ -155,6 +161,48 @@ export default function SponsorshipPage() {
   const [error, setError] = useState("");
   const [removing, setRemoving] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+
+  const [gratitude, setGratitude] = useState(["", "", ""]);
+  const [savedGratitudes, setSavedGratitudes] = useState<GratitudeEntry[]>([]);
+  const [gratitudesLoading, setGratitudesLoading] = useState(true);
+  const [gratitudeSaving, setGratitudeSaving] = useState(false);
+
+  useEffect(() => {
+    if (!unlocked) return;
+    fetch("/api/gratitudes")
+      .then((r) => r.json())
+      .then((data) => { if (Array.isArray(data.entries)) setSavedGratitudes(data.entries); })
+      .catch(() => {})
+      .finally(() => setGratitudesLoading(false));
+  }, [unlocked]);
+
+  const saveGratitudeEntry = async () => {
+    const filled = gratitude.filter((g) => g.trim());
+    if (filled.length === 0 || gratitudeSaving) return;
+    setGratitudeSaving(true);
+    try {
+      const res = await fetch("/api/gratitudes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items: filled, date: formatDate(todayString()) }),
+      });
+      const data = await res.json();
+      if (data.entries) {
+        setSavedGratitudes(data.entries);
+        setGratitude(["", "", ""]);
+      }
+    } catch {}
+    setGratitudeSaving(false);
+  };
+
+  const removeGratitudeEntry = (id: string) => {
+    setSavedGratitudes((g) => g.filter((e) => e.id !== id));
+    fetch("/api/gratitudes", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    }).catch(() => {});
+  };
 
   useEffect(() => {
     if (!unlocked) return;
@@ -335,6 +383,94 @@ export default function SponsorshipPage() {
           />
         ))}
       </div>
+
+      {/* Gratitudes List */}
+      <Card variant="amber" padding="lg" className="mt-8">
+        <div className="flex items-center gap-2 mb-4">
+          <Star className="w-4 h-4 text-[var(--accent-amber)]" aria-hidden />
+          <span className="text-sm font-medium text-[var(--text-primary)]">{t.sponsorship.gratitudesList}</span>
+        </div>
+        <p className="text-xs text-[var(--text-muted)] mb-3">
+          {t.daily.smallIsFine}
+        </p>
+        <div className="space-y-2">
+          {gratitude.map((value, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <span className="w-5 h-5 rounded-full bg-[var(--accent-amber-light)] text-[var(--accent-amber)] text-xs flex items-center justify-center flex-shrink-0 font-medium" aria-hidden>
+                {i + 1}
+              </span>
+              <input
+                type="text"
+                value={value}
+                onChange={(e) => {
+                  const next = [...gratitude];
+                  next[i] = e.target.value;
+                  setGratitude(next);
+                }}
+                onKeyDown={(e) => { if (e.key === "Enter") saveGratitudeEntry(); }}
+                placeholder={t.daily.gratitudePlaceholder}
+                aria-label={t.daily.gratitudeLabel(i + 1)}
+                className={cn(
+                  "flex-1 px-3 py-2 rounded-xl text-sm",
+                  "bg-[var(--bg-card)] border border-[var(--border-soft)]",
+                  "text-[var(--text-primary)] placeholder:text-[var(--text-muted)]",
+                  "focus:outline-none focus:ring-2 focus:ring-[var(--accent-amber)] transition-calm"
+                )}
+              />
+            </div>
+          ))}
+        </div>
+
+        <button
+          onClick={saveGratitudeEntry}
+          disabled={gratitude.every((g) => !g.trim()) || gratitudeSaving}
+          className={cn(
+            "mt-4 w-full py-2.5 rounded-xl text-sm font-medium transition-calm",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-amber)]",
+            "bg-[var(--accent-amber)] text-white hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
+          )}
+        >
+          {gratitudeSaving ? t.sponsorship.saving : t.daily.saveGratitudes}
+        </button>
+
+        {gratitudesLoading && (
+          <div className="mt-6 space-y-2 animate-pulse">
+            <div className="h-3 bg-[var(--border-soft)] rounded w-24" />
+            <div className="h-16 bg-[var(--border-soft)] rounded-2xl" />
+          </div>
+        )}
+
+        {!gratitudesLoading && savedGratitudes.length > 0 && (
+          <div className="mt-6 space-y-3">
+            <p className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-medium">{t.daily.savedEntries}</p>
+            {savedGratitudes.map((entry) => (
+              <div
+                key={entry.id}
+                className="rounded-2xl border border-[var(--accent-amber)]/20 bg-[var(--bg-card)] p-3"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs text-[var(--text-muted)]">{entry.date}</span>
+                  <button
+                    onClick={() => removeGratitudeEntry(entry.id)}
+                    className="p-1 rounded-lg text-[var(--text-muted)] hover:text-red-400 hover:bg-[var(--bg-muted)] transition-calm"
+                    aria-label={t.daily.removeEntry}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+                <ul className="space-y-1">
+                  {entry.items.map((item, j) => (
+                    <li key={j} className="text-sm text-[var(--text-secondary)] flex items-start gap-2">
+                      <span className="text-[var(--accent-amber)] mt-0.5 flex-shrink-0">·</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
     </main>
   );
 }
