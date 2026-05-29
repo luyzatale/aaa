@@ -259,6 +259,81 @@ export default function MeetingsContent({ nlMeetings, todayNLMeetings, todayDayN
         </section>
       )}
 
+      {/* AAA Meetings – autism-friendly */}
+      <section aria-labelledby="aaa-meetings-heading" className="mb-12">
+        <div className="mb-5">
+          <h2
+            id="aaa-meetings-heading"
+            className="text-xl font-semibold text-[var(--text-primary)]"
+          >
+            {t.meetings.aaaMeetingsTitle}
+          </h2>
+          <p className="text-sm text-[var(--text-secondary)] mt-1">
+            {t.meetings.aaaMeetingsSubtitle}
+          </p>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-4">
+          {/* Autism And AA – daily */}
+          <Card padding="md" className="space-y-3">
+            <div>
+              <div className="flex items-center gap-2 mb-2 flex-wrap">
+                <span className="text-lg font-light text-[var(--accent-sage)] tabular-nums">17:00</span>
+                <Badge variant="muted">Open</Badge>
+                <Badge variant="muted">EN</Badge>
+                <Badge variant="muted">Every day</Badge>
+              </div>
+              <h3 className="font-medium text-[var(--text-primary)] text-sm leading-snug">Autism And AA</h3>
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">4:00pm GMT · 12:00pm EST · 2:00am AEST</p>
+            </div>
+            <div className="flex items-start gap-2 text-xs text-[var(--text-muted)] bg-[var(--bg-muted)] rounded-xl p-2.5">
+              <Info className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" aria-hidden />
+              <span>MeetingID: 636 252 1979 · Pass: AA · Topic discussion open meeting for anyone interested in the Autistic view of AA.</span>
+            </div>
+            <a
+              href="https://zoom.us/j/6362521979"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl
+                bg-[var(--accent-sage-light)] text-[var(--accent-sage)] text-sm font-medium
+                hover:bg-[var(--accent-sage)]/20 transition-calm
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
+            >
+              <Video className="w-3.5 h-3.5" aria-hidden />
+              Join via Zoom
+            </a>
+          </Card>
+
+          {/* Autism Friendly AA – Tuesday */}
+          <Card padding="md" className="space-y-3">
+            <div>
+              <div className="flex items-center gap-2 mb-2 flex-wrap">
+                <span className="text-lg font-light text-[var(--accent-sage)] tabular-nums">01:00</span>
+                <Badge variant="muted">Open</Badge>
+                <Badge variant="muted">EN</Badge>
+                <Badge variant="muted">Tuesday</Badge>
+              </div>
+              <h3 className="font-medium text-[var(--text-primary)] text-sm leading-snug">Autism Friendly AA</h3>
+            </div>
+            <div className="flex items-start gap-2 text-xs text-[var(--text-muted)] bg-[var(--bg-muted)] rounded-xl p-2.5">
+              <Info className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" aria-hidden />
+              <span>MeetingID: 883 9894 0113 · Pass: Email us · A Neurodiversity affirming and accommodating weekly open topic AA meeting.</span>
+            </div>
+            <a
+              href="https://zoom.us/j/88398940113"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl
+                bg-[var(--accent-sage-light)] text-[var(--accent-sage)] text-sm font-medium
+                hover:bg-[var(--accent-sage)]/20 transition-calm
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
+            >
+              <Video className="w-3.5 h-3.5" aria-hidden />
+              Join via Zoom
+            </a>
+          </Card>
+        </div>
+      </section>
+
       {/* Other online meetings */}
       <section aria-labelledby="online-meetings-heading" className="mb-12">
         <h2
