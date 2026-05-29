@@ -167,10 +167,10 @@ export default function Header() {
       label: t.nav.recovery,
       items: [
         { href: "/daily",        label: t.nav.dailyRecovery,  desc: t.nav.dailyRecoveryDesc },
-        { href: "/prayers",      label: t.nav.prayers,        desc: t.nav.prayersDesc },
-        { href: "/steps",        label: t.nav.stepWork,       desc: t.nav.stepWorkDesc },
-        { href: "/sponsorship",  label: t.nav.sponsorship,    desc: t.nav.sponsorshipDesc },
         { href: "/literature",   label: t.nav.literature,     desc: t.nav.literatureDesc },
+        { href: "/steps",        label: t.nav.stepWork,       desc: t.nav.stepWorkDesc },
+        { href: "/prayers",      label: t.nav.prayers,        desc: t.nav.prayersDesc },
+        { href: "/sponsorship",  label: t.nav.sponsorship,    desc: t.nav.sponsorshipDesc },
       ],
     },
     {
