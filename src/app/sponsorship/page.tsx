@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { BookHeart, Plus, Trash2, ChevronDown, ChevronUp, Phone } from "lucide-react";
+import { BookHeart, Plus, Trash2, ChevronDown, ChevronUp, Phone, Lock, X } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
 
@@ -47,11 +47,9 @@ function EntryCard({
   return (
     <Card padding="md" className="space-y-3">
       <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-xs font-medium text-[var(--accent-sage)] uppercase tracking-wide">
-            {formatDate(entry.date)}
-          </p>
-        </div>
+        <p className="text-xs font-medium text-[var(--accent-sage)] uppercase tracking-wide">
+          {formatDate(entry.date)}
+        </p>
         <button
           onClick={() => onRemove(entry.id)}
           disabled={removing}
@@ -78,7 +76,73 @@ function EntryCard({
   );
 }
 
+function PasswordGate({ onUnlock }: { onUnlock: () => void }) {
+  const [input, setInput] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (input === "Sun*1010") {
+      onUnlock();
+    } else {
+      setError("Incorrect password.");
+      setInput("");
+    }
+  };
+
+  return (
+    <main className="min-h-[60vh] flex items-center justify-center px-4">
+      <div className={cn(
+        "w-full max-w-sm",
+        "bg-[var(--bg-card)] border border-[var(--border-soft)] rounded-3xl shadow-calm-lg",
+        "p-8 animate-fade-up"
+      )}>
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-2xl bg-[var(--accent-serenity-light)] flex items-center justify-center flex-shrink-0" aria-hidden>
+            <Lock className="w-5 h-5 text-[var(--accent-serenity)]" />
+          </div>
+          <div>
+            <h1 className="font-semibold text-[var(--text-primary)]">Sponsorship Journal</h1>
+            <p className="text-xs text-[var(--text-muted)]">Enter the password to continue.</p>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="password"
+            value={input}
+            onChange={(e) => { setInput(e.target.value); setError(""); }}
+            placeholder="Password"
+            autoFocus
+            className={cn(
+              "w-full px-3 py-2.5 rounded-xl text-sm",
+              "bg-[var(--bg-secondary)] border",
+              error ? "border-red-400" : "border-[var(--border-soft)]",
+              "text-[var(--text-primary)] placeholder:text-[var(--text-muted)]",
+              "focus:outline-none focus:ring-2 focus:ring-[var(--accent-serenity)] transition-calm"
+            )}
+          />
+          {error && <p className="text-xs text-red-500">{error}</p>}
+          <button
+            type="submit"
+            disabled={!input}
+            className={cn(
+              "w-full py-3 rounded-2xl text-sm font-medium transition-calm",
+              "bg-[var(--accent-serenity)] text-white hover:opacity-90",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-serenity)]",
+              "disabled:opacity-50"
+            )}
+          >
+            Unlock
+          </button>
+        </form>
+      </div>
+    </main>
+  );
+}
+
 export default function SponsorshipPage() {
+  const [unlocked, setUnlocked] = useState(false);
   const [entries, setEntries] = useState<SponsorshipEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [date, setDate] = useState(todayString());
@@ -89,12 +153,15 @@ export default function SponsorshipPage() {
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
+    if (!unlocked) return;
     fetch("/api/sponsorship")
       .then((r) => r.json())
       .then((d) => setEntries(d.entries ?? []))
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, []);
+  }, [unlocked]);
+
+  if (!unlocked) return <PasswordGate onUnlock={() => setUnlocked(true)} />;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
