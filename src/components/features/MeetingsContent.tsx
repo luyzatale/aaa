@@ -115,11 +115,13 @@ export default function MeetingsContent({ nlMeetings, todayNLMeetings, todayDayN
       {/* The Sunrise Serenity Group */}
       <Card padding="md" className="mb-8 space-y-3">
         <div>
-          <h3 className="font-medium text-[var(--text-primary)] mb-1">The Sunrise Serenity Group</h3>
-          <div className="flex flex-wrap gap-3 text-xs text-[var(--text-muted)]">
-            <span><span className="font-medium">{t.meetings.meetingIdLabel}:</span> <span className="font-mono">9769709597</span></span>
-            <span><span className="font-medium">{t.meetings.passwordLabel}:</span> <span className="font-mono">081152</span></span>
-          </div>
+          <h3 className="font-medium text-[var(--text-primary)] text-sm leading-snug">
+            The Sunrise Serenity Group
+          </h3>
+        </div>
+        <div className="flex items-start gap-2 text-xs text-[var(--text-muted)] bg-[var(--bg-muted)] rounded-xl p-2.5">
+          <Info className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" aria-hidden />
+          <span>MeetingID: 9769709597 - Pass: 081152</span>
         </div>
         <a
           href="https://zoom.us/j/9769709597"
@@ -131,7 +133,7 @@ export default function MeetingsContent({ nlMeetings, todayNLMeetings, todayDayN
             focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
         >
           <Video className="w-3.5 h-3.5" aria-hidden />
-          {t.meetings.joinNow}
+          Deelnemen via Zoom
         </a>
       </Card>
 
