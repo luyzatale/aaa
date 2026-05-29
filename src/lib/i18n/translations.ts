@@ -347,7 +347,7 @@ const en = {
   },
   newToAA: {
     badge: "Newcomers",
-    titlePrefix: "Welcome to healing.",
+    titlePrefix: "Together in recovery.",
     titleEm: "You are not alone.",
     subtitle: "You do not need to have it figured out. You do not need to be sure. You only need to be here.",
     cards: [
@@ -778,7 +778,7 @@ const pt: typeof en = {
   },
   newToAA: {
     badge: "Recém-chegados",
-    titlePrefix: "Bem-vindo à cura.",
+    titlePrefix: "Juntos na recuperação.",
     titleEm: "Você não está sozinho.",
     subtitle: "Você não precisa ter tudo resolvido. Você não precisa ter certeza. Você só precisa estar aqui.",
     cards: [
