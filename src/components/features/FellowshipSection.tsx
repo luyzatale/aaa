@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { HeartHandshake, X, MapPin, Phone, Plus, Users, Eye, EyeOff, Trash2, Lock } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 interface Member {
   id: string;
@@ -38,6 +39,7 @@ function Avatar({ name }: { name: string }) {
 }
 
 export default function FellowshipSection() {
+  const { t } = useT();
   const [members, setMembers] = useState<Member[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ nickname: "", phone: "", city: "" });
@@ -84,7 +86,7 @@ export default function FellowshipSection() {
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (passwordInput === "Sun*1010") {
+    if (passwordInput === "Sun*1010") {  // hardcoded password — do not translate
       setPasswordUnlocked(true);
       setShowPasswordModal(false);
       if (pendingRevealId) {
@@ -143,17 +145,17 @@ export default function FellowshipSection() {
           </div>
           <div>
             <h2 id="fellowship-heading" className="text-lg font-semibold text-[var(--text-primary)]">
-              Fellowship
+              {t.fellowship.badge}
             </h2>
             <p className="text-sm text-[var(--text-muted)]">
-              We are stronger together. No one recovers alone.
+              {t.fellowship.subtitle}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1.5 text-sm text-[var(--text-muted)]">
             <Users className="w-4 h-4" aria-hidden />
-            {members.length} members
+            {t.fellowship.membersCount(members.length)}
           </span>
           {!joined && (
             <button
@@ -165,11 +167,11 @@ export default function FellowshipSection() {
               )}
             >
               <Plus className="w-4 h-4" aria-hidden />
-              Join fellowship
+              {t.fellowship.joinBtn}
             </button>
           )}
           {joined && (
-            <span className="text-sm text-[var(--accent-sage)] font-medium">Welcome to the fellowship ♥</span>
+            <span className="text-sm text-[var(--accent-sage)] font-medium">{t.fellowship.welcomeMsg}</span>
           )}
         </div>
       </div>
@@ -193,7 +195,7 @@ export default function FellowshipSection() {
                 <button
                   onClick={() => toggleReveal(m.id)}
                   className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-calm focus-visible:outline-none"
-                  aria-label={revealed.has(m.id) ? "Hide phone number" : "Reveal phone number"}
+                  aria-label={revealed.has(m.id) ? t.fellowship.hidePhone : t.fellowship.revealPhone}
                 >
                   {revealed.has(m.id)
                     ? <EyeOff className="w-3 h-3" />
@@ -205,7 +207,7 @@ export default function FellowshipSection() {
               onClick={() => removeMember(m.id)}
               disabled={removing === m.id}
               className="flex-shrink-0 p-1.5 rounded-lg text-[var(--text-muted)] hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-calm focus-visible:outline-none disabled:opacity-40"
-              aria-label={`Remove ${m.nickname}`}
+              aria-label={t.fellowship.removeMember(m.nickname)}
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>
@@ -218,7 +220,7 @@ export default function FellowshipSection() {
         <div
           className="fixed inset-0 z-[60] flex items-center justify-center p-4"
           role="dialog"
-          aria-label="Enter password to view number"
+          aria-label={t.fellowship.protectedDesc}
           aria-modal="true"
         >
           <button
@@ -244,8 +246,8 @@ export default function FellowshipSection() {
                 <Lock className="w-5 h-5 text-[var(--accent-serenity)]" />
               </div>
               <div>
-                <h3 className="font-semibold text-[var(--text-primary)]">Protected</h3>
-                <p className="text-xs text-[var(--text-muted)]">Enter the password to view phone numbers.</p>
+                <h3 className="font-semibold text-[var(--text-primary)]">{t.fellowship.protectedTitle}</h3>
+                <p className="text-xs text-[var(--text-muted)]">{t.fellowship.protectedDesc}</p>
               </div>
             </div>
 
@@ -254,7 +256,7 @@ export default function FellowshipSection() {
                 type="password"
                 value={passwordInput}
                 onChange={(e) => setPasswordInput(e.target.value)}
-                placeholder="Password"
+                placeholder={t.fellowship.password}
                 autoFocus
                 className={cn(
                   "w-full px-3 py-2.5 rounded-xl text-sm",
@@ -277,7 +279,7 @@ export default function FellowshipSection() {
                   "disabled:opacity-50"
                 )}
               >
-                Unlock
+                {t.fellowship.unlock}
               </button>
             </form>
           </div>

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { BookHeart, Plus, Trash2, ChevronDown, ChevronUp, Phone, Lock, X } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 interface SponsorshipEntry {
   id: string;
@@ -40,6 +41,7 @@ function EntryCard({
   onRemove: (id: string) => void;
   removing: boolean;
 }) {
+  const { t } = useT();
   const [expanded, setExpanded] = useState(false);
   const isLong = entry.notes.length > NOTE_PREVIEW_LENGTH;
   const displayText = isLong && !expanded ? entry.notes.slice(0, NOTE_PREVIEW_LENGTH) + "…" : entry.notes;
@@ -54,7 +56,7 @@ function EntryCard({
           onClick={() => onRemove(entry.id)}
           disabled={removing}
           className="flex-shrink-0 p-1.5 rounded-lg text-[var(--text-muted)] hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-calm focus-visible:outline-none disabled:opacity-40"
-          aria-label="Delete entry"
+          aria-label={t.sponsorship.deleteEntry}
         >
           <Trash2 className="w-3.5 h-3.5" />
         </button>
@@ -66,9 +68,9 @@ function EntryCard({
           className="flex items-center gap-1 text-xs text-[var(--accent-sage)] hover:opacity-80 transition-calm focus-visible:outline-none"
         >
           {expanded ? (
-            <><ChevronUp className="w-3 h-3" /> Show less</>
+            <><ChevronUp className="w-3 h-3" /> {t.sponsorship.showLess}</>
           ) : (
-            <><ChevronDown className="w-3 h-3" /> Show more</>
+            <><ChevronDown className="w-3 h-3" /> {t.sponsorship.showMore}</>
           )}
         </button>
       )}
@@ -77,15 +79,16 @@ function EntryCard({
 }
 
 function PasswordGate({ onUnlock }: { onUnlock: () => void }) {
+  const { t } = useT();
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (input === "Sun*1010") {
+    if (input === "Sun*1010") {  // hardcoded password — do not translate
       onUnlock();
     } else {
-      setError("Incorrect password.");
+      setError(t.sponsorship.incorrectPassword);
       setInput("");
     }
   };
@@ -102,8 +105,8 @@ function PasswordGate({ onUnlock }: { onUnlock: () => void }) {
             <Lock className="w-5 h-5 text-[var(--accent-serenity)]" />
           </div>
           <div>
-            <h1 className="font-semibold text-[var(--text-primary)]">Sponsorship Journal</h1>
-            <p className="text-xs text-[var(--text-muted)]">Enter the password to continue.</p>
+            <h1 className="font-semibold text-[var(--text-primary)]">{t.sponsorship.badge}</h1>
+            <p className="text-xs text-[var(--text-muted)]">{t.sponsorship.passwordPrompt}</p>
           </div>
         </div>
 
@@ -112,7 +115,7 @@ function PasswordGate({ onUnlock }: { onUnlock: () => void }) {
             type="password"
             value={input}
             onChange={(e) => { setInput(e.target.value); setError(""); }}
-            placeholder="Password"
+            placeholder={t.sponsorship.password}
             autoFocus
             className={cn(
               "w-full px-3 py-2.5 rounded-xl text-sm",
@@ -133,7 +136,7 @@ function PasswordGate({ onUnlock }: { onUnlock: () => void }) {
               "disabled:opacity-50"
             )}
           >
-            Unlock
+            {t.sponsorship.unlock}
           </button>
         </form>
       </div>
@@ -142,6 +145,7 @@ function PasswordGate({ onUnlock }: { onUnlock: () => void }) {
 }
 
 export default function SponsorshipPage() {
+  const { t } = useT();
   const [unlocked, setUnlocked] = useState(false);
   const [entries, setEntries] = useState<SponsorshipEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -166,7 +170,7 @@ export default function SponsorshipPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    if (!notes.trim()) { setError("Please write your notes before saving."); return; }
+    if (!notes.trim()) { setError(t.sponsorship.notes + " required"); return; }
     setSubmitting(true);
     try {
       const res = await fetch("/api/sponsorship", {
@@ -175,13 +179,13 @@ export default function SponsorshipPage() {
         body: JSON.stringify({ date, notes }),
       });
       const data = await res.json();
-      if (!res.ok) { setError(data.error ?? "Something went wrong."); return; }
+      if (!res.ok) { setError(data.error ?? t.common.somethingWentWrong); return; }
       setEntries(data.entries ?? []);
       setNotes("");
       setDate(todayString());
       setShowForm(false);
     } catch {
-      setError("Could not connect. Please try again.");
+      setError(t.common.couldNotConnect);
     } finally {
       setSubmitting(false);
     }
@@ -205,9 +209,9 @@ export default function SponsorshipPage() {
           <BookHeart className="w-6 h-6 text-[var(--accent-sage)]" />
         </div>
         <div>
-          <h1 className="text-2xl font-semibold text-[var(--text-primary)]">Sponsorship Journal</h1>
+          <h1 className="text-2xl font-semibold text-[var(--text-primary)]">{t.sponsorship.title}</h1>
           <p className="text-sm text-[var(--text-muted)] mt-1">
-            Track your daily step work, sponsor calls, and recovery notes.
+            {t.sponsorship.subtitle}
           </p>
         </div>
       </div>
@@ -216,7 +220,7 @@ export default function SponsorshipPage() {
       <Card padding="md" className="flex items-center gap-3 bg-[var(--accent-serenity-light)] border-[var(--accent-serenity)]/20">
         <Phone className="w-4 h-4 text-[var(--accent-serenity)] flex-shrink-0" aria-hidden />
         <p className="text-sm text-[var(--accent-serenity)]">
-          Have you called your sponsor today? Regular contact strengthens your recovery.
+          {t.sponsorship.sponsorReminder}
         </p>
       </Card>
 
@@ -232,15 +236,15 @@ export default function SponsorshipPage() {
             )}
           >
             <Plus className="w-4 h-4" aria-hidden />
-            Add today&apos;s note
+            {t.sponsorship.addNote}
           </button>
         ) : (
           <Card padding="lg" className="animate-fade-in">
-            <h2 className="text-base font-semibold text-[var(--text-primary)] mb-4">New Entry</h2>
+            <h2 className="text-base font-semibold text-[var(--text-primary)] mb-4">{t.sponsorship.newEntry}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5" htmlFor="sp-date">
-                  Date
+                  {t.sponsorship.date}
                 </label>
                 <input
                   id="sp-date"
@@ -258,13 +262,13 @@ export default function SponsorshipPage() {
               </div>
               <div>
                 <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5" htmlFor="sp-notes">
-                  Notes
+                  {t.sponsorship.notes}
                 </label>
                 <textarea
                   id="sp-notes"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Write about your step work, your sponsor call, what you shared, what you heard…"
+                  placeholder={t.sponsorship.notesPlaceholder}
                   rows={6}
                   className={cn(
                     "w-full px-3 py-2.5 rounded-xl text-sm resize-none",
@@ -288,7 +292,7 @@ export default function SponsorshipPage() {
                     "disabled:opacity-60"
                   )}
                 >
-                  {submitting ? "Saving…" : "Save entry"}
+                  {submitting ? t.sponsorship.saving : t.sponsorship.saveEntry}
                 </button>
                 <button
                   type="button"
@@ -299,7 +303,7 @@ export default function SponsorshipPage() {
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
                   )}
                 >
-                  Cancel
+                  {t.sponsorship.cancel}
                 </button>
               </div>
             </form>
@@ -319,7 +323,7 @@ export default function SponsorshipPage() {
         {!loading && entries.length === 0 && (
           <div className="text-center py-12 text-[var(--text-muted)]">
             <BookHeart className="w-8 h-8 mx-auto mb-3 opacity-40" aria-hidden />
-            <p className="text-sm">No entries yet. Start by adding today&apos;s note.</p>
+            <p className="text-sm">{t.sponsorship.noEntries}</p>
           </div>
         )}
         {!loading && entries.map((entry) => (

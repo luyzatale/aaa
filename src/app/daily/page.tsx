@@ -3,18 +3,12 @@
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { TWELVE_STEPS } from "@/lib/recovery-content";
 import { formatDate, getDayOfYear } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import {
   Sun, Moon, Heart, CheckCircle, Circle, Star, Trash2, BookOpen, ExternalLink, RefreshCw,
 } from "lucide-react";
-
-const EMOTIONS = [
-  "Grateful", "Anxious", "Serene", "Frustrated", "Hopeful",
-  "Lonely", "Tired", "Present", "Overwhelmed", "Peaceful",
-  "Irritable", "Content",
-];
+import { useT } from "@/lib/i18n";
 
 interface GratitudeEntry {
   id: string;
@@ -31,6 +25,7 @@ interface DailyReflection {
 }
 
 export default function DailyRecoveryPage() {
+  const { t } = useT();
   const today = new Date();
   const dayOfYear = getDayOfYear(today);
   const JFT_MONTHS = [
@@ -38,7 +33,7 @@ export default function DailyRecoveryPage() {
     "july","august","september","october","november","december",
   ];
   const jftUrl = `https://www.justfortodaymeditations.com/daily-recovery-readings-${JFT_MONTHS[today.getMonth()]}-${today.getDate()}/`;
-  const step = TWELVE_STEPS[dayOfYear % 12];
+  const step = t.steps.stepData[dayOfYear % 12];
 
   const [reflection, setReflection] = useState<DailyReflection | null>(null);
 
@@ -51,7 +46,6 @@ export default function DailyRecoveryPage() {
 
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
 
-  // Sobriety
   const [sobrietyStartDate, setSobrietyStartDate] = useState<string | null>(null);
   const [sobrietyLoading, setSobrietyLoading] = useState(true);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -155,28 +149,26 @@ export default function DailyRecoveryPage() {
     });
   };
 
-  const dailyItems = [
-    { id: "prayer", label: "Said the Serenity Prayer" },
-    { id: "meeting", label: "Attended a meeting" },
-    { id: "sponsor", label: "Contacted my sponsor" },
-    { id: "reading", label: "Read AA literature" },
-    { id: "inventory", label: "Did a mini inventory" },
-    { id: "gratitude", label: "Noted gratitude" },
-    { id: "meditation", label: "Meditated or prayed" },
-    { id: "exercise", label: "Moved my body" },
-    { id: "sleep", label: "Prioritised sleep" },
-    { id: "food", label: "Ate regularly" },
-  ];
+  const actionIds = ["prayer","meeting","sponsor","reading","inventory","gratitude","meditation","exercise","sleep","food"];
+  const dailyItems = actionIds.map((id, i) => ({ id, label: t.daily.actions[i] }));
+
+  const getMilestone = (days: number) => {
+    if (days < 7) return t.daily.milestone0;
+    if (days < 30) return t.daily.milestone7;
+    if (days < 90) return t.daily.milestone30;
+    if (days < 365) return t.daily.milestone90;
+    return t.daily.milestone365;
+  };
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
       <div className="mb-10">
-        <Badge variant="amber" className="mb-4">Daily Recovery</Badge>
+        <Badge variant="amber" className="mb-4">{t.daily.badge}</Badge>
         <h1 className="text-3xl font-light text-[var(--text-primary)] mb-2">
           {formatDate(today)}
         </h1>
         <p className="text-[var(--text-secondary)] font-light">
-          One day at a time. Today is enough.
+          {t.daily.subtitle}
         </p>
       </div>
 
@@ -185,7 +177,7 @@ export default function DailyRecoveryPage() {
         <Card variant="serenity" padding="lg" className="space-y-3">
           <div className="flex items-center gap-2">
             <Sun className="w-4 h-4 text-[var(--accent-serenity)]" aria-hidden />
-            <span className="text-sm font-medium text-[var(--text-primary)]">Daily Reflection</span>
+            <span className="text-sm font-medium text-[var(--text-primary)]">{t.daily.dailyReflection}</span>
             {reflection && (
               <span className="ml-auto text-xs text-[var(--text-muted)]">{reflection.date}</span>
             )}
@@ -216,7 +208,7 @@ export default function DailyRecoveryPage() {
         <Card variant="sage" padding="lg" className="space-y-3">
           <div className="flex items-center gap-2">
             <Star className="w-4 h-4 text-[var(--accent-sage)]" aria-hidden />
-            <span className="text-sm font-medium text-[var(--text-primary)]">Step {step.number}</span>
+            <span className="text-sm font-medium text-[var(--text-primary)]">{t.daily.stepOf(step.number)}</span>
           </div>
           <h2 className="text-lg font-light text-[var(--text-primary)]">{step.shortText}</h2>
           <p className="text-sm text-[var(--text-secondary)] leading-relaxed italic">
@@ -241,7 +233,7 @@ export default function DailyRecoveryPage() {
               </div>
               <div>
                 <p className="text-sm font-medium text-[var(--text-primary)] group-hover:text-[var(--accent-serenity)] transition-calm">
-                  Just For Today — Daily Reading
+                  {t.daily.justForToday}
                 </p>
                 <p className="text-xs text-[var(--text-muted)]">{formatDate(today)}</p>
               </div>
@@ -256,7 +248,7 @@ export default function DailyRecoveryPage() {
         <Card padding="lg">
           <div className="flex items-center gap-2 mb-4">
             <Heart className="w-4 h-4 text-[var(--accent-sage)]" aria-hidden />
-            <span className="text-sm font-medium text-[var(--text-primary)]">Sobriety Counter</span>
+            <span className="text-sm font-medium text-[var(--text-primary)]">{t.daily.sobrietyCounter}</span>
           </div>
 
           {sobrietyLoading ? (
@@ -271,24 +263,20 @@ export default function DailyRecoveryPage() {
                   {sobrietyDays}
                 </div>
                 <div className="text-sm text-[var(--text-muted)] mt-1">
-                  {sobrietyDays === 1 ? "day sober" : "days sober"}
+                  {sobrietyDays === 1 ? t.daily.daySober : t.daily.daysSober}
                 </div>
                 {sobrietyStartDate && (() => {
                   const [y,m,d] = sobrietyStartDate.split("-").map(Number);
                   return (
                     <p className="text-xs text-[var(--text-muted)] mt-2">
-                      Since {formatDate(new Date(y, m - 1, d))}
+                      {t.daily.sinceDate(formatDate(new Date(y, m - 1, d)))}
                     </p>
                   );
                 })()}
               </div>
               {sobrietyDays > 0 && (
                 <p className="text-center text-xs text-[var(--text-muted)] mb-4">
-                  {sobrietyDays < 7 && "Every day matters. You are doing it."}
-                  {sobrietyDays >= 7 && sobrietyDays < 30 && "One week or more. That is real."}
-                  {sobrietyDays >= 30 && sobrietyDays < 90 && "A month or more. Keep going."}
-                  {sobrietyDays >= 90 && sobrietyDays < 365 && "Three months or more. You are building a life."}
-                  {sobrietyDays >= 365 && "A year or more. That is extraordinary."}
+                  {getMilestone(sobrietyDays)}
                 </p>
               )}
               <button
@@ -299,13 +287,13 @@ export default function DailyRecoveryPage() {
                 className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs text-[var(--text-muted)] border border-[var(--border-soft)] hover:bg-[var(--bg-muted)] transition-calm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
               >
                 <RefreshCw className="w-3 h-3" aria-hidden />
-                {sobrietyStartDate ? "Reset / change date" : "Set my sober date"}
+                {sobrietyStartDate ? t.daily.resetDate : t.daily.setMyDate}
               </button>
             </>
           ) : (
             <div className="space-y-3 py-2">
               <p className="text-sm text-[var(--text-secondary)]">
-                {sobrietyStartDate ? "Set a new sobriety start date:" : "When did you get sober?"}
+                {sobrietyStartDate ? t.daily.setNewDate : t.daily.whenSober}
               </p>
               <input
                 type="date"
@@ -320,13 +308,13 @@ export default function DailyRecoveryPage() {
                   disabled={!newSobrietyDate || sobrietySaving}
                   className="flex-1 py-2.5 rounded-xl bg-[var(--accent-sage)] text-white text-sm font-medium hover:opacity-90 transition-calm disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
                 >
-                  {sobrietySaving ? "Saving…" : "Save"}
+                  {sobrietySaving ? t.daily.saving : t.daily.save}
                 </button>
                 <button
                   onClick={() => { setShowDatePicker(false); setNewSobrietyDate(""); }}
                   className="flex-1 py-2.5 rounded-xl bg-[var(--bg-muted)] text-[var(--text-secondary)] text-sm hover:bg-[var(--border-soft)] transition-calm"
                 >
-                  Cancel
+                  {t.daily.cancel}
                 </button>
               </div>
             </div>
@@ -337,11 +325,11 @@ export default function DailyRecoveryPage() {
         <Card padding="lg">
           <div className="flex items-center gap-2 mb-4">
             <Moon className="w-4 h-4 text-[var(--accent-serenity)]" aria-hidden />
-            <span className="text-sm font-medium text-[var(--text-primary)]">Emotional Check-in</span>
+            <span className="text-sm font-medium text-[var(--text-primary)]">{t.daily.emotionalCheckIn}</span>
           </div>
-          <p className="text-xs text-[var(--text-muted)] mb-3">How are you feeling right now?</p>
+          <p className="text-xs text-[var(--text-muted)] mb-3">{t.daily.howAreYou}</p>
           <div className="flex flex-wrap gap-2" role="group" aria-label="Emotion selector">
-            {EMOTIONS.map((e) => (
+            {t.daily.emotions.map((e) => (
               <button
                 key={e}
                 onClick={() => toggleEmotion(e)}
@@ -365,7 +353,7 @@ export default function DailyRecoveryPage() {
       <Card padding="lg" className="mb-6">
         <div className="flex items-center gap-2 mb-4">
           <CheckCircle className="w-4 h-4 text-[var(--accent-sage)]" aria-hidden />
-          <span className="text-sm font-medium text-[var(--text-primary)]">Today&apos;s Recovery Actions</span>
+          <span className="text-sm font-medium text-[var(--text-primary)]">{t.daily.todaysActions}</span>
           <span className="ml-auto text-xs text-[var(--text-muted)]">
             {checkedItems.size}/{dailyItems.length}
           </span>
@@ -403,10 +391,10 @@ export default function DailyRecoveryPage() {
       <Card variant="amber" padding="lg">
         <div className="flex items-center gap-2 mb-4">
           <Star className="w-4 h-4 text-[var(--accent-amber)]" aria-hidden />
-          <span className="text-sm font-medium text-[var(--text-primary)]">Three Gratitudes</span>
+          <span className="text-sm font-medium text-[var(--text-primary)]">{t.daily.threeGratitudes}</span>
         </div>
         <p className="text-xs text-[var(--text-muted)] mb-3">
-          Small is fine. &ldquo;I have a bed&rdquo; counts.
+          {t.daily.smallIsFine}
         </p>
         <div className="space-y-2">
           {gratitude.map((value, i) => (
@@ -423,8 +411,8 @@ export default function DailyRecoveryPage() {
                   setGratitude(next);
                 }}
                 onKeyDown={(e) => { if (e.key === "Enter") saveGratitudeEntry(); }}
-                placeholder="I am grateful for..."
-                aria-label={`Gratitude ${i + 1}`}
+                placeholder={t.daily.gratitudePlaceholder}
+                aria-label={t.daily.gratitudeLabel(i + 1)}
                 className={cn(
                   "flex-1 px-3 py-2 rounded-xl text-sm",
                   "bg-[var(--bg-card)] border border-[var(--border-soft)]",
@@ -445,7 +433,7 @@ export default function DailyRecoveryPage() {
             "bg-[var(--accent-amber)] text-white hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
           )}
         >
-          {gratitudeSaving ? "Saving…" : "Save gratitudes"}
+          {gratitudeSaving ? t.daily.saving : t.daily.saveGratitudes}
         </button>
 
         {gratitudesLoading && (
@@ -457,7 +445,7 @@ export default function DailyRecoveryPage() {
 
         {!gratitudesLoading && savedGratitudes.length > 0 && (
           <div className="mt-6 space-y-3">
-            <p className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-medium">Saved entries</p>
+            <p className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-medium">{t.daily.savedEntries}</p>
             {savedGratitudes.map((entry) => (
               <div
                 key={entry.id}
@@ -468,7 +456,7 @@ export default function DailyRecoveryPage() {
                   <button
                     onClick={() => removeGratitudeEntry(entry.id)}
                     className="p-1 rounded-lg text-[var(--text-muted)] hover:text-red-400 hover:bg-[var(--bg-muted)] transition-calm"
-                    aria-label="Remove entry"
+                    aria-label={t.daily.removeEntry}
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>

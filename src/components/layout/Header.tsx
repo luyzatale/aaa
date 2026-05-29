@@ -5,42 +5,22 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Menu, X, Heart, ChevronDown, HeartHandshake } from "lucide-react";
-
-const navGroups = [
-  {
-    id: "recovery",
-    label: "Recovery",
-    items: [
-      { href: "/daily",        label: "Daily Recovery",  desc: "Check-ins & sobriety tracker" },
-      { href: "/prayers",      label: "Prayers",         desc: "Calming prayers with TTS" },
-      { href: "/steps",        label: "Step Work",       desc: "Private guided journal" },
-      { href: "/sponsorship",  label: "Sponsorship",     desc: "Daily notes & sponsor contact" },
-      { href: "/literature",   label: "Literature",      desc: "Big Book & AA texts" },
-    ],
-  },
-  {
-    id: "support",
-    label: "Support",
-    items: [
-      { href: "/meetings",       label: "Meetings",       desc: "Online & in-person, 24/7" },
-      { href: "/neurodivergent", label: "Neurodivergent", desc: "Autistic & sensory-friendly" },
-    ],
-  },
-];
+import { useT } from "@/lib/i18n";
 
 function NavDropdown({
-  group, isOpen, onOpen, onClose, pathname,
+  groupId, label, items, isOpen, onOpen, onClose, pathname,
 }: {
-  group: typeof navGroups[0];
+  groupId: string;
+  label: string;
+  items: { href: string; label: string; desc: string }[];
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
   pathname: string;
 }) {
-  const isGroupActive = group.items.some((item) => pathname === item.href);
+  const isGroupActive = items.some((item) => pathname === item.href);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Close on click outside
   useEffect(() => {
     if (!isOpen) return;
     const handler = (e: MouseEvent) => {
@@ -52,7 +32,6 @@ function NavDropdown({
     return () => document.removeEventListener("mousedown", handler);
   }, [isOpen, onClose]);
 
-  // Close on Escape
   useEffect(() => {
     if (!isOpen) return;
     const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -74,7 +53,7 @@ function NavDropdown({
             : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-muted)]"
         )}
       >
-        {group.label}
+        {label}
         <ChevronDown
           className={cn("w-3 h-3 transition-calm", isOpen && "rotate-180")}
           aria-hidden
@@ -86,9 +65,9 @@ function NavDropdown({
           <div
             className="rounded-2xl bg-[var(--bg-card)] border border-[var(--border-soft)] shadow-calm-md p-2 animate-fade-in"
             role="menu"
-            aria-label={`${group.label} submenu`}
+            aria-label={`${label} submenu`}
           >
-            {group.items.map((item) => (
+            {items.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -114,14 +93,15 @@ function NavDropdown({
 }
 
 function MobileNavGroup({
-  group, pathname, onClose,
+  label, items, pathname, onClose,
 }: {
-  group: typeof navGroups[0];
+  label: string;
+  items: { href: string; label: string; desc: string }[];
   pathname: string;
   onClose: () => void;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const isGroupActive = group.items.some((item) => pathname === item.href);
+  const isGroupActive = items.some((item) => pathname === item.href);
 
   return (
     <div>
@@ -136,7 +116,7 @@ function MobileNavGroup({
             : "text-[var(--text-secondary)] hover:bg-[var(--bg-muted)]"
         )}
       >
-        {group.label}
+        {label}
         <ChevronDown
           className={cn("w-4 h-4 transition-calm", expanded && "rotate-180")}
           aria-hidden
@@ -144,7 +124,7 @@ function MobileNavGroup({
       </button>
       {expanded && (
         <div className="pl-4 pt-1 space-y-0.5">
-          {group.items.map((item) => (
+          {items.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -170,6 +150,29 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const pathname = usePathname();
+  const { t, lang, setLang } = useT();
+
+  const navGroups = [
+    {
+      id: "recovery",
+      label: t.nav.recovery,
+      items: [
+        { href: "/daily",        label: t.nav.dailyRecovery,  desc: t.nav.dailyRecoveryDesc },
+        { href: "/prayers",      label: t.nav.prayers,        desc: t.nav.prayersDesc },
+        { href: "/steps",        label: t.nav.stepWork,       desc: t.nav.stepWorkDesc },
+        { href: "/sponsorship",  label: t.nav.sponsorship,    desc: t.nav.sponsorshipDesc },
+        { href: "/literature",   label: t.nav.literature,     desc: t.nav.literatureDesc },
+      ],
+    },
+    {
+      id: "support",
+      label: t.nav.support,
+      items: [
+        { href: "/meetings",       label: t.nav.meetings,       desc: t.nav.meetingsDesc },
+        { href: "/neurodivergent", label: t.nav.neurodivergent, desc: t.nav.neurodivergentDesc },
+      ],
+    },
+  ];
 
   return (
     <header
@@ -188,12 +191,12 @@ export default function Header() {
         <Link
           href="/"
           className="flex items-center gap-2.5 font-semibold text-[var(--text-primary)] hover:opacity-80 transition-calm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)] rounded-lg p-1"
-          aria-label="A@AA Serenity Path — AA Recovery Home"
+          aria-label={t.nav.appAriaLabel}
         >
           <span className="w-7 h-7 rounded-xl bg-[var(--accent-sage-light)] flex items-center justify-center" aria-hidden>
             <Heart className="w-4 h-4 text-[var(--accent-sage)]" />
           </span>
-          <span className="text-base">A@AA Serenity Path</span>
+          <span className="text-base">{t.nav.appName}</span>
         </Link>
 
         {/* Desktop nav */}
@@ -208,7 +211,7 @@ export default function Header() {
                 : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-muted)]"
             )}
           >
-            Home
+            {t.nav.home}
           </Link>
           <Link
             href="/new-to-aa"
@@ -220,12 +223,14 @@ export default function Header() {
                 : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-muted)]"
             )}
           >
-            New to AA
+            {t.nav.newToAA}
           </Link>
           {navGroups.map((group) => (
             <NavDropdown
               key={group.id}
-              group={group}
+              groupId={group.id}
+              label={group.label}
+              items={group.items}
               isOpen={openGroup === group.id}
               onOpen={() => setOpenGroup(group.id)}
               onClose={() => setOpenGroup(null)}
@@ -241,11 +246,22 @@ export default function Header() {
             )}
           >
             <HeartHandshake className="w-4 h-4" aria-hidden />
-            Fellowship
+            {t.nav.fellowship}
           </Link>
         </div>
 
         <div className="hidden lg:flex items-center gap-2">
+          <button
+            onClick={() => setLang(lang === "en" ? "pt" : "en")}
+            aria-label={t.lang.switchLabel}
+            className={cn(
+              "px-3 py-1.5 rounded-xl text-sm font-medium transition-calm",
+              "border border-[var(--border-soft)] text-[var(--text-secondary)] hover:bg-[var(--bg-muted)]",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
+            )}
+          >
+            {t.lang.toggle}
+          </button>
           <Link
             href="/crisis"
             className={cn(
@@ -255,7 +271,7 @@ export default function Header() {
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-serenity)]"
             )}
           >
-            Crisis Support
+            {t.nav.crisisSupport}
           </Link>
         </div>
 
@@ -267,7 +283,7 @@ export default function Header() {
             "text-[var(--text-secondary)] hover:bg-[var(--bg-muted)]",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
           )}
-          aria-label={mobileOpen ? "Close menu" : "Open menu"}
+          aria-label={mobileOpen ? t.nav.closeMenu : t.nav.openMenu}
           aria-expanded={mobileOpen}
           aria-controls="mobile-nav"
         >
@@ -298,7 +314,7 @@ export default function Header() {
                 : "text-[var(--text-secondary)] hover:bg-[var(--bg-muted)]"
             )}
           >
-            Home
+            {t.nav.home}
           </Link>
           <Link
             href="/new-to-aa"
@@ -311,12 +327,13 @@ export default function Header() {
                 : "text-[var(--text-secondary)] hover:bg-[var(--bg-muted)]"
             )}
           >
-            New to AA
+            {t.nav.newToAA}
           </Link>
           {navGroups.map((group) => (
             <MobileNavGroup
               key={group.id}
-              group={group}
+              label={group.label}
+              items={group.items}
               pathname={pathname}
               onClose={() => setMobileOpen(false)}
             />
@@ -331,19 +348,32 @@ export default function Header() {
             )}
           >
             <HeartHandshake className="w-4 h-4" aria-hidden />
-            Fellowship
+            {t.nav.fellowship}
           </Link>
-          <Link
-            href="/crisis"
-            onClick={() => setMobileOpen(false)}
-            className={cn(
-              "block px-4 py-3 rounded-2xl text-sm font-medium mt-2 transition-calm",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-serenity)]",
-              "bg-[var(--accent-serenity-light)] text-[var(--accent-serenity)]"
-            )}
-          >
-            Crisis Support
-          </Link>
+          <div className="flex items-center gap-2 pt-1">
+            <button
+              onClick={() => { setLang(lang === "en" ? "pt" : "en"); setMobileOpen(false); }}
+              aria-label={t.lang.switchLabel}
+              className={cn(
+                "flex-1 px-4 py-3 rounded-2xl text-sm font-medium transition-calm",
+                "border border-[var(--border-soft)] text-[var(--text-secondary)] hover:bg-[var(--bg-muted)]",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
+              )}
+            >
+              {t.lang.toggle}
+            </button>
+            <Link
+              href="/crisis"
+              onClick={() => setMobileOpen(false)}
+              className={cn(
+                "flex-1 block px-4 py-3 rounded-2xl text-sm font-medium text-center transition-calm",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-serenity)]",
+                "bg-[var(--accent-serenity-light)] text-[var(--accent-serenity)]"
+              )}
+            >
+              {t.nav.crisisSupport}
+            </Link>
+          </div>
         </div>
       )}
     </header>

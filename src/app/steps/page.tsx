@@ -3,74 +3,12 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { TWELVE_STEPS } from "@/lib/recovery-content";
 import { cn } from "@/lib/utils";
 import { BookOpen, Lock, Save, ChevronDown, ChevronUp, AlertTriangle, Mail, Send, X } from "lucide-react";
-
-const STEP_PROMPTS: Record<number, string[]> = {
-  1: [
-    "Describe a specific moment when alcohol made your life unmanageable.",
-    "What did you try to control that you could not control?",
-    "What does powerlessness mean to you, in your own words?",
-  ],
-  2: [
-    "What would a Power greater than yourself feel like to you?",
-    "What would 'restored to sanity' look like in your daily life?",
-    "Have you seen recovery work in others? What does that tell you?",
-  ],
-  3: [
-    "What does 'turning my will over' mean to you?",
-    "What are you most afraid of letting go of?",
-    "Write the Third Step Prayer in your own words.",
-  ],
-  4: [
-    "List three resentments you currently carry.",
-    "What fears are most present in your life?",
-    "Where have you been dishonest, selfish, or self-seeking recently?",
-  ],
-  5: [
-    "What does it feel like to have shared your inventory?",
-    "What was the most difficult thing to admit?",
-    "What do you feel free from after this step?",
-  ],
-  6: [
-    "Which character defects are you most resistant to releasing?",
-    "What would your life look like without these defects?",
-    "Are there any you are not yet ready to give up? Why?",
-  ],
-  7: [
-    "Write the Seventh Step Prayer in your own words.",
-    "What shortcomings have you asked to be removed?",
-    "What action are you willing to take differently now?",
-  ],
-  8: [
-    "List people you have harmed. Be thorough.",
-    "For each person, briefly note how you harmed them.",
-    "Are you willing to make amends to all of them?",
-  ],
-  9: [
-    "Which amends have you made?",
-    "Which amends are you afraid of?",
-    "Are there any amends where you need guidance on how to proceed?",
-  ],
-  10: [
-    "Where were you wrong today?",
-    "Did you promptly admit it?",
-    "What did you do that was right today?",
-  ],
-  11: [
-    "Describe your current prayer and meditation practice.",
-    "What does conscious contact with your Higher Power feel like?",
-    "What is your Higher Power asking of you today?",
-  ],
-  12: [
-    "How have you tried to carry the message to others?",
-    "What spiritual principles are you practising in your daily life?",
-    "How has working these steps changed you?",
-  ],
-};
+import { useT } from "@/lib/i18n";
 
 export default function StepWorkPage() {
+  const { t } = useT();
   const [activeStep, setActiveStep] = useState<number | null>(null);
   const [entries, setEntries] = useState<Record<string, string>>({});
   const [saved, setSaved] = useState<Record<string, boolean>>({});
@@ -108,12 +46,12 @@ export default function StepWorkPage() {
         body: JSON.stringify({ to: emailTo, stepNumber: stepNum, entries }),
       });
       const data = await res.json();
-      if (!res.ok) { setEmailStatus("error"); setEmailError(data.error ?? "Something went wrong."); return; }
+      if (!res.ok) { setEmailStatus("error"); setEmailError(data.error ?? t.common.somethingWentWrong); return; }
       setEmailStatus("sent");
       setTimeout(() => { setEmailPrompt(null); setEmailStatus("idle"); setEmailTo(""); }, 3000);
     } catch {
       setEmailStatus("error");
-      setEmailError("Could not connect. Please try again.");
+      setEmailError(t.common.couldNotConnect);
     }
   };
 
@@ -122,14 +60,13 @@ export default function StepWorkPage() {
       setActiveStep(null);
     } else {
       setActiveStep(stepNum);
-      const step = TWELVE_STEPS[stepNum - 1];
-      const prompts = STEP_PROMPTS[stepNum] || [];
+      const prompts = t.steps.prompts[stepNum] || [];
       prompts.forEach((_, idx) => {
         const key = `step-${stepNum}-${idx}`;
         if (!entries[key]) {
-          const saved = loadEntry(key);
-          if (saved) {
-            setEntries((prev) => ({ ...prev, [key]: saved }));
+          const savedVal = loadEntry(key);
+          if (savedVal) {
+            setEntries((prev) => ({ ...prev, [key]: savedVal }));
           }
         }
       });
@@ -139,13 +76,12 @@ export default function StepWorkPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
       <div className="mb-10">
-        <Badge variant="sage" className="mb-4">Step Work</Badge>
+        <Badge variant="sage" className="mb-4">{t.steps.badge}</Badge>
         <h1 className="text-4xl font-light text-[var(--text-primary)] mb-4 leading-tight">
-          Private Step Work Journal
+          {t.steps.title}
         </h1>
         <p className="text-lg text-[var(--text-secondary)] font-light leading-relaxed max-w-2xl">
-          Your writing is private. It is stored only on your device and never sent anywhere.
-          Work at your own pace. There is no wrong speed.
+          {t.steps.subtitle}
         </p>
       </div>
 
@@ -153,9 +89,8 @@ export default function StepWorkPage() {
       <Card variant="sage" padding="md" className="mb-8 flex items-start gap-3">
         <Lock className="w-4 h-4 text-[var(--accent-sage)] flex-shrink-0 mt-0.5" aria-hidden />
         <div className="text-sm text-[var(--text-secondary)]">
-          <span className="font-medium text-[var(--text-primary)]">Privacy: </span>
-          All your writing stays on your device in local storage. Nothing is sent to a server unless you choose to email a step.
-          For deep personal inventory work, you can use the <strong>Email this step</strong> button to send your reflections to yourself or your sponsor.
+          <span className="font-medium text-[var(--text-primary)]">{t.steps.privacyLabel} </span>
+          {t.steps.privacyText}
         </div>
       </Card>
 
@@ -163,11 +98,10 @@ export default function StepWorkPage() {
       <Card variant="amber" padding="md" className="mb-8 flex items-start gap-3">
         <AlertTriangle className="w-4 h-4 text-[var(--accent-amber)] flex-shrink-0 mt-0.5" aria-hidden />
         <div className="text-sm text-[var(--text-secondary)]">
-          <span className="font-medium text-[var(--text-primary)]">Pacing: </span>
-          Step work can bring up difficult feelings. Take breaks. Use the breathing exercises
-          in{" "}
-          <a href="/prayers" className="text-[var(--accent-sage)] underline">Prayers &amp; Meditation</a>.
-          This is not a test. Go slowly.
+          <span className="font-medium text-[var(--text-primary)]">{t.steps.pacing} </span>
+          {t.steps.pacingText.split(t.steps.prayersMedLink)[0]}
+          <a href="/prayers" className="text-[var(--accent-sage)] underline">{t.steps.prayersMedLink}</a>
+          {t.steps.pacingText.split(t.steps.prayersMedLink)[1]}
         </div>
       </Card>
 
@@ -175,9 +109,9 @@ export default function StepWorkPage() {
       <section aria-labelledby="steps-heading">
         <h2 id="steps-heading" className="sr-only">The Twelve Steps</h2>
         <div className="space-y-3">
-          {TWELVE_STEPS.map((step) => {
+          {t.steps.stepData.map((step) => {
             const isOpen = activeStep === step.number;
-            const prompts = STEP_PROMPTS[step.number] || [];
+            const prompts = t.steps.prompts[step.number] || [];
 
             return (
               <div
@@ -209,7 +143,6 @@ export default function StepWorkPage() {
                     id={`step-content-${step.number}`}
                     className="px-5 pb-5 space-y-5 border-t border-[var(--border-soft)] pt-4"
                   >
-                    {/* Step text */}
                     <div className="bg-[var(--bg-secondary)] rounded-2xl p-4">
                       <p className="text-sm text-[var(--text-secondary)] italic leading-relaxed">
                         &ldquo;{step.text}&rdquo;
@@ -220,11 +153,10 @@ export default function StepWorkPage() {
                       {step.reflection}
                     </p>
 
-                    {/* Prompts with text areas */}
                     <div className="space-y-4">
                       <div className="flex items-center gap-2">
                         <BookOpen className="w-4 h-4 text-[var(--accent-sage)]" aria-hidden />
-                        <span className="text-sm font-medium text-[var(--text-primary)]">Reflection Prompts</span>
+                        <span className="text-sm font-medium text-[var(--text-primary)]">{t.steps.reflectionPrompts}</span>
                       </div>
                       {prompts.map((prompt, idx) => {
                         const key = `step-${step.number}-${idx}`;
@@ -240,7 +172,7 @@ export default function StepWorkPage() {
                               id={key}
                               value={entries[key] || ""}
                               onChange={(e) => setEntries((prev) => ({ ...prev, [key]: e.target.value }))}
-                              placeholder="Write freely here..."
+                              placeholder={t.steps.writeFreelyPlaceholder}
                               rows={4}
                               className={cn(
                                 "w-full px-4 py-3 rounded-2xl text-sm resize-none",
@@ -261,7 +193,7 @@ export default function StepWorkPage() {
                                 )}
                               >
                                 <Save className="w-3 h-3" aria-hidden />
-                                {saved[key] ? "Saved" : "Save"}
+                                {saved[key] ? t.steps.saved : t.steps.save}
                               </button>
                             </div>
                           </div>
@@ -269,7 +201,6 @@ export default function StepWorkPage() {
                       })}
                     </div>
 
-                    {/* Email step */}
                     <div className="pt-2 border-t border-[var(--border-soft)]">
                       {emailPrompt !== step.number ? (
                         <div className="flex justify-end">
@@ -282,14 +213,14 @@ export default function StepWorkPage() {
                             )}
                           >
                             <Mail className="w-3 h-3" aria-hidden />
-                            Email this step
+                            {t.steps.emailThisStep}
                           </button>
                         </div>
                       ) : (
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <p className="text-xs text-[var(--text-muted)]">Send Step {step.number} to your email</p>
-                            <button onClick={() => setEmailPrompt(null)} className="text-[var(--text-muted)] hover:text-[var(--text-secondary)]" aria-label="Cancel">
+                            <p className="text-xs text-[var(--text-muted)]">{t.steps.sendStep(step.number)}</p>
+                            <button onClick={() => setEmailPrompt(null)} className="text-[var(--text-muted)] hover:text-[var(--text-secondary)]" aria-label={t.common.cancel}>
                               <X className="w-3.5 h-3.5" />
                             </button>
                           </div>
@@ -298,7 +229,7 @@ export default function StepWorkPage() {
                               type="email"
                               value={emailTo}
                               onChange={(e) => setEmailTo(e.target.value)}
-                              placeholder="your@email.com"
+                              placeholder={t.common.email}
                               autoFocus
                               className={cn(
                                 "flex-1 px-3 py-2 rounded-xl text-sm",
@@ -320,7 +251,7 @@ export default function StepWorkPage() {
                               )}
                             >
                               <Send className="w-3 h-3" aria-hidden />
-                              {emailStatus === "sending" ? "Sending…" : emailStatus === "sent" ? "Sent!" : "Send"}
+                              {emailStatus === "sending" ? t.steps.sending : emailStatus === "sent" ? t.steps.sent : t.steps.send}
                             </button>
                           </div>
                           {emailStatus === "error" && <p className="text-xs text-red-500">{emailError}</p>}

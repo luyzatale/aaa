@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Lora } from "next/font/google";
 import "./globals.css";
 import { AccessibilityProvider } from "@/lib/accessibility-context";
+import { LanguageProvider } from "@/lib/i18n";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import AccessibilityBar from "@/components/layout/AccessibilityBar";
@@ -71,6 +72,7 @@ export default function RootLayout({
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
+        <LanguageProvider>
         <AccessibilityProvider>
           <Header />
           <main id="main-content" className="flex-1" tabIndex={-1}>
@@ -81,6 +83,7 @@ export default function RootLayout({
           <OverwhelmButton />
           <ServiceWorkerRegistration />
         </AccessibilityProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

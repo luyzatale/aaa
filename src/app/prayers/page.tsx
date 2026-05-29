@@ -5,25 +5,17 @@ import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import TTSPlayer from "@/components/features/TTSPlayer";
 import BreathingExercise from "@/components/features/BreathingExercise";
-import { PRAYERS, GROUNDING_EXERCISES } from "@/lib/recovery-content";
 import { cn } from "@/lib/utils";
 import { Leaf, Wind, Heart, Clock, CheckCircle } from "lucide-react";
-
-const CATEGORIES = [
-  { id: "all", label: "All" },
-  { id: "core", label: "Core" },
-  { id: "steps", label: "Step Prayers" },
-  { id: "daily", label: "Daily" },
-  { id: "emotional", label: "Emotional" },
-  { id: "meditation", label: "Meditation" },
-];
+import { useT } from "@/lib/i18n";
 
 export default function PrayersPage() {
+  const { t } = useT();
   const [category, setCategory] = useState("all");
   const [activeGrounding, setActiveGrounding] = useState<string | null>(null);
   const [completedSteps, setCompletedSteps] = useState<Record<string, Set<number>>>({});
 
-  const filtered = PRAYERS.filter(
+  const filtered = t.prayers.prayersData.filter(
     (p) => category === "all" || p.category === category
   );
 
@@ -39,14 +31,13 @@ export default function PrayersPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
       <div className="mb-10">
-        <Badge variant="serenity" className="mb-4">Prayers & Meditation</Badge>
+        <Badge variant="serenity" className="mb-4">{t.prayers.badge}</Badge>
         <h1 className="text-4xl font-light text-[var(--text-primary)] mb-4 leading-tight">
-          A quiet place to{" "}
-          <em className="not-italic text-[var(--accent-serenity)]">pray and breathe.</em>
+          {t.prayers.titlePrefix}{" "}
+          <em className="not-italic text-[var(--accent-serenity)]">{t.prayers.titleEm}</em>
         </h1>
         <p className="text-lg text-[var(--text-secondary)] font-light leading-relaxed max-w-2xl">
-          Each prayer can be read or listened to. Take what you need. Leave what you do not.
-          There is no pressure here.
+          {t.prayers.description}
         </p>
       </div>
 
@@ -54,11 +45,10 @@ export default function PrayersPage() {
       <Card variant="serenity" padding="lg" className="mb-10">
         <div className="flex items-center gap-2 mb-4">
           <Wind className="w-4 h-4 text-[var(--accent-serenity)]" aria-hidden />
-          <h2 className="font-semibold text-[var(--text-primary)]">2-Minute Recovery Reset</h2>
+          <h2 className="font-semibold text-[var(--text-primary)]">{t.prayers.resetTitle}</h2>
         </div>
         <p className="text-sm text-[var(--text-secondary)] mb-4 leading-relaxed">
-          If you are overwhelmed right now, start here. Follow the breathing guide.
-          No thinking required.
+          {t.prayers.resetDesc}
         </p>
         <BreathingExercise />
       </Card>
@@ -69,7 +59,7 @@ export default function PrayersPage() {
         role="group"
         aria-label="Filter prayers by category"
       >
-        {CATEGORIES.map((cat) => (
+        {t.prayers.categories.map((cat) => (
           <button
             key={cat.id}
             onClick={() => setCategory(cat.id)}
@@ -111,10 +101,7 @@ export default function PrayersPage() {
                 </p>
               </div>
 
-              <TTSPlayer
-                text={prayer.text}
-                title={prayer.title}
-              />
+              <TTSPlayer text={prayer.text} title={prayer.title} />
             </Card>
           ))}
         </div>
@@ -127,15 +114,15 @@ export default function PrayersPage() {
             id="grounding-heading"
             className="text-xl font-semibold text-[var(--text-primary)]"
           >
-            Grounding Exercises
+            {t.prayers.groundingTitle}
           </h2>
           <p className="text-sm text-[var(--text-muted)] mt-1">
-            When your nervous system needs to come back to safety
+            {t.prayers.groundingSubtitle}
           </p>
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
-          {GROUNDING_EXERCISES.map((exercise) => {
+          {t.prayers.groundingData.map((exercise) => {
             const isActive = activeGrounding === exercise.id;
             const completed = completedSteps[exercise.id] || new Set();
             return (
@@ -192,7 +179,7 @@ export default function PrayersPage() {
                       : "bg-[var(--accent-serenity-light)] text-[var(--accent-serenity)] hover:bg-[var(--accent-serenity)]/20"
                   )}
                 >
-                  {isActive ? "Close" : "Begin"}
+                  {isActive ? t.prayers.close : t.prayers.begin}
                 </button>
               </Card>
             );
