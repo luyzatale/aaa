@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { BookHeart, Plus, Trash2, ChevronDown, ChevronUp, Phone, Lock, X, Star } from "lucide-react";
+import { BookHeart, Plus, Trash2, ChevronDown, ChevronUp, Phone, Lock, X, Star, PlusCircle } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
 import { useT } from "@/lib/i18n";
@@ -420,6 +420,14 @@ export default function SponsorshipPage() {
             </div>
           ))}
         </div>
+
+        <button
+          onClick={() => setGratitude((prev) => [...prev, ""])}
+          className="mt-2 flex items-center gap-1.5 text-xs text-[var(--accent-amber)] hover:opacity-80 transition-calm focus-visible:outline-none"
+        >
+          <PlusCircle className="w-3.5 h-3.5" aria-hidden />
+          {t.sponsorship.addGratitude}
+        </button>
 
         <button
           onClick={saveGratitudeEntry}
