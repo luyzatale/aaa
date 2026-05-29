@@ -39,7 +39,7 @@ const en = {
     dailyRecovery: "Daily Recovery", dailyRecoveryDesc: "Check-ins & sobriety tracker",
     prayers: "Prayers", prayersDesc: "Calming prayers with TTS",
     stepWork: "Step Work", stepWorkDesc: "Private guided journal",
-    sponsorship: "Sponsorship", sponsorshipDesc: "Daily notes & sponsor contact",
+    sponsorship: "Sponsee Journal", sponsorshipDesc: "Daily notes & sponsor contact",
     literature: "Literature", literatureDesc: "Big Book & AA texts",
     meetings: "Meetings", meetingsDesc: "Online & in-person, 24/7",
     neurodivergent: "Neurodivergent", neurodivergentDesc: "Autistic & sensory-friendly",
@@ -204,7 +204,7 @@ const en = {
     } as Record<number, string[]>,
   },
   sponsorship: {
-    badge: "Sponsorship Journal", title: "Sponsorship Journal",
+    badge: "Sponsee Journal", title: "Sponsee Journal",
     passwordPrompt: "Enter the password to continue.",
     unlock: "Unlock", password: "Password", incorrectPassword: "Incorrect password.",
     subtitle: "Track your daily step work, sponsor calls, and recovery notes.",
