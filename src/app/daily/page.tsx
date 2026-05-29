@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/Badge";
 import { formatDate, getDayOfYear } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import {
-  Sun, Moon, Heart, CheckCircle, Circle, Star, BookOpen, ExternalLink, RefreshCw,
+  Sun, Moon, CheckCircle, Circle, Star, BookOpen, ExternalLink,
 } from "lucide-react";
 import { useT } from "@/lib/i18n";
 
@@ -40,49 +40,6 @@ export default function DailyRecoveryPage() {
 
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
 
-  const [sobrietyStartDate, setSobrietyStartDate] = useState<string | null>(null);
-  const [sobrietyLoading, setSobrietyLoading] = useState(true);
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [newSobrietyDate, setNewSobrietyDate] = useState("");
-  const [sobrietySaving, setSobrietySaving] = useState(false);
-
-  const sobrietyDays = sobrietyStartDate
-    ? (() => {
-        const [y, m, d] = sobrietyStartDate.split("-").map(Number);
-        const start = new Date(y, m - 1, d);
-        const now = new Date();
-        const today0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        return Math.max(0, Math.floor((today0.getTime() - start.getTime()) / 86400000));
-      })()
-    : 0;
-
-  useEffect(() => {
-    fetch("/api/sobriety")
-      .then((r) => r.json())
-      .then((data) => { if (data.startDate) setSobrietyStartDate(data.startDate); })
-      .catch(() => {})
-      .finally(() => setSobrietyLoading(false));
-  }, []);
-
-  const saveSobrietyDate = async () => {
-    if (!newSobrietyDate || sobrietySaving) return;
-    setSobrietySaving(true);
-    try {
-      const res = await fetch("/api/sobriety", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ startDate: newSobrietyDate }),
-      });
-      const data = await res.json();
-      if (data.startDate) {
-        setSobrietyStartDate(data.startDate);
-        setShowDatePicker(false);
-        setNewSobrietyDate("");
-      }
-    } catch {}
-    setSobrietySaving(false);
-  };
-
   const [emotions, setEmotions] = useState<Set<string>>(new Set());
 
   const toggleCheck = (id: string) => {
@@ -105,14 +62,6 @@ export default function DailyRecoveryPage() {
 
   const actionIds = ["prayer","meeting","sponsor","reading","inventory","gratitude","meditation","exercise","sleep","food"];
   const dailyItems = actionIds.map((id, i) => ({ id, label: t.daily.actions[i] }));
-
-  const getMilestone = (days: number) => {
-    if (days < 7) return t.daily.milestone0;
-    if (days < 30) return t.daily.milestone7;
-    if (days < 90) return t.daily.milestone30;
-    if (days < 365) return t.daily.milestone90;
-    return t.daily.milestone365;
-  };
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
@@ -197,84 +146,7 @@ export default function DailyRecoveryPage() {
         </Card>
       </a>
 
-      <div className="grid lg:grid-cols-2 gap-6 mb-6">
-        {/* Sobriety counter */}
-        <Card padding="lg">
-          <div className="flex items-center gap-2 mb-4">
-            <Heart className="w-4 h-4 text-[var(--accent-sage)]" aria-hidden />
-            <span className="text-sm font-medium text-[var(--text-primary)]">{t.daily.sobrietyCounter}</span>
-          </div>
-
-          {sobrietyLoading ? (
-            <div className="py-6 flex flex-col items-center gap-2 animate-pulse">
-              <div className="h-12 w-20 bg-[var(--border-soft)] rounded-xl" />
-              <div className="h-3 w-24 bg-[var(--border-soft)] rounded" />
-            </div>
-          ) : !showDatePicker ? (
-            <>
-              <div className="text-center py-4">
-                <div className="text-5xl font-light text-[var(--accent-sage)]" aria-live="polite">
-                  {sobrietyDays}
-                </div>
-                <div className="text-sm text-[var(--text-muted)] mt-1">
-                  {sobrietyDays === 1 ? t.daily.daySober : t.daily.daysSober}
-                </div>
-                {sobrietyStartDate && (() => {
-                  const [y,m,d] = sobrietyStartDate.split("-").map(Number);
-                  return (
-                    <p className="text-xs text-[var(--text-muted)] mt-2">
-                      {t.daily.sinceDate(formatDate(new Date(y, m - 1, d)))}
-                    </p>
-                  );
-                })()}
-              </div>
-              {sobrietyDays > 0 && (
-                <p className="text-center text-xs text-[var(--text-muted)] mb-4">
-                  {getMilestone(sobrietyDays)}
-                </p>
-              )}
-              <button
-                onClick={() => {
-                  setNewSobrietyDate(sobrietyStartDate ?? "");
-                  setShowDatePicker(true);
-                }}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs text-[var(--text-muted)] border border-[var(--border-soft)] hover:bg-[var(--bg-muted)] transition-calm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
-              >
-                <RefreshCw className="w-3 h-3" aria-hidden />
-                {sobrietyStartDate ? t.daily.resetDate : t.daily.setMyDate}
-              </button>
-            </>
-          ) : (
-            <div className="space-y-3 py-2">
-              <p className="text-sm text-[var(--text-secondary)]">
-                {sobrietyStartDate ? t.daily.setNewDate : t.daily.whenSober}
-              </p>
-              <input
-                type="date"
-                value={newSobrietyDate}
-                max={new Date().toISOString().split("T")[0]}
-                onChange={(e) => setNewSobrietyDate(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl border border-[var(--border-soft)] bg-[var(--bg-card)] text-[var(--text-primary)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-sage)] transition-calm"
-              />
-              <div className="flex gap-2">
-                <button
-                  onClick={saveSobrietyDate}
-                  disabled={!newSobrietyDate || sobrietySaving}
-                  className="flex-1 py-2.5 rounded-xl bg-[var(--accent-sage)] text-white text-sm font-medium hover:opacity-90 transition-calm disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
-                >
-                  {sobrietySaving ? t.daily.saving : t.daily.save}
-                </button>
-                <button
-                  onClick={() => { setShowDatePicker(false); setNewSobrietyDate(""); }}
-                  className="flex-1 py-2.5 rounded-xl bg-[var(--bg-muted)] text-[var(--text-secondary)] text-sm hover:bg-[var(--border-soft)] transition-calm"
-                >
-                  {t.daily.cancel}
-                </button>
-              </div>
-            </div>
-          )}
-        </Card>
-
+      <div className="mb-6">
         {/* Emotional check-in */}
         <Card padding="lg">
           <div className="flex items-center gap-2 mb-4">
