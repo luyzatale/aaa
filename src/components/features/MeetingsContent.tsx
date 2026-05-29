@@ -112,6 +112,45 @@ export default function MeetingsContent({ nlMeetings, todayNLMeetings, todayDayN
         </a>
       </Card>
 
+      {/* The Sunrise Serenity Group */}
+      <Card variant="sage" padding="lg" className="mb-8">
+        <div className="flex items-start gap-4 mb-4">
+          <div className="w-10 h-10 rounded-2xl bg-[var(--accent-sage)] text-white flex items-center justify-center flex-shrink-0" aria-hidden>
+            <Video className="w-5 h-5" />
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
+              <h2 className="font-semibold text-[var(--text-primary)]">The Sunrise Serenity Group</h2>
+              <span className="px-2 py-0.5 rounded-full bg-[var(--accent-sage)] text-white text-xs font-medium">
+                {t.meetings.liveNow}
+              </span>
+            </div>
+            <p className="text-sm text-[var(--text-secondary)]">
+              {t.meetings.marathonDesc}
+            </p>
+          </div>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-3 mb-4 text-sm">
+          <div className="bg-[var(--bg-card)] rounded-2xl p-3">
+            <span className="text-xs text-[var(--text-muted)] uppercase tracking-wide block mb-1">{t.meetings.meetingIdLabel}</span>
+            <span className="font-mono font-medium text-[var(--text-primary)]">9769709597</span>
+          </div>
+          <div className="bg-[var(--bg-card)] rounded-2xl p-3">
+            <span className="text-xs text-[var(--text-muted)] uppercase tracking-wide block mb-1">{t.meetings.passwordLabel}</span>
+            <span className="font-mono font-medium text-[var(--text-primary)]">081152</span>
+          </div>
+        </div>
+        <a
+          href="https://zoom.us/j/9769709597"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[var(--accent-sage)] text-white text-sm font-medium hover:opacity-90 transition-calm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
+        >
+          <Video className="w-4 h-4" aria-hidden />
+          {t.meetings.joinNow}
+        </a>
+      </Card>
+
       {/* Anxiety guide */}
       <Card variant="serenity" padding="lg" className="mb-10">
         <div className="flex items-start gap-3 mb-4">
