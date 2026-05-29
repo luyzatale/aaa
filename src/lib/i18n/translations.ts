@@ -46,8 +46,8 @@ const en = {
   },
   home: {
     tagline: "Recovery, one day at a time",
-    heroLine1: "You do not have to do",
-    heroEm: "recovery perfectly.",
+    heroLine1: "Hope, honesty, recovery.",
+    heroEm: "Progress, not perfection.",
     heroSub: "You only need to stay sober today.",
     heroDesc: "A calm, accessible space for AA recovery — especially for those who are exhausted, overwhelmed, or neurodivergent.",
     joinMeeting: "Join a Meeting", joinMeetingDesc: "Online meetings available now",
@@ -477,8 +477,8 @@ const pt: typeof en = {
   },
   home: {
     tagline: "Recuperação, um dia de cada vez",
-    heroLine1: "Você não precisa fazer",
-    heroEm: "a recuperação perfeitamente.",
+    heroLine1: "Esperança, honestidade, recuperação.",
+    heroEm: "Progresso, não perfeição.",
     heroSub: "Você só precisa ficar sóbrio hoje.",
     heroDesc: "Um espaço calmo e acessível para a recuperação do AA — especialmente para quem está exausto, sobrecarregado ou neurodivergente.",
     joinMeeting: "Entrar em uma Reunião", joinMeetingDesc: "Reuniões online disponíveis agora",
