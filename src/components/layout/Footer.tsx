@@ -62,6 +62,7 @@ export default function Footer() {
               {[
                 { href: "https://www.aa.org", label: "AA.org" },
                 { href: "https://www.aa-nederland.nl", label: "AA Nederland" },
+                { href: "https://www.aa.org.br", label: "AA Brasil" },
                 { href: "https://www.aa.org/the-big-book", label: "Big Book" },
               ].map((link) => (
                 <li key={link.href}>
