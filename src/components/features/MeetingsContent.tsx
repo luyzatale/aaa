@@ -115,9 +115,15 @@ export default function MeetingsContent({ nlMeetings, todayNLMeetings, todayDayN
       {/* The Sunrise Serenity Group */}
       <Card padding="md" className="mb-8 space-y-3">
         <div>
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
+            <span className="text-lg font-light text-[var(--accent-sage)] tabular-nums">07:30</span>
+            <Badge variant="muted">Open</Badge>
+            <Badge variant="muted">EN</Badge>
+          </div>
           <h3 className="font-medium text-[var(--text-primary)] text-sm leading-snug">
             The Sunrise Serenity Group
           </h3>
+          <p className="text-xs text-[var(--text-muted)] mt-0.5">tot 08:30 · Every day</p>
         </div>
         <div className="flex items-start gap-2 text-xs text-[var(--text-muted)] bg-[var(--bg-muted)] rounded-xl p-2.5">
           <Info className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" aria-hidden />
