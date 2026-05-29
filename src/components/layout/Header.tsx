@@ -11,10 +11,11 @@ const navGroups = [
     id: "recovery",
     label: "Recovery",
     items: [
-      { href: "/daily",      label: "Daily Recovery",  desc: "Check-ins & sobriety tracker" },
-      { href: "/prayers",    label: "Prayers",         desc: "Calming prayers with TTS" },
-      { href: "/steps",      label: "Step Work",       desc: "Private guided journal" },
-      { href: "/literature", label: "Literature",      desc: "Big Book & AA texts" },
+      { href: "/daily",        label: "Daily Recovery",  desc: "Check-ins & sobriety tracker" },
+      { href: "/prayers",      label: "Prayers",         desc: "Calming prayers with TTS" },
+      { href: "/steps",        label: "Step Work",       desc: "Private guided journal" },
+      { href: "/sponsorship",  label: "Sponsorship",     desc: "Daily notes & sponsor contact" },
+      { href: "/literature",   label: "Literature",      desc: "Big Book & AA texts" },
     ],
   },
   {
