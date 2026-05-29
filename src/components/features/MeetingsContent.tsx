@@ -73,6 +73,31 @@ export default function MeetingsContent({ nlMeetings, todayNLMeetings, todayDayN
         </p>
       </div>
 
+      {/* Anxiety guide */}
+      <Card variant="serenity" padding="lg" className="mb-10">
+        <div className="flex items-start gap-3 mb-4">
+          <Shield className="w-5 h-5 text-[var(--accent-serenity)] flex-shrink-0 mt-0.5" aria-hidden />
+          <div>
+            <h2 className="font-semibold text-[var(--text-primary)] mb-1">
+              {t.meetings.anxietyTitle}
+            </h2>
+            <p className="text-sm text-[var(--text-secondary)]">
+              {t.meetings.anxietySubtitle}
+            </p>
+          </div>
+        </div>
+        <ul className="space-y-2" aria-label="Meeting anxiety reassurances">
+          {t.meetings.anxietyItems.map((item, i) => (
+            <li key={i} className="flex items-start gap-2.5 text-sm text-[var(--text-secondary)]">
+              <span className="w-5 h-5 rounded-full bg-[var(--accent-serenity-light)] text-[var(--accent-serenity)] text-xs flex items-center justify-center flex-shrink-0 mt-0.5 font-medium" aria-hidden>
+                {i + 1}
+              </span>
+              {item}
+            </li>
+          ))}
+        </ul>
+      </Card>
+
       {/* 24/7 Marathon Meeting - highlighted */}
       <Card variant="sage" padding="lg" className="mb-8">
         <div className="flex items-start gap-4 mb-4">
@@ -141,31 +166,6 @@ export default function MeetingsContent({ nlMeetings, todayNLMeetings, todayDayN
           <Video className="w-3.5 h-3.5" aria-hidden />
           Deelnemen via Zoom
         </a>
-      </Card>
-
-      {/* Anxiety guide */}
-      <Card variant="serenity" padding="lg" className="mb-10">
-        <div className="flex items-start gap-3 mb-4">
-          <Shield className="w-5 h-5 text-[var(--accent-serenity)] flex-shrink-0 mt-0.5" aria-hidden />
-          <div>
-            <h2 className="font-semibold text-[var(--text-primary)] mb-1">
-              {t.meetings.anxietyTitle}
-            </h2>
-            <p className="text-sm text-[var(--text-secondary)]">
-              {t.meetings.anxietySubtitle}
-            </p>
-          </div>
-        </div>
-        <ul className="space-y-2" aria-label="Meeting anxiety reassurances">
-          {t.meetings.anxietyItems.map((item, i) => (
-            <li key={i} className="flex items-start gap-2.5 text-sm text-[var(--text-secondary)]">
-              <span className="w-5 h-5 rounded-full bg-[var(--accent-serenity-light)] text-[var(--accent-serenity)] text-xs flex items-center justify-center flex-shrink-0 mt-0.5 font-medium" aria-hidden>
-                {i + 1}
-              </span>
-              {item}
-            </li>
-          ))}
-        </ul>
       </Card>
 
       {/* AA Nederland Online Meetings – Today */}
