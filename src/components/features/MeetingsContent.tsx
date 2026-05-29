@@ -34,12 +34,14 @@ const ONLINE_MEETING_URLS: Record<string, string> = {
   "in-the-rooms": "https://www.intherooms.com",
   "aa-uk-online": "https://www.alcoholics-anonymous.org.uk/find-a-meeting",
   "aa-online": "https://www.aa-intergroup.org/meetings",
+  "aa-brazil": "https://www.aa.org.br/virtual/",
 };
 
 const ONLINE_MEETING_TAGS: Record<string, string[]> = {
   "in-the-rooms": ["Free", "Many types", "Global"],
   "aa-uk-online": ["UK", "Official", "Beginner"],
   "aa-online": ["Global", "Secular", "LGBTQ+"],
+  "aa-brazil": ["Brasil", "Português", "Official"],
 };
 
 const MEETING_TYPE_ICONS = [
@@ -325,13 +327,22 @@ export default function MeetingsContent({ nlMeetings, todayNLMeetings, todayDayN
         </div>
       </section>
 
-      <div className="mt-10 text-center">
+      <div className="mt-10 text-center space-y-3">
         <Link
           href="/new-to-aa"
-          className="text-sm text-[var(--accent-sage)] hover:opacity-80 transition-calm"
+          className="block text-sm text-[var(--accent-sage)] hover:opacity-80 transition-calm"
         >
           {t.meetings.firstMeetingLink}
         </Link>
+        <a
+          href="https://www.aa.org.br/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-sm text-[var(--text-muted)] hover:text-[var(--accent-sage)] transition-calm"
+        >
+          {t.meetings.aaBrazilLink}
+          <ExternalLink className="w-3.5 h-3.5" aria-hidden />
+        </a>
       </div>
     </div>
   );
