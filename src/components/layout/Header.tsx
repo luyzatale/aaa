@@ -4,7 +4,16 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Menu, X, Heart, ChevronDown, HeartHandshake } from "lucide-react";
+import { Menu, X, ChevronDown, HeartHandshake } from "lucide-react";
+
+function AATriangle({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+      <circle cx="12" cy="12" r="10" />
+      <polygon points="12,5 20,19 4,19" />
+    </svg>
+  );
+}
 import { useT } from "@/lib/i18n";
 
 function NavDropdown({
@@ -194,7 +203,7 @@ export default function Header() {
           aria-label={t.nav.appAriaLabel}
         >
           <span className="w-7 h-7 rounded-xl bg-[var(--accent-sage-light)] flex items-center justify-center" aria-hidden>
-            <Heart className="w-4 h-4 text-[var(--accent-sage)]" />
+            <AATriangle className="w-4 h-4 text-[var(--accent-sage)]" />
           </span>
           <span className="text-base">{t.nav.appName}</span>
         </Link>
