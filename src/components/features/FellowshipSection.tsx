@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { HeartHandshake, X, MapPin, Phone, Plus, Users, Eye, EyeOff, Trash2 } from "lucide-react";
+import { HeartHandshake, X, MapPin, Phone, Plus, Users, Eye, EyeOff, Trash2, Lock } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
 
@@ -46,6 +46,11 @@ export default function FellowshipSection() {
   const [error, setError] = useState("");
   const [revealed, setRevealed] = useState<Set<string>>(new Set());
   const [removing, setRemoving] = useState<string | null>(null);
+  const [passwordUnlocked, setPasswordUnlocked] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [pendingRevealId, setPendingRevealId] = useState<string | null>(null);
+  const [passwordInput, setPasswordInput] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   const removeMember = async (id: string) => {
     setRemoving(id);
@@ -63,11 +68,35 @@ export default function FellowshipSection() {
   };
 
   const toggleReveal = (id: string) => {
-    setRevealed((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
-      return next;
-    });
+    if (revealed.has(id)) {
+      setRevealed((prev) => { const next = new Set(prev); next.delete(id); return next; });
+      return;
+    }
+    if (passwordUnlocked) {
+      setRevealed((prev) => { const next = new Set(prev); next.add(id); return next; });
+    } else {
+      setPendingRevealId(id);
+      setPasswordInput("");
+      setPasswordError("");
+      setShowPasswordModal(true);
+    }
+  };
+
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (passwordInput === "Sun*1010") {
+      setPasswordUnlocked(true);
+      setShowPasswordModal(false);
+      if (pendingRevealId) {
+        setRevealed((prev) => { const next = new Set(prev); next.add(pendingRevealId); return next; });
+        setPendingRevealId(null);
+      }
+      setPasswordInput("");
+      setPasswordError("");
+    } else {
+      setPasswordError("Incorrect password.");
+      setPasswordInput("");
+    }
   };
 
   useEffect(() => {
@@ -184,7 +213,78 @@ export default function FellowshipSection() {
         ))}
       </div>
 
-      {/* Modal form */}
+      {/* Password modal */}
+      {showPasswordModal && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+          role="dialog"
+          aria-label="Enter password to view number"
+          aria-modal="true"
+        >
+          <button
+            className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+            onClick={() => { setShowPasswordModal(false); setPendingRevealId(null); }}
+            aria-label="Close"
+          />
+          <div className={cn(
+            "relative z-10 w-full max-w-sm",
+            "bg-[var(--bg-card)] border border-[var(--border-soft)] rounded-3xl shadow-calm-lg",
+            "p-8 animate-fade-up"
+          )}>
+            <button
+              onClick={() => { setShowPasswordModal(false); setPendingRevealId(null); }}
+              className="absolute top-5 right-5 p-2 rounded-xl text-[var(--text-muted)] hover:bg-[var(--bg-muted)] transition-calm"
+              aria-label="Close"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-2xl bg-[var(--accent-serenity-light)] flex items-center justify-center" aria-hidden>
+                <Lock className="w-5 h-5 text-[var(--accent-serenity)]" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-[var(--text-primary)]">Protected</h3>
+                <p className="text-xs text-[var(--text-muted)]">Enter the password to view phone numbers.</p>
+              </div>
+            </div>
+
+            <form onSubmit={handlePasswordSubmit} className="space-y-4">
+              <input
+                type="password"
+                value={passwordInput}
+                onChange={(e) => setPasswordInput(e.target.value)}
+                placeholder="Password"
+                autoFocus
+                className={cn(
+                  "w-full px-3 py-2.5 rounded-xl text-sm",
+                  "bg-[var(--bg-secondary)] border",
+                  passwordError ? "border-red-400" : "border-[var(--border-soft)]",
+                  "text-[var(--text-primary)] placeholder:text-[var(--text-muted)]",
+                  "focus:outline-none focus:ring-2 focus:ring-[var(--accent-serenity)] transition-calm"
+                )}
+              />
+              {passwordError && (
+                <p className="text-xs text-red-500">{passwordError}</p>
+              )}
+              <button
+                type="submit"
+                disabled={!passwordInput}
+                className={cn(
+                  "w-full py-3 rounded-2xl text-sm font-medium transition-calm",
+                  "bg-[var(--accent-serenity)] text-white hover:opacity-90",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-serenity)]",
+                  "disabled:opacity-50"
+                )}
+              >
+                Unlock
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Member form modal */}
       {showForm && (
         <div
           className="fixed inset-0 z-[60] flex items-center justify-center p-4"
