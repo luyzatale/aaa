@@ -140,11 +140,6 @@ export default function BreathingExercise() {
   const dur = active ? `${cur.duration}s ease-in-out` : "1.8s ease-in-out";
   const tx  = `transform ${dur}`;
 
-  const R = 130;
-  const circ = 2 * Math.PI * R;
-  const progress = active ? (cur.duration - countdown) / cur.duration : 0;
-  const dashOffset = circ * (1 - progress);
-
   const toggle = () => {
     if (active) {
       setActive(false);
@@ -383,20 +378,6 @@ export default function BreathingExercise() {
 
           </g>
 
-          {/* ── Progress ring (outside clip) ── */}
-          {active && (
-            <circle cx="140" cy="140" r={R}
-              fill="none"
-              stroke={cur.ringColor}
-              strokeWidth="1.5"
-              strokeOpacity="0.42"
-              strokeLinecap="round"
-              strokeDasharray={circ}
-              strokeDashoffset={dashOffset}
-              transform="rotate(-90 140 140)"
-              style={{ transition: "stroke-dashoffset 1s linear, stroke 0.8s ease" }}
-            />
-          )}
 
         </svg>
       </div>
