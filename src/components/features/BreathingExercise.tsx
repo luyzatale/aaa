@@ -384,8 +384,6 @@ export default function BreathingExercise() {
           </g>
 
           {/* ── Progress ring (outside clip) ── */}
-          <circle cx="140" cy="140" r={R}
-            fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="1.5" />
           {active && (
             <circle cx="140" cy="140" r={R}
               fill="none"
@@ -400,9 +398,6 @@ export default function BreathingExercise() {
             />
           )}
 
-          {/* ── Outer frame glow ── */}
-          <circle cx="140" cy="140" r="139"
-            fill="none" stroke="rgba(255,255,255,0.035)" strokeWidth="1" />
         </svg>
       </div>
 
