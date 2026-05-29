@@ -94,19 +94,13 @@ export default function DailyRecoveryPage() {
     setGratitudeSaving(false);
   };
 
-  const removeGratitudeEntry = async (id: string) => {
-    const prev = savedGratitudes;
+  const removeGratitudeEntry = (id: string) => {
     setSavedGratitudes((g) => g.filter((e) => e.id !== id));
-    try {
-      const res = await fetch("/api/gratitudes", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
-      });
-      const data = await res.json();
-      if (data.entries) setSavedGratitudes(data.entries);
-      else setSavedGratitudes(prev);
-    } catch { setSavedGratitudes(prev); }
+    fetch("/api/gratitudes", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    }).catch(() => {});
   };
 
   const toggleEmotion = (e: string) => {
