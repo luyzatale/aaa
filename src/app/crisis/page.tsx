@@ -1,16 +1,16 @@
-import type { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 import BreathingExercise from "@/components/features/BreathingExercise";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
+import { GROUNDING_EXERCISES } from "@/lib/recovery-content";
+import { cn } from "@/lib/utils";
 import {
-  Phone, Video, Heart, Shield, Droplets, Utensils, Moon, Wind, Users
+  Phone, Video, Heart, Shield, Droplets, Utensils, Moon, Wind, Users,
+  Clock, CheckCircle,
 } from "lucide-react";
-
-export const metadata: Metadata = {
-  title: "Crisis Support",
-  description: "Grounding tools, emergency contacts, and gentle support for moments of crisis. You are not alone.",
-};
 
 const helplines = [
   {
@@ -71,6 +71,18 @@ const delayTechniques = [
 ];
 
 export default function CrisisPage() {
+  const [activeGrounding, setActiveGrounding] = useState<string | null>(null);
+  const [completedSteps, setCompletedSteps] = useState<Record<string, Set<number>>>({});
+
+  const toggleStep = (exerciseId: string, idx: number) => {
+    setCompletedSteps((prev) => {
+      const set = new Set(prev[exerciseId] || []);
+      if (set.has(idx)) set.delete(idx);
+      else set.add(idx);
+      return { ...prev, [exerciseId]: set };
+    });
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
       <div className="mb-10">
@@ -209,6 +221,83 @@ export default function CrisisPage() {
               <span className="text-sm text-[var(--text-secondary)]">{item.action}</span>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Grounding exercises */}
+      <section aria-labelledby="grounding-heading" className="mb-10">
+        <h2
+          id="grounding-heading"
+          className="text-xl font-semibold text-[var(--text-primary)] mb-1"
+        >
+          Grounding Exercises
+        </h2>
+        <p className="text-sm text-[var(--text-muted)] mb-5">
+          When your nervous system needs to come back to safety
+        </p>
+        <div className="grid sm:grid-cols-2 gap-4">
+          {GROUNDING_EXERCISES.map((exercise) => {
+            const isActive = activeGrounding === exercise.id;
+            const completed = completedSteps[exercise.id] || new Set();
+            return (
+              <Card key={exercise.id} padding="md" className="space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <h3 className="font-medium text-[var(--text-primary)]">{exercise.title}</h3>
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <Clock className="w-3 h-3 text-[var(--text-muted)]" aria-hidden />
+                      <span className="text-xs text-[var(--text-muted)]">{exercise.duration}</span>
+                    </div>
+                  </div>
+                  <Heart className="w-4 h-4 text-[var(--accent-serenity)] flex-shrink-0" aria-hidden />
+                </div>
+
+                <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+                  {exercise.description}
+                </p>
+
+                {isActive && (
+                  <ol className="space-y-2" aria-label={`Steps for ${exercise.title}`}>
+                    {exercise.steps.map((step, idx) => (
+                      <li key={idx} className="flex items-start gap-2">
+                        <button
+                          onClick={() => toggleStep(exercise.id, idx)}
+                          className={cn(
+                            "w-5 h-5 rounded-full border-2 flex-shrink-0 mt-0.5 transition-calm flex items-center justify-center",
+                            completed.has(idx)
+                              ? "bg-[var(--accent-sage)] border-[var(--accent-sage)] text-white"
+                              : "border-[var(--border-muted)]"
+                          )}
+                          aria-label={`Step ${idx + 1}: ${completed.has(idx) ? "completed" : "not completed"}`}
+                        >
+                          {completed.has(idx) && <CheckCircle className="w-3 h-3" />}
+                        </button>
+                        <span className={cn(
+                          "text-sm transition-calm",
+                          completed.has(idx) ? "text-[var(--text-muted)] line-through" : "text-[var(--text-secondary)]"
+                        )}>
+                          {step}
+                        </span>
+                      </li>
+                    ))}
+                  </ol>
+                )}
+
+                <button
+                  onClick={() => setActiveGrounding(isActive ? null : exercise.id)}
+                  className={cn(
+                    "w-full py-2.5 rounded-2xl text-sm font-medium transition-calm",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-serenity)]",
+                    isActive
+                      ? "bg-[var(--bg-muted)] text-[var(--text-secondary)] hover:bg-[var(--border-soft)]"
+                      : "bg-[var(--accent-serenity-light)] text-[var(--accent-serenity)] hover:bg-[var(--accent-serenity)]/20"
+                  )}
+                >
+                  {isActive ? "Close" : "Begin"}
+                </button>
+              </Card>
+            );
+          })}
         </div>
       </section>
 
