@@ -7,7 +7,7 @@ import { TWELVE_STEPS } from "@/lib/recovery-content";
 import { formatDate, getDayOfYear } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import {
-  Sun, Moon, Heart, CheckCircle, Circle, Star, Minus, Plus, Trash2,
+  Sun, Moon, Heart, CheckCircle, Circle, Star, Minus, Plus, Trash2, BookOpen, ExternalLink,
 } from "lucide-react";
 
 const EMOTIONS = [
@@ -33,6 +33,11 @@ interface DailyReflection {
 export default function DailyRecoveryPage() {
   const today = new Date();
   const dayOfYear = getDayOfYear(today);
+  const JFT_MONTHS = [
+    "january","february","march","april","may","june",
+    "july","august","september","october","november","december",
+  ];
+  const jftUrl = `https://www.justfortodaymeditations.com/daily-recovery-readings-${JFT_MONTHS[today.getMonth()]}-${today.getDate()}/`;
   const step = TWELVE_STEPS[dayOfYear % 12];
 
   const [reflection, setReflection] = useState<DailyReflection | null>(null);
@@ -182,6 +187,31 @@ export default function DailyRecoveryPage() {
           <p className="text-xs text-[var(--text-secondary)] leading-relaxed">{step.reflection}</p>
         </Card>
       </div>
+
+      {/* Just For Today */}
+      <a
+        href={jftUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block mb-6 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-serenity)] rounded-3xl"
+      >
+        <Card variant="serenity" padding="lg">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-[var(--accent-serenity-light)] flex items-center justify-center flex-shrink-0">
+                <BookOpen className="w-5 h-5 text-[var(--accent-serenity)]" aria-hidden />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-[var(--text-primary)] group-hover:text-[var(--accent-serenity)] transition-calm">
+                  Just For Today — Daily Reading
+                </p>
+                <p className="text-xs text-[var(--text-muted)]">{formatDate(today)}</p>
+              </div>
+            </div>
+            <ExternalLink className="w-4 h-4 text-[var(--accent-serenity)] flex-shrink-0 opacity-60 group-hover:opacity-100 transition-calm" aria-hidden />
+          </div>
+        </Card>
+      </a>
 
       <div className="grid lg:grid-cols-2 gap-6 mb-6">
         {/* Sobriety counter */}
