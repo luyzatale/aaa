@@ -345,8 +345,8 @@ const en = {
   },
   newToAA: {
     badge: "Newcomers",
-    titlePrefix: "Welcome to",
-    titleEm: "recovery.",
+    titlePrefix: "Welcome to healing.",
+    titleEm: "You are not alone.",
     subtitle: "You do not need to have it figured out. You do not need to be sure. You only need to be here.",
     cards: [
       { title: "No Judgement", text: "AA is a place of radical acceptance. You are welcome exactly as you are today." },
@@ -774,8 +774,8 @@ const pt: typeof en = {
   },
   newToAA: {
     badge: "Recém-chegados",
-    titlePrefix: "Bem-vindo à",
-    titleEm: "recuperação.",
+    titlePrefix: "Bem-vindo à cura.",
+    titleEm: "Você não está sozinho.",
     subtitle: "Você não precisa ter tudo resolvido. Você não precisa ter certeza. Você só precisa estar aqui.",
     cards: [
       { title: "Sem Julgamento", text: "O AA é um lugar de aceitação radical. Você é bem-vindo exatamente como você é hoje." },
