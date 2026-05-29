@@ -8,6 +8,7 @@ import Footer from "@/components/layout/Footer";
 import AccessibilityBar from "@/components/layout/AccessibilityBar";
 import OverwhelmButton from "@/components/features/OverwhelmButton";
 import ServiceWorkerRegistration from "@/components/features/ServiceWorkerRegistration";
+import VersionChecker from "@/components/features/VersionChecker";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -82,6 +83,7 @@ export default function RootLayout({
           <AccessibilityBar />
           <OverwhelmButton />
           <ServiceWorkerRegistration />
+          <VersionChecker />
         </AccessibilityProvider>
         </LanguageProvider>
       </body>
