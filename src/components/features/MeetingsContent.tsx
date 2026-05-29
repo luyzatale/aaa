@@ -418,15 +418,6 @@ export default function MeetingsContent({ nlMeetings, todayNLMeetings, todayDayN
         >
           {t.meetings.firstMeetingLink}
         </Link>
-        <a
-          href="https://www.aa.org.br/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-sm text-[var(--text-muted)] hover:text-[var(--accent-sage)] transition-calm"
-        >
-          {t.meetings.aaBrazilLink}
-          <ExternalLink className="w-3.5 h-3.5" aria-hidden />
-        </a>
       </div>
     </div>
   );
