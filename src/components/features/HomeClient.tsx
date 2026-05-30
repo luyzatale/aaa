@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { formatDate, getDayOfYear } from "@/lib/utils";
 import NeurodivergentReadingPanel from "@/components/features/NeurodivergentReadingPanel";
+import AASpeakersCard from "@/components/features/AASpeakersCard";
 import { useT } from "@/lib/i18n";
 
 function TodayWidget() {
@@ -252,6 +253,12 @@ export default function HomeClient() {
             <SerenityCard />
           </div>
         </div>
+      </section>
+
+      {/* AA Speakers card */}
+      <section className="px-4 sm:px-6 pb-10 max-w-6xl mx-auto" aria-label="AA Speakers">
+        <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4">AA Speakers</h2>
+        <AASpeakersCard />
       </section>
 
       {/* Section links grid */}
