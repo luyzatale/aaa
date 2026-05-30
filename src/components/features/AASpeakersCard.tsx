@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Card } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
-import { Mic, RefreshCw, ExternalLink, ChevronRight } from "lucide-react";
+import { Mic, RefreshCw, ExternalLink, ChevronRight, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { SpeakerEntry } from "@/app/api/xa-speakers/route";
+import { XA_URL } from "@/app/api/xa-speakers/route";
 
 const PAGE_SIZE = 10;
 
@@ -76,11 +76,11 @@ export default function AASpeakersCard() {
           ))}
         </div>
       ) : (
-        <ol className="space-y-2" aria-label="Top AA speakers">
+        <ol className="space-y-1" aria-label="Top AA speakers">
           {visible.map((speaker, i) => (
             <li key={`${speaker.name}-${i}`}>
               <a
-                href={speaker.url}
+                href={XA_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={cn(
@@ -95,9 +95,8 @@ export default function AASpeakersCard() {
                   <p className="text-sm font-medium text-[var(--text-primary)] truncate group-hover:text-[var(--accent-serenity)] transition-calm">
                     {speaker.name}
                   </p>
-                  {speaker.title && (
-                    <p className="text-xs text-[var(--text-muted)] truncate">{speaker.title}</p>
-                  )}
+                  <p className="text-xs text-[var(--text-muted)] truncate">{speaker.title}</p>
+                  <p className="text-xs text-[var(--accent-serenity)]/70 truncate">{speaker.category}</p>
                 </div>
                 <div className="flex items-center gap-1.5 flex-shrink-0">
                   {speaker.downloads > 0 && (
@@ -113,6 +112,14 @@ export default function AASpeakersCard() {
         </ol>
       )}
 
+      {/* Note */}
+      <div className="flex items-start gap-2 px-1 py-2 rounded-xl bg-[var(--bg-muted)]">
+        <Info className="w-3.5 h-3.5 text-[var(--text-muted)] flex-shrink-0 mt-0.5" aria-hidden />
+        <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+          Direct link not possible. Go to the website and search for this file.
+        </p>
+      </div>
+
       {/* Footer */}
       <div className="pt-1 border-t border-[var(--border-soft)] flex items-center justify-between">
         <p className="text-xs text-[var(--text-muted)]">
@@ -120,7 +127,7 @@ export default function AASpeakersCard() {
           Free AA recordings
         </p>
         <a
-          href="https://www.xa-speakers.org/pafiledb.php?action=category&id=1&sortby=downloads"
+          href={XA_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-1 text-xs text-[var(--accent-sage)] hover:opacity-80 transition-calm"

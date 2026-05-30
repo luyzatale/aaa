@@ -5,90 +5,59 @@ export const dynamic = "force-dynamic";
 export interface SpeakerEntry {
   name: string;
   title: string;
+  category: string;
   downloads: number;
-  url: string;
 }
 
-// Fallback list ranked by xa-speakers.org download count.
-// URLs open xa-speakers.org search for that speaker — works in any browser.
-// When live scraping succeeds, parsed URLs are direct file pages (action=file&id=XXX).
+const XA_URL = "https://www.xa-speakers.org/pafiledb.php?action=category&id=1";
+
+// Ranked by xa-speakers.org download count. All link to the general AA category page.
 const FALLBACK_SPEAKERS: SpeakerEntry[] = [
-  { name: "Father Martin", title: "Chalk Talk on Alcoholism", downloads: 42000,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=father+martin" },
-  { name: "Joe McQ.", title: "The Big Book Comes Alive", downloads: 38500,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=joe+mcq" },
-  { name: "Chuck C.", title: "A New Pair of Glasses", downloads: 35200,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=chuck+c+new+pair+glasses" },
-  { name: "Bob D.", title: "How It Works — Las Vegas", downloads: 31800,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=bob+d+how+it+works" },
-  { name: "Sandy B.", title: "A Vision For You", downloads: 29600,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=sandy+b" },
-  { name: "Clancy I.", title: "Pacific Group Sharing", downloads: 27100,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=clancy+i" },
-  { name: "Joe & Charlie", title: "Big Book Study", downloads: 25900,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=joe+charlie+big+book" },
-  { name: "Earl H.", title: "Cleveland Speaker Meeting", downloads: 24400,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=earl+h" },
-  { name: "Jim B.", title: "The Agnostic", downloads: 22700,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=jim+b+agnostic" },
-  { name: "Scott H.", title: "Pacific Group — How I Got Sober", downloads: 21300,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=scott+h+pacific" },
-  { name: "Mike Q.", title: "Big Book Step Study", downloads: 20100,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=mike+q+big+book" },
-  { name: "Wally P.", title: "Back to Basics", downloads: 19400,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=wally+p+back+to+basics" },
-  { name: "Paul O.", title: "There's Nothing Wrong With You", downloads: 18600,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=paul+o" },
-  { name: "Gary B.", title: "Back to Basics Workshop", downloads: 17900,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=gary+b+back+to+basics" },
-  { name: "Herb K.", title: "Step 11 Meditation", downloads: 17200,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=herb+k+step+11" },
-  { name: "John H.", title: "Serenity — How to Get It", downloads: 16500,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=john+h+serenity" },
-  { name: "Tommy B.", title: "Speaker Meeting — Chicago", downloads: 15800,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=tommy+b" },
-  { name: "Ray C.", title: "Pacific Group Sharing", downloads: 15100,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=ray+c+pacific" },
-  { name: "Mel B.", title: "God, As We Understand Him", downloads: 14400,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=mel+b" },
-  { name: "Bill W.", title: "Talk at 18th Anniversary Dinner", downloads: 13900,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=bill+w" },
-  { name: "Doctor Bob", title: "Last Major Address", downloads: 13200,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=doctor+bob" },
-  { name: "Harry M.", title: "Step Work and Sponsorship", downloads: 12600,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=harry+m" },
-  { name: "Clarence S.", title: "Old Timer — How AA Began", downloads: 11900,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=clarence+s" },
-  { name: "Dick B.", title: "AA History and the Big Book", downloads: 11300,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=dick+b+aa+history" },
-  { name: "Eric S.", title: "Young People in Recovery", downloads: 10700,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=eric+s" },
-  { name: "Mary T.", title: "Women in AA", downloads: 10100,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=mary+t+women" },
-  { name: "Rick T.", title: "The Solution is the Steps", downloads: 9600,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=rick+t" },
-  { name: "Lois W.", title: "The Al-Anon Story", downloads: 9100,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=lois+w" },
-  { name: "Bill Dotson", title: "AA Number Three — Historical", downloads: 8700,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=bill+dotson+aa+number+three" },
-  { name: "Dave P.", title: "Twelve Step Workshop", downloads: 8300,
-    url: "https://www.xa-speakers.org/pafiledb.php?action=search&search=dave+p+twelve+step" },
+  { name: "Father Martin",  title: "Chalk Talk on Alcoholism",         category: "Alcoholics Anonymous", downloads: 42000 },
+  { name: "Joe McQ.",       title: "The Big Book Comes Alive",          category: "Alcoholics Anonymous", downloads: 38500 },
+  { name: "Chuck C.",       title: "A New Pair of Glasses",             category: "Alcoholics Anonymous", downloads: 35200 },
+  { name: "Bob D.",         title: "How It Works — Las Vegas",          category: "Alcoholics Anonymous", downloads: 31800 },
+  { name: "Sandy B.",       title: "A Vision For You",                  category: "Alcoholics Anonymous", downloads: 29600 },
+  { name: "Clancy I.",      title: "Pacific Group Sharing",             category: "Alcoholics Anonymous", downloads: 27100 },
+  { name: "Joe & Charlie",  title: "Big Book Study",                    category: "Alcoholics Anonymous", downloads: 25900 },
+  { name: "Earl H.",        title: "Cleveland Speaker Meeting",         category: "Alcoholics Anonymous", downloads: 24400 },
+  { name: "Jim B.",         title: "The Agnostic",                      category: "Alcoholics Anonymous", downloads: 22700 },
+  { name: "Scott H.",       title: "Pacific Group — How I Got Sober",  category: "Alcoholics Anonymous", downloads: 21300 },
+  { name: "Mike Q.",        title: "Big Book Step Study",               category: "Alcoholics Anonymous", downloads: 20100 },
+  { name: "Wally P.",       title: "Back to Basics",                    category: "Alcoholics Anonymous", downloads: 19400 },
+  { name: "Paul O.",        title: "There's Nothing Wrong With You",    category: "Alcoholics Anonymous", downloads: 18600 },
+  { name: "Gary B.",        title: "Back to Basics Workshop",           category: "Alcoholics Anonymous", downloads: 17900 },
+  { name: "Herb K.",        title: "Step 11 Meditation",                category: "Alcoholics Anonymous", downloads: 17200 },
+  { name: "John H.",        title: "Serenity — How to Get It",         category: "Alcoholics Anonymous", downloads: 16500 },
+  { name: "Tommy B.",       title: "Speaker Meeting — Chicago",        category: "Alcoholics Anonymous", downloads: 15800 },
+  { name: "Ray C.",         title: "Pacific Group Sharing",             category: "Alcoholics Anonymous", downloads: 15100 },
+  { name: "Mel B.",         title: "God, As We Understand Him",         category: "Alcoholics Anonymous", downloads: 14400 },
+  { name: "Bill W.",        title: "Talk at 18th Anniversary Dinner",  category: "Alcoholics Anonymous", downloads: 13900 },
+  { name: "Doctor Bob",     title: "Last Major Address",                category: "Alcoholics Anonymous", downloads: 13200 },
+  { name: "Harry M.",       title: "Step Work and Sponsorship",         category: "Alcoholics Anonymous", downloads: 12600 },
+  { name: "Clarence S.",    title: "Old Timer — How AA Began",         category: "Alcoholics Anonymous", downloads: 11900 },
+  { name: "Dick B.",        title: "AA History and the Big Book",       category: "Alcoholics Anonymous", downloads: 11300 },
+  { name: "Eric S.",        title: "Young People in Recovery",          category: "Alcoholics Anonymous", downloads: 10700 },
+  { name: "Mary T.",        title: "Women in AA",                       category: "Alcoholics Anonymous", downloads: 10100 },
+  { name: "Rick T.",        title: "The Solution is the Steps",        category: "Alcoholics Anonymous", downloads:  9600 },
+  { name: "Lois W.",        title: "The Al-Anon Story",                 category: "Al-Anon",              downloads:  9100 },
+  { name: "Bill Dotson",    title: "AA Number Three — Historical",     category: "Alcoholics Anonymous", downloads:  8700 },
+  { name: "Dave P.",        title: "Twelve Step Workshop",              category: "Alcoholics Anonymous", downloads:  8300 },
 ];
+
+export { XA_URL };
 
 function parseSpeakers(html: string): SpeakerEntry[] {
   const results: SpeakerEntry[] = [];
-  // Match file links and download counts from paFileDB top-downloads table
-  const rowRe = /<a[^>]+href="([^"]*action=file[^"]*)"[^>]*>([^<]+)<\/a>[\s\S]*?(\d[\d,]+)\s*<\/td>/gi;
+  const rowRe = /<a[^>]+href="[^"]*action=file[^"]*"[^>]*>([^<]+)<\/a>[\s\S]*?(\d[\d,]+)\s*<\/td>/gi;
   let m: RegExpExecArray | null;
   while ((m = rowRe.exec(html)) !== null) {
-    const url = m[1].startsWith("http") ? m[1] : `https://xa-speakers.org/${m[1]}`;
-    const rawTitle = m[2].trim();
-    const downloads = parseInt(m[3].replace(/,/g, ""), 10);
-    // Split "Speaker Name - Talk Title" convention
+    const rawTitle = m[1].trim();
+    const downloads = parseInt(m[2].replace(/,/g, ""), 10);
     const dash = rawTitle.indexOf(" - ");
     const name = dash > -1 ? rawTitle.slice(0, dash).trim() : rawTitle;
     const title = dash > -1 ? rawTitle.slice(dash + 3).trim() : "";
-    if (name && downloads > 0) results.push({ name, title, downloads, url });
+    if (name && downloads > 0) results.push({ name, title, category: "Alcoholics Anonymous", downloads });
   }
   return results.sort((a, b) => b.downloads - a.downloads);
 }
