@@ -103,7 +103,7 @@ export default function AASpeakersCard() {
                   <p className="text-sm font-medium text-[var(--text-primary)] truncate group-hover:text-[var(--accent-serenity)] transition-calm font-mono">
                     {speaker.filename}
                   </p>
-                  <p className="text-xs text-[var(--accent-serenity)]/70 truncate">{speaker.category}</p>
+                  <p className="text-xs text-[var(--accent-serenity)]/70 truncate">Category: {speaker.category}</p>
                 </div>
                 <div className="flex items-center gap-1.5 flex-shrink-0">
                   {speaker.downloads > 0 && (
