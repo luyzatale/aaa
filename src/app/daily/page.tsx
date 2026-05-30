@@ -93,9 +93,11 @@ export default function DailyRecoveryPage() {
               </p>
               <p className="text-xs text-[var(--text-muted)]">{reflection.source}</p>
               {reflection.body && (
-                <p className="text-sm text-[var(--text-secondary)] leading-relaxed border-t border-[var(--border-soft)] pt-3">
-                  {reflection.body.split("\n\n")[0]}
-                </p>
+                <div className="text-sm text-[var(--text-secondary)] leading-relaxed border-t border-[var(--border-soft)] pt-3 space-y-3">
+                  {reflection.body.split("\n\n").map((para, i) => (
+                    <p key={i}>{para}</p>
+                  ))}
+                </div>
               )}
             </>
           ) : (
