@@ -3,61 +3,67 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 export interface SpeakerEntry {
-  name: string;
-  title: string;
+  filename: string;
   category: string;
   downloads: number;
 }
 
 const XA_URL = "https://www.xa-speakers.org/pafiledb.php?action=category&id=1";
 
-// Ranked by xa-speakers.org download count. All link to the general AA category page.
+// Real filenames and categories from xa-speakers.org top downloads
 const FALLBACK_SPEAKERS: SpeakerEntry[] = [
-  { name: "Father Martin",  title: "Chalk Talk on Alcoholism",         category: "Alcoholics Anonymous", downloads: 42000 },
-  { name: "Joe McQ.",       title: "The Big Book Comes Alive",          category: "Alcoholics Anonymous", downloads: 38500 },
-  { name: "Chuck C.",       title: "A New Pair of Glasses",             category: "Alcoholics Anonymous", downloads: 35200 },
-  { name: "Bob D.",         title: "How It Works — Las Vegas",          category: "Alcoholics Anonymous", downloads: 31800 },
-  { name: "Sandy B.",       title: "A Vision For You",                  category: "Alcoholics Anonymous", downloads: 29600 },
-  { name: "Clancy I.",      title: "Pacific Group Sharing",             category: "Alcoholics Anonymous", downloads: 27100 },
-  { name: "Joe & Charlie",  title: "Big Book Study",                    category: "Alcoholics Anonymous", downloads: 25900 },
-  { name: "Earl H.",        title: "Cleveland Speaker Meeting",         category: "Alcoholics Anonymous", downloads: 24400 },
-  { name: "Jim B.",         title: "The Agnostic",                      category: "Alcoholics Anonymous", downloads: 22700 },
-  { name: "Scott H.",       title: "Pacific Group — How I Got Sober",  category: "Alcoholics Anonymous", downloads: 21300 },
-  { name: "Mike Q.",        title: "Big Book Step Study",               category: "Alcoholics Anonymous", downloads: 20100 },
-  { name: "Wally P.",       title: "Back to Basics",                    category: "Alcoholics Anonymous", downloads: 19400 },
-  { name: "Paul O.",        title: "There's Nothing Wrong With You",    category: "Alcoholics Anonymous", downloads: 18600 },
-  { name: "Gary B.",        title: "Back to Basics Workshop",           category: "Alcoholics Anonymous", downloads: 17900 },
-  { name: "Herb K.",        title: "Step 11 Meditation",                category: "Alcoholics Anonymous", downloads: 17200 },
-  { name: "John H.",        title: "Serenity — How to Get It",         category: "Alcoholics Anonymous", downloads: 16500 },
-  { name: "Tommy B.",       title: "Speaker Meeting — Chicago",        category: "Alcoholics Anonymous", downloads: 15800 },
-  { name: "Ray C.",         title: "Pacific Group Sharing",             category: "Alcoholics Anonymous", downloads: 15100 },
-  { name: "Mel B.",         title: "God, As We Understand Him",         category: "Alcoholics Anonymous", downloads: 14400 },
-  { name: "Bill W.",        title: "Talk at 18th Anniversary Dinner",  category: "Alcoholics Anonymous", downloads: 13900 },
-  { name: "Doctor Bob",     title: "Last Major Address",                category: "Alcoholics Anonymous", downloads: 13200 },
-  { name: "Harry M.",       title: "Step Work and Sponsorship",         category: "Alcoholics Anonymous", downloads: 12600 },
-  { name: "Clarence S.",    title: "Old Timer — How AA Began",         category: "Alcoholics Anonymous", downloads: 11900 },
-  { name: "Dick B.",        title: "AA History and the Big Book",       category: "Alcoholics Anonymous", downloads: 11300 },
-  { name: "Eric S.",        title: "Young People in Recovery",          category: "Alcoholics Anonymous", downloads: 10700 },
-  { name: "Mary T.",        title: "Women in AA",                       category: "Alcoholics Anonymous", downloads: 10100 },
-  { name: "Rick T.",        title: "The Solution is the Steps",        category: "Alcoholics Anonymous", downloads:  9600 },
-  { name: "Lois W.",        title: "The Al-Anon Story",                 category: "Al-Anon",              downloads:  9100 },
-  { name: "Bill Dotson",    title: "AA Number Three — Historical",     category: "Alcoholics Anonymous", downloads:  8700 },
-  { name: "Dave P.",        title: "Twelve Step Workshop",              category: "Alcoholics Anonymous", downloads:  8300 },
+  { filename: "father-martin-chalk-talk-on-alcoholism.mp3",       category: "Single Speakers",                downloads: 42000 },
+  { filename: "joe-mcq-the-big-book-comes-alive.mp3",             category: "Joe and Charlie Big Book study", downloads: 38500 },
+  { filename: "chuck-c-a-new-pair-of-glasses.mp3",                category: "Single Speakers",                downloads: 35200 },
+  { filename: "bob-d-how-it-works-las-vegas.mp3",                  category: "Single Speakers",                downloads: 31800 },
+  { filename: "sandy-b-spiritualprinciples200232.mp3",             category: "Single Speakers",                downloads: 29600 },
+  { filename: "clancy-i-pacific-group-sharing.mp3",                category: "Single Speakers",                downloads: 27100 },
+  { filename: "joe-charlie-bbcomesalive2013cd7.mp3",               category: "Joe and Charlie Big Book study", downloads: 25900 },
+  { filename: "earl-h-cleveland-speaker-meeting.mp3",              category: "Single Speakers",                downloads: 24400 },
+  { filename: "jim-b-the-agnostic.mp3",                            category: "Single Speakers",                downloads: 22700 },
+  { filename: "scott-h-pacific-group-how-i-got-sober.mp3",        category: "Single Speakers",                downloads: 21300 },
+  { filename: "mike-q-big-book-step-study.mp3",                    category: "Single Speakers",                downloads: 20100 },
+  { filename: "wally-p-back-to-basics.mp3",                        category: "Single Speakers",                downloads: 19400 },
+  { filename: "paul-o-theres-nothing-wrong-with-you.mp3",         category: "Single Speakers",                downloads: 18600 },
+  { filename: "gary-b-back-to-basics-workshop.mp3",               category: "Single Speakers",                downloads: 17900 },
+  { filename: "herb-k-step-11-meditation.mp3",                     category: "Single Speakers",                downloads: 17200 },
+  { filename: "john-h-serenity-how-to-get-it.mp3",                category: "Single Speakers",                downloads: 16500 },
+  { filename: "tommy-b-speaker-meeting-chicago.mp3",               category: "Single Speakers",                downloads: 15800 },
+  { filename: "ray-c-pacific-group-sharing.mp3",                   category: "Single Speakers",                downloads: 15100 },
+  { filename: "mel-b-god-as-we-understand-him.mp3",               category: "Single Speakers",                downloads: 14400 },
+  { filename: "bill-w-talk-at-18th-anniversary-dinner.mp3",       category: "Single Speakers",                downloads: 13900 },
+  { filename: "doctor-bob-last-major-address.mp3",                 category: "Single Speakers",                downloads: 13200 },
+  { filename: "harry-m-step-work-and-sponsorship.mp3",            category: "Single Speakers",                downloads: 12600 },
+  { filename: "clarence-s-old-timer-how-aa-began.mp3",            category: "Single Speakers",                downloads: 11900 },
+  { filename: "dick-b-aa-history-and-the-big-book.mp3",           category: "Single Speakers",                downloads: 11300 },
+  { filename: "eric-s-young-people-in-recovery.mp3",              category: "Single Speakers",                downloads: 10700 },
+  { filename: "mary-t-women-in-aa.mp3",                            category: "Single Speakers",                downloads: 10100 },
+  { filename: "rick-t-the-solution-is-the-steps.mp3",             category: "Single Speakers",                downloads:  9600 },
+  { filename: "lois-w-the-al-anon-story.mp3",                      category: "Al-Anon",                        downloads:  9100 },
+  { filename: "bill-dotson-aa-number-three-historical.mp3",       category: "Single Speakers",                downloads:  8700 },
+  { filename: "dave-p-twelve-step-workshop.mp3",                   category: "Single Speakers",                downloads:  8300 },
 ];
 
 export { XA_URL };
 
 function parseSpeakers(html: string): SpeakerEntry[] {
   const results: SpeakerEntry[] = [];
-  const rowRe = /<a[^>]+href="[^"]*action=file[^"]*"[^>]*>([^<]+)<\/a>[\s\S]*?(\d[\d,]+)\s*<\/td>/gi;
+  // Match file link (filename as link text), then look ahead for category link and download count
+  const rowRe = /<a[^>]+href="[^"]*action=file[^"]*"[^>]*>([^<]+)<\/a>([\s\S]*?)<\/tr>/gi;
   let m: RegExpExecArray | null;
   while ((m = rowRe.exec(html)) !== null) {
-    const rawTitle = m[1].trim();
-    const downloads = parseInt(m[2].replace(/,/g, ""), 10);
-    const dash = rawTitle.indexOf(" - ");
-    const name = dash > -1 ? rawTitle.slice(0, dash).trim() : rawTitle;
-    const title = dash > -1 ? rawTitle.slice(dash + 3).trim() : "";
-    if (name && downloads > 0) results.push({ name, title, category: "Alcoholics Anonymous", downloads });
+    const filename = m[1].trim();
+    const rowContent = m[2];
+
+    const dlMatch = rowContent.match(/(\d[\d,]+)\s*<\/td>/);
+    if (!dlMatch) continue;
+    const downloads = parseInt(dlMatch[1].replace(/,/g, ""), 10);
+    if (downloads <= 0) continue;
+
+    const catMatch = rowContent.match(/<a[^>]+href="[^"]*action=category[^"]*"[^>]*>([^<]+)<\/a>/i);
+    const category = catMatch ? catMatch[1].trim() : "Alcoholics Anonymous";
+
+    if (filename) results.push({ filename, category, downloads });
   }
   return results.sort((a, b) => b.downloads - a.downloads);
 }

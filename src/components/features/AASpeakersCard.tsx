@@ -78,7 +78,7 @@ export default function AASpeakersCard() {
       ) : (
         <ol className="space-y-1" aria-label="Top AA speakers">
           {visible.map((speaker, i) => (
-            <li key={`${speaker.name}-${i}`}>
+            <li key={`${speaker.filename}-${i}`}>
               <a
                 href={XA_URL}
                 target="_blank"
@@ -92,10 +92,9 @@ export default function AASpeakersCard() {
                   {globalStart + i + 1}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-[var(--text-primary)] truncate group-hover:text-[var(--accent-serenity)] transition-calm">
-                    {speaker.name}
+                  <p className="text-sm font-medium text-[var(--text-primary)] truncate group-hover:text-[var(--accent-serenity)] transition-calm font-mono">
+                    {speaker.filename}
                   </p>
-                  <p className="text-xs text-[var(--text-muted)] truncate">{speaker.title}</p>
                   <p className="text-xs text-[var(--accent-serenity)]/70 truncate">{speaker.category}</p>
                 </div>
                 <div className="flex items-center gap-1.5 flex-shrink-0">
