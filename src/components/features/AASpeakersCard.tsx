@@ -120,7 +120,7 @@ export default function AASpeakersCard() {
           Free AA recordings
         </p>
         <a
-          href="https://xa-speakers.org/pafiledb.php?action=category&id=1&sortby=downloads"
+          href="https://www.xa-speakers.org/pafiledb.php?action=category&id=1&sortby=downloads"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-1 text-xs text-[var(--accent-sage)] hover:opacity-80 transition-calm"
