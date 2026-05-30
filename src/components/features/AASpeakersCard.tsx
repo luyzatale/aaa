@@ -62,6 +62,14 @@ export default function AASpeakersCard() {
         )}
       </div>
 
+      {/* Note */}
+      <div className="flex items-start gap-2 px-1 py-2 rounded-xl bg-[var(--bg-muted)]">
+        <Info className="w-3.5 h-3.5 text-[var(--text-muted)] flex-shrink-0 mt-0.5" aria-hidden />
+        <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+          Direct link not possible. Go to the website and search for this file.
+        </p>
+      </div>
+
       {/* List */}
       {loading ? (
         <div className="space-y-3 animate-pulse">
@@ -110,14 +118,6 @@ export default function AASpeakersCard() {
           ))}
         </ol>
       )}
-
-      {/* Note */}
-      <div className="flex items-start gap-2 px-1 py-2 rounded-xl bg-[var(--bg-muted)]">
-        <Info className="w-3.5 h-3.5 text-[var(--text-muted)] flex-shrink-0 mt-0.5" aria-hidden />
-        <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-          Direct link not possible. Go to the website and search for this file.
-        </p>
-      </div>
 
       {/* Footer */}
       <div className="pt-1 border-t border-[var(--border-soft)] flex items-center justify-between">
