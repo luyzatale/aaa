@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { BookHeart, Plus, Trash2, ChevronDown, ChevronUp, Phone, Lock, X, Star, PlusCircle, Heart, RefreshCw } from "lucide-react";
+import { BookHeart, Plus, Trash2, ChevronDown, ChevronUp, Phone, Lock, X, Star, PlusCircle, Heart, RefreshCw, Sparkles, Pencil, Check } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
 import { useT } from "@/lib/i18n";
@@ -16,6 +16,12 @@ interface GratitudeEntry {
   id: string;
   date: string;
   items: string[];
+}
+
+interface ReflectionEntry {
+  id: string;
+  date: string;
+  text: string;
 }
 
 function todayString() {
@@ -191,6 +197,13 @@ export default function SponsorshipPage() {
   const [gratitudesLoading, setGratitudesLoading] = useState(true);
   const [gratitudeSaving, setGratitudeSaving] = useState(false);
 
+  const [reflections, setReflections] = useState<ReflectionEntry[]>([]);
+  const [reflectionsLoading, setReflectionsLoading] = useState(true);
+  const [reflectionText, setReflectionText] = useState("");
+  const [reflectionSaving, setReflectionSaving] = useState(false);
+  const [editingReflectionId, setEditingReflectionId] = useState<string | null>(null);
+  const [editingText, setEditingText] = useState("");
+
   useEffect(() => {
     if (!unlocked) return;
     fetch("/api/sobriety")
@@ -228,6 +241,15 @@ export default function SponsorshipPage() {
       .finally(() => setGratitudesLoading(false));
   }, [unlocked]);
 
+  useEffect(() => {
+    if (!unlocked) return;
+    fetch("/api/inspirational-reflections")
+      .then((r) => r.json())
+      .then((data) => { if (Array.isArray(data.entries)) setReflections(data.entries); })
+      .catch(() => {})
+      .finally(() => setReflectionsLoading(false));
+  }, [unlocked]);
+
   const saveGratitudeEntry = async () => {
     const filled = gratitude.filter((g) => g.trim());
     if (filled.length === 0 || gratitudeSaving) return;
@@ -254,6 +276,48 @@ export default function SponsorshipPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id }),
     }).catch(() => {});
+  };
+
+  const saveReflection = async () => {
+    if (!reflectionText.trim() || reflectionSaving) return;
+    setReflectionSaving(true);
+    try {
+      const res = await fetch("/api/inspirational-reflections", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: reflectionText }),
+      });
+      const data = await res.json();
+      if (data.entries) { setReflections(data.entries); setReflectionText(""); }
+    } catch {}
+    setReflectionSaving(false);
+  };
+
+  const removeReflection = (id: string) => {
+    setReflections((r) => r.filter((e) => e.id !== id));
+    fetch("/api/inspirational-reflections", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    }).catch(() => {});
+  };
+
+  const saveEditReflection = async (id: string) => {
+    if (!editingText.trim()) return;
+    const prev = reflections;
+    setReflections((r) => r.map((e) => e.id === id ? { ...e, text: editingText.trim() } : e));
+    setEditingReflectionId(null);
+    try {
+      const res = await fetch("/api/inspirational-reflections", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, text: editingText }),
+      });
+      const data = await res.json();
+      if (data.entries) setReflections(data.entries);
+    } catch {
+      setReflections(prev);
+    }
   };
 
   useEffect(() => {
@@ -596,6 +660,127 @@ export default function SponsorshipPage() {
                     </li>
                   ))}
                 </ul>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
+
+      {/* Inspirational Reflections */}
+      <Card variant="serenity" padding="lg" className="mt-8">
+        <div className="flex items-center gap-2 mb-4">
+          <Sparkles className="w-4 h-4 text-[var(--accent-serenity)]" aria-hidden />
+          <span className="text-sm font-medium text-[var(--text-primary)]">{t.sponsorship.reflectionsTitle}</span>
+        </div>
+
+        {/* Add form */}
+        <div className="space-y-2 mb-5">
+          <textarea
+            value={reflectionText}
+            onChange={(e) => setReflectionText(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter" && e.metaKey) saveReflection(); }}
+            placeholder={t.sponsorship.reflectionPlaceholder}
+            rows={3}
+            className={cn(
+              "w-full px-3 py-2.5 rounded-xl text-sm resize-none",
+              "bg-[var(--bg-card)] border border-[var(--border-soft)]",
+              "text-[var(--text-primary)] placeholder:text-[var(--text-muted)]",
+              "focus:outline-none focus:ring-2 focus:ring-[var(--accent-serenity)] transition-calm"
+            )}
+          />
+          <button
+            onClick={saveReflection}
+            disabled={!reflectionText.trim() || reflectionSaving}
+            className={cn(
+              "flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-calm",
+              "bg-[var(--accent-serenity)] text-white hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-serenity)]"
+            )}
+          >
+            <Plus className="w-3.5 h-3.5" aria-hidden />
+            {reflectionSaving ? t.sponsorship.saving : t.sponsorship.addReflection}
+          </button>
+        </div>
+
+        {/* List */}
+        {reflectionsLoading && (
+          <div className="space-y-2 animate-pulse">
+            {[1, 2].map((i) => (
+              <div key={i} className="h-14 rounded-2xl bg-[var(--border-soft)]" />
+            ))}
+          </div>
+        )}
+
+        {!reflectionsLoading && reflections.length === 0 && (
+          <p className="text-sm text-[var(--text-muted)] text-center py-4">{t.sponsorship.noReflections}</p>
+        )}
+
+        {!reflectionsLoading && reflections.length > 0 && (
+          <div className="space-y-3">
+            {reflections.map((entry) => (
+              <div
+                key={entry.id}
+                className="rounded-2xl border border-[var(--accent-serenity)]/20 bg-[var(--bg-card)] p-3 space-y-2"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs text-[var(--text-muted)]">{entry.date}</span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => { setEditingReflectionId(entry.id); setEditingText(entry.text); }}
+                      className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--accent-serenity)] hover:bg-[var(--accent-serenity-light)] transition-calm focus-visible:outline-none"
+                      aria-label={t.sponsorship.editReflection}
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => removeReflection(entry.id)}
+                      className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-calm focus-visible:outline-none"
+                      aria-label={t.sponsorship.deleteReflection}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+
+                {editingReflectionId === entry.id ? (
+                  <div className="space-y-2">
+                    <textarea
+                      value={editingText}
+                      onChange={(e) => setEditingText(e.target.value)}
+                      rows={3}
+                      autoFocus
+                      className={cn(
+                        "w-full px-3 py-2 rounded-xl text-sm resize-none",
+                        "bg-[var(--bg-secondary)] border border-[var(--accent-serenity)]/30",
+                        "text-[var(--text-primary)] placeholder:text-[var(--text-muted)]",
+                        "focus:outline-none focus:ring-2 focus:ring-[var(--accent-serenity)] transition-calm"
+                      )}
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => saveEditReflection(entry.id)}
+                        disabled={!editingText.trim()}
+                        className={cn(
+                          "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-calm",
+                          "bg-[var(--accent-serenity)] text-white hover:opacity-90 disabled:opacity-40",
+                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-serenity)]"
+                        )}
+                      >
+                        <Check className="w-3 h-3" aria-hidden />
+                        {t.sponsorship.saveEdit}
+                      </button>
+                      <button
+                        onClick={() => { setEditingReflectionId(null); setEditingText(""); }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] transition-calm focus-visible:outline-none"
+                      >
+                        <X className="w-3 h-3" aria-hidden />
+                        {t.sponsorship.cancelEdit}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-[var(--text-secondary)] leading-relaxed whitespace-pre-wrap">{entry.text}</p>
+                )}
               </div>
             ))}
           </div>
