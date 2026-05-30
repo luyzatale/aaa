@@ -1,4 +1,4 @@
-const CACHE_NAME = "serenity-path-v2";
+const CACHE_NAME = "serenity-path-v3";
 const STATIC_ASSETS = [
   "/",
   "/daily",
@@ -9,6 +9,7 @@ const STATIC_ASSETS = [
   "/literature",
   "/steps",
   "/neurodivergent",
+  "/traditions",
   "/manifest.json",
 ];
 
