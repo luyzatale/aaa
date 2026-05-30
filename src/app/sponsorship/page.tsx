@@ -47,16 +47,26 @@ const NOTE_PREVIEW_LENGTH = 180;
 function EntryCard({
   entry,
   onRemove,
+  onEdit,
   removing,
 }: {
   entry: SponsorshipEntry;
   onRemove: (id: string) => void;
+  onEdit: (id: string, newNotes: string) => void;
   removing: boolean;
 }) {
   const { t } = useT();
   const [expanded, setExpanded] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editNotes, setEditNotes] = useState(entry.notes);
   const isLong = entry.notes.length > NOTE_PREVIEW_LENGTH;
   const displayText = isLong && !expanded ? entry.notes.slice(0, NOTE_PREVIEW_LENGTH) + "…" : entry.notes;
+
+  const handleSaveEdit = () => {
+    if (!editNotes.trim()) return;
+    onEdit(entry.id, editNotes);
+    setEditing(false);
+  };
 
   return (
     <Card padding="md" className="space-y-3">
@@ -64,27 +74,77 @@ function EntryCard({
         <p className="text-xs font-medium text-[var(--accent-sage)] uppercase tracking-wide">
           {formatDate(entry.date)}
         </p>
-        <button
-          onClick={() => onRemove(entry.id)}
-          disabled={removing}
-          className="flex-shrink-0 p-1.5 rounded-lg text-[var(--text-muted)] hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-calm focus-visible:outline-none disabled:opacity-40"
-          aria-label={t.sponsorship.deleteEntry}
-        >
-          <Trash2 className="w-3.5 h-3.5" />
-        </button>
+        <div className="flex items-center gap-1 flex-shrink-0">
+          <button
+            onClick={() => { setEditNotes(entry.notes); setEditing(true); }}
+            className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--accent-sage)] hover:bg-[var(--accent-sage-light)] transition-calm focus-visible:outline-none"
+            aria-label={t.sponsorship.editReflection}
+          >
+            <Pencil className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={() => onRemove(entry.id)}
+            disabled={removing}
+            className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-calm focus-visible:outline-none disabled:opacity-40"
+            aria-label={t.sponsorship.deleteEntry}
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
+        </div>
       </div>
-      <p className="text-sm text-[var(--text-secondary)] leading-relaxed whitespace-pre-wrap">{displayText}</p>
-      {isLong && (
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className="flex items-center gap-1 text-xs text-[var(--accent-sage)] hover:opacity-80 transition-calm focus-visible:outline-none"
-        >
-          {expanded ? (
-            <><ChevronUp className="w-3 h-3" /> {t.sponsorship.showLess}</>
-          ) : (
-            <><ChevronDown className="w-3 h-3" /> {t.sponsorship.showMore}</>
+
+      {editing ? (
+        <div className="space-y-2">
+          <textarea
+            value={editNotes}
+            onChange={(e) => setEditNotes(e.target.value)}
+            rows={5}
+            autoFocus
+            className={cn(
+              "w-full px-3 py-2.5 rounded-xl text-sm resize-none",
+              "bg-[var(--bg-secondary)] border border-[var(--accent-sage)]/30",
+              "text-[var(--text-primary)] placeholder:text-[var(--text-muted)]",
+              "focus:outline-none focus:ring-2 focus:ring-[var(--accent-sage)] transition-calm"
+            )}
+          />
+          <div className="flex gap-2">
+            <button
+              onClick={handleSaveEdit}
+              disabled={!editNotes.trim()}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-calm",
+                "bg-[var(--accent-sage)] text-white hover:opacity-90 disabled:opacity-40",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
+              )}
+            >
+              <Check className="w-3 h-3" aria-hidden />
+              {t.sponsorship.saveEdit}
+            </button>
+            <button
+              onClick={() => { setEditing(false); setEditNotes(entry.notes); }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] transition-calm focus-visible:outline-none"
+            >
+              <X className="w-3 h-3" aria-hidden />
+              {t.sponsorship.cancelEdit}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <>
+          <p className="text-sm text-[var(--text-secondary)] leading-relaxed whitespace-pre-wrap">{displayText}</p>
+          {isLong && (
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="flex items-center gap-1 text-xs text-[var(--accent-sage)] hover:opacity-80 transition-calm focus-visible:outline-none"
+            >
+              {expanded ? (
+                <><ChevronUp className="w-3 h-3" /> {t.sponsorship.showLess}</>
+              ) : (
+                <><ChevronDown className="w-3 h-3" /> {t.sponsorship.showMore}</>
+              )}
+            </button>
           )}
-        </button>
+        </>
       )}
     </Card>
   );
@@ -166,7 +226,6 @@ export default function SponsorshipPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [removing, setRemoving] = useState<string | null>(null);
-  const [showForm, setShowForm] = useState(false);
 
   const [sobrietyStartDate, setSobrietyStartDate] = useState<string | null>(null);
   const [sobrietyLoading, setSobrietyLoading] = useState(true);
@@ -347,7 +406,6 @@ export default function SponsorshipPage() {
       setEntries(data.entries ?? []);
       setNotes("");
       setDate(todayString());
-      setShowForm(false);
     } catch {
       setError(t.common.couldNotConnect);
     } finally {
@@ -363,6 +421,19 @@ export default function SponsorshipPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id }),
     }).finally(() => setRemoving(null));
+  };
+
+  const handleEdit = (id: string, newNotes: string) => {
+    const prev = entries;
+    setEntries((e) => e.map((entry) => entry.id === id ? { ...entry, notes: newNotes } : entry));
+    fetch("/api/sponsorship", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, notes: newNotes }),
+    }).then(async (res) => {
+      const data = await res.json();
+      if (data.entries) setEntries(data.entries);
+    }).catch(() => setEntries(prev));
   };
 
   return (
@@ -458,92 +529,66 @@ export default function SponsorshipPage() {
         </p>
       </Card>
 
-      {/* Add entry */}
-      <div>
-        {!showForm ? (
+      {/* Sponsor's Learnt Lesson — always-visible entry card */}
+      <Card padding="lg">
+        <div className="flex items-center gap-2 mb-4">
+          <BookHeart className="w-4 h-4 text-[var(--accent-sage)]" aria-hidden />
+          <h2 className="text-sm font-semibold text-[var(--text-primary)]">{t.sponsorship.newEntry}</h2>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5" htmlFor="sp-date">
+              {t.sponsorship.date}
+            </label>
+            <input
+              id="sp-date"
+              type="date"
+              value={date}
+              max={todayString()}
+              onChange={(e) => setDate(e.target.value)}
+              className={cn(
+                "w-full px-3 py-2.5 rounded-xl text-sm",
+                "bg-[var(--bg-secondary)] border border-[var(--border-soft)]",
+                "text-[var(--text-primary)]",
+                "focus:outline-none focus:ring-2 focus:ring-[var(--accent-sage)] transition-calm"
+              )}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5" htmlFor="sp-notes">
+              {t.sponsorship.notes}
+            </label>
+            <textarea
+              id="sp-notes"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder={t.sponsorship.notesPlaceholder}
+              rows={6}
+              className={cn(
+                "w-full px-3 py-2.5 rounded-xl text-sm resize-none",
+                "bg-[var(--bg-secondary)] border border-[var(--border-soft)]",
+                "text-[var(--text-primary)] placeholder:text-[var(--text-muted)]",
+                "focus:outline-none focus:ring-2 focus:ring-[var(--accent-sage)] transition-calm"
+              )}
+            />
+          </div>
+
+          {error && <p className="text-xs text-red-500">{error}</p>}
+
           <button
-            onClick={() => setShowForm(true)}
+            type="submit"
+            disabled={submitting}
             className={cn(
-              "flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-medium transition-calm",
+              "w-full py-2.5 rounded-2xl text-sm font-medium transition-calm",
               "bg-[var(--accent-sage)] text-white hover:opacity-90",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]",
+              "disabled:opacity-60"
             )}
           >
-            <Plus className="w-4 h-4" aria-hidden />
-            {t.sponsorship.addNote}
+            {submitting ? t.sponsorship.saving : t.sponsorship.saveEntry}
           </button>
-        ) : (
-          <Card padding="lg" className="animate-fade-in">
-            <h2 className="text-base font-semibold text-[var(--text-primary)] mb-4">{t.sponsorship.newEntry}</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5" htmlFor="sp-date">
-                  {t.sponsorship.date}
-                </label>
-                <input
-                  id="sp-date"
-                  type="date"
-                  value={date}
-                  max={todayString()}
-                  onChange={(e) => setDate(e.target.value)}
-                  className={cn(
-                    "w-full px-3 py-2.5 rounded-xl text-sm",
-                    "bg-[var(--bg-secondary)] border border-[var(--border-soft)]",
-                    "text-[var(--text-primary)]",
-                    "focus:outline-none focus:ring-2 focus:ring-[var(--accent-sage)] transition-calm"
-                  )}
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5" htmlFor="sp-notes">
-                  {t.sponsorship.notes}
-                </label>
-                <textarea
-                  id="sp-notes"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder={t.sponsorship.notesPlaceholder}
-                  rows={6}
-                  className={cn(
-                    "w-full px-3 py-2.5 rounded-xl text-sm resize-none",
-                    "bg-[var(--bg-secondary)] border border-[var(--border-soft)]",
-                    "text-[var(--text-primary)] placeholder:text-[var(--text-muted)]",
-                    "focus:outline-none focus:ring-2 focus:ring-[var(--accent-sage)] transition-calm"
-                  )}
-                />
-              </div>
-
-              {error && <p className="text-xs text-red-500">{error}</p>}
-
-              <div className="flex gap-3">
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className={cn(
-                    "flex-1 py-2.5 rounded-2xl text-sm font-medium transition-calm",
-                    "bg-[var(--accent-sage)] text-white hover:opacity-90",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]",
-                    "disabled:opacity-60"
-                  )}
-                >
-                  {submitting ? t.sponsorship.saving : t.sponsorship.saveEntry}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setShowForm(false); setError(""); setNotes(""); }}
-                  className={cn(
-                    "px-4 py-2.5 rounded-2xl text-sm transition-calm",
-                    "text-[var(--text-secondary)] hover:bg-[var(--bg-muted)]",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
-                  )}
-                >
-                  {t.sponsorship.cancel}
-                </button>
-              </div>
-            </form>
-          </Card>
-        )}
-      </div>
+        </form>
+      </Card>
 
       {/* Entries list */}
       <div className="space-y-3">
@@ -565,6 +610,7 @@ export default function SponsorshipPage() {
             key={entry.id}
             entry={entry}
             onRemove={handleRemove}
+            onEdit={handleEdit}
             removing={removing === entry.id}
           />
         ))}

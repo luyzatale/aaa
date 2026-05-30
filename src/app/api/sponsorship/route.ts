@@ -64,6 +64,20 @@ export async function POST(req: Request) {
   return NextResponse.json({ entries: updated });
 }
 
+export async function PATCH(req: Request) {
+  const body = await req.json().catch(() => null);
+  const { id, notes } = body ?? {};
+  if (!id || !notes || typeof notes !== "string" || !notes.trim()) {
+    return NextResponse.json({ error: "id and notes required" }, { status: 400 });
+  }
+  const { entries, ok } = await readEntries();
+  if (!ok) return NextResponse.json({ error: "Storage error" }, { status: 503 });
+  const updated = entries.map((e) => e.id === id ? { ...e, notes: notes.trim() } : e);
+  const saved = await writeEntries(updated);
+  if (!saved) return NextResponse.json({ error: "Failed to save." }, { status: 500 });
+  return NextResponse.json({ entries: updated });
+}
+
 export async function DELETE(req: Request) {
   const body = await req.json().catch(() => null);
   const { id } = body ?? {};
