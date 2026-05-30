@@ -43,7 +43,7 @@ export default function AASpeakersCard() {
           </div>
           <div>
             <p className="text-sm font-semibold text-[var(--text-primary)]">AA Speakers</p>
-            <p className="text-xs text-[var(--text-muted)]">Most downloaded · free recordings</p>
+            <p className="text-xs text-[var(--text-muted)]">xa-speakers.org · most downloaded</p>
           </div>
         </div>
         {!loading && totalPages > 1 && (
@@ -120,7 +120,7 @@ export default function AASpeakersCard() {
           Free AA recordings
         </p>
         <a
-          href="https://www.recoveryspeakers.com/speakers/alcoholics-anonymous/"
+          href="https://xa-speakers.org/pafiledb.php?action=category&id=1&sortby=downloads"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-1 text-xs text-[var(--accent-sage)] hover:opacity-80 transition-calm"
