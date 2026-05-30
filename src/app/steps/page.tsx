@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
-import { BookOpen, Lock, Save, ChevronDown, ChevronUp, AlertTriangle, Mail, Send, X } from "lucide-react";
+import { BookOpen, Lock, Save, ChevronDown, ChevronUp, AlertTriangle, Mail, Send, X, Lightbulb } from "lucide-react";
 import { useT } from "@/lib/i18n";
 
 export default function StepWorkPage() {
@@ -152,6 +152,31 @@ export default function StepWorkPage() {
                     <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
                       {step.reflection}
                     </p>
+
+                    {/* Plain words */}
+                    <div className="bg-[var(--bg-muted)] rounded-2xl p-4 space-y-1">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-[var(--accent-sage)] mb-2">
+                        {t.steps.plainWords}
+                      </p>
+                      <p className="text-sm text-[var(--text-primary)] leading-relaxed">{step.plain}</p>
+                    </div>
+
+                    {/* Concrete example */}
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)] mb-2">
+                        {t.steps.example}
+                      </p>
+                      <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{step.example}</p>
+                    </div>
+
+                    {/* Neurodivergent note */}
+                    <div className="flex items-start gap-2.5 bg-[var(--accent-amber-light)] rounded-2xl p-3.5">
+                      <Lightbulb className="w-4 h-4 text-[var(--accent-amber)] flex-shrink-0 mt-0.5" aria-hidden />
+                      <div>
+                        <p className="text-xs font-semibold text-[var(--accent-amber)] mb-1">{t.steps.autisticNote}</p>
+                        <p className="text-xs text-[var(--text-secondary)] leading-relaxed">{step.note}</p>
+                      </div>
+                    </div>
 
                     <div className="space-y-4">
                       <div className="flex items-center gap-2">
