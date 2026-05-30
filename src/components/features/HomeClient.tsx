@@ -232,19 +232,27 @@ export default function HomeClient() {
         />
       </section>
 
-      {/* Today widget + HALT */}
+      {/* Today widget + HALT + AA Speakers */}
       <section
-        className="px-4 sm:px-6 pb-20 max-w-6xl mx-auto"
+        className="px-4 sm:px-6 pb-16 max-w-6xl mx-auto"
         aria-labelledby="today-section"
       >
-        <div className="grid lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <h2 id="today-section" className="text-lg font-semibold text-[var(--text-primary)] mb-4">
-              {t.home.todaysRecovery}
-            </h2>
-            <TodayWidget />
+        <div className="grid lg:grid-cols-3 gap-6 items-start">
+          {/* Left column: Today's Recovery + AA Speakers */}
+          <div className="lg:col-span-2 space-y-6">
+            <div>
+              <h2 id="today-section" className="text-lg font-semibold text-[var(--text-primary)] mb-4">
+                {t.home.todaysRecovery}
+              </h2>
+              <TodayWidget />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4">AA Speakers</h2>
+              <AASpeakersCard />
+            </div>
           </div>
 
+          {/* Right column: HALT + Serenity */}
           <div className="space-y-4">
             <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
               {t.home.checkIn}
@@ -253,12 +261,6 @@ export default function HomeClient() {
             <SerenityCard />
           </div>
         </div>
-      </section>
-
-      {/* AA Speakers card */}
-      <section className="px-4 sm:px-6 pb-10 max-w-6xl mx-auto" aria-label="AA Speakers">
-        <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4">AA Speakers</h2>
-        <AASpeakersCard />
       </section>
 
       {/* Section links grid */}
