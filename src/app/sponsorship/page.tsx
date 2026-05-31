@@ -7,10 +7,18 @@ import { RichTextEditor, RichTextRenderer } from "@/components/ui/RichTextEditor
 import { cn } from "@/lib/utils";
 import { useT } from "@/lib/i18n";
 
+interface ChecklistItem {
+  text: string;
+  checked: boolean;
+}
+
 interface SponsorshipEntry {
   id: string;
   date: string;
-  notes: string;
+  type?: "note" | "checklist";
+  notes?: string;
+  title?: string;
+  items?: ChecklistItem[];
 }
 
 interface GratitudeEntry {
@@ -151,6 +159,177 @@ function EntryCard({
   );
 }
 
+function ChecklistEntryCard({
+  entry,
+  onRemove,
+  onEdit,
+  onUpdateItems,
+  removing,
+}: {
+  entry: SponsorshipEntry;
+  onRemove: (id: string) => void;
+  onEdit: (id: string, title: string | undefined, items: ChecklistItem[]) => void;
+  onUpdateItems: (id: string, items: ChecklistItem[]) => void;
+  removing: boolean;
+}) {
+  const { t } = useT();
+  const [editing, setEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState(entry.title ?? "");
+  const [editItems, setEditItems] = useState<string[]>(entry.items?.map((i) => i.text) ?? [""]);
+
+  const handleSave = () => {
+    const filled = editItems.filter((i) => i.trim());
+    if (!filled.length) return;
+    onEdit(
+      entry.id,
+      editTitle.trim() || undefined,
+      filled.map((text) => {
+        const existing = entry.items?.find((i) => i.text === text);
+        return { text: text.trim(), checked: existing?.checked ?? false };
+      })
+    );
+    setEditing(false);
+  };
+
+  const toggleItem = (idx: number) => {
+    const newItems = (entry.items ?? []).map((item, i) =>
+      i === idx ? { ...item, checked: !item.checked } : item
+    );
+    onUpdateItems(entry.id, newItems);
+  };
+
+  return (
+    <Card padding="md" className="space-y-3">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-medium text-[var(--accent-sage)] uppercase tracking-wide">
+            {formatDate(entry.date)}
+          </p>
+          {entry.title && (
+            <p className="text-sm font-semibold text-[var(--text-primary)] mt-1">{entry.title}</p>
+          )}
+        </div>
+        <div className="flex items-center gap-1 flex-shrink-0">
+          <button
+            onClick={() => { setEditTitle(entry.title ?? ""); setEditItems(entry.items?.map((i) => i.text) ?? [""]); setEditing(true); }}
+            className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--accent-sage)] hover:bg-[var(--accent-sage-light)] transition-calm focus-visible:outline-none"
+            aria-label={t.sponsorship.editReflection}
+          >
+            <Pencil className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={() => onRemove(entry.id)}
+            disabled={removing}
+            className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-calm focus-visible:outline-none disabled:opacity-40"
+            aria-label={t.sponsorship.deleteEntry}
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
+
+      {editing ? (
+        <div className="space-y-3">
+          <input
+            type="text"
+            value={editTitle}
+            onChange={(e) => setEditTitle(e.target.value)}
+            placeholder="Checklist title (optional)"
+            autoFocus
+            className={cn(
+              "w-full px-3 py-2 rounded-xl text-sm",
+              "bg-[var(--bg-secondary)] border border-[var(--accent-sage)]/30",
+              "text-[var(--text-primary)] placeholder:text-[var(--text-muted)]",
+              "focus:outline-none focus:ring-2 focus:ring-[var(--accent-sage)] transition-calm"
+            )}
+          />
+          <div className="space-y-2">
+            {editItems.map((item, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={item}
+                  onChange={(e) => { const next = [...editItems]; next[i] = e.target.value; setEditItems(next); }}
+                  placeholder={`Item ${i + 1}`}
+                  className={cn(
+                    "flex-1 px-3 py-2 rounded-xl text-sm",
+                    "bg-[var(--bg-secondary)] border border-[var(--accent-sage)]/30",
+                    "text-[var(--text-primary)] placeholder:text-[var(--text-muted)]",
+                    "focus:outline-none focus:ring-2 focus:ring-[var(--accent-sage)] transition-calm"
+                  )}
+                />
+                <button
+                  type="button"
+                  onClick={() => setEditItems((prev) => prev.filter((_, j) => j !== i))}
+                  className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-calm"
+                  aria-label="Remove item"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => setEditItems((prev) => [...prev, ""])}
+            className="flex items-center gap-1.5 text-xs text-[var(--accent-sage)] hover:opacity-80 transition-calm"
+          >
+            <PlusCircle className="w-3.5 h-3.5" aria-hidden />
+            Add item
+          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={handleSave}
+              disabled={!editItems.some((i) => i.trim())}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-calm",
+                "bg-[var(--accent-sage)] text-white hover:opacity-90 disabled:opacity-40",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
+              )}
+            >
+              <Check className="w-3 h-3" aria-hidden />
+              {t.sponsorship.saveEdit}
+            </button>
+            <button
+              onClick={() => setEditing(false)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] transition-calm focus-visible:outline-none"
+            >
+              <X className="w-3 h-3" aria-hidden />
+              {t.sponsorship.cancelEdit}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <ul className="space-y-2">
+          {(entry.items ?? []).map((item, i) => (
+            <li key={i} className="flex items-start gap-2.5">
+              <button
+                type="button"
+                onClick={() => toggleItem(i)}
+                className={cn(
+                  "w-4 h-4 rounded border-2 flex-shrink-0 mt-0.5 transition-calm flex items-center justify-center",
+                  item.checked
+                    ? "bg-[var(--accent-sage)] border-[var(--accent-sage)]"
+                    : "border-[var(--border-muted)] hover:border-[var(--accent-sage)]"
+                )}
+                aria-label={`${item.checked ? "Uncheck" : "Check"}: ${item.text}`}
+              >
+                {item.checked && <Check className="w-2.5 h-2.5 text-white" />}
+              </button>
+              <span className={cn(
+                "text-sm leading-relaxed transition-calm",
+                item.checked ? "text-[var(--text-muted)] line-through" : "text-[var(--text-secondary)]"
+              )}>
+                {item.text}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </Card>
+  );
+}
+
 function PasswordGate({ onUnlock }: { onUnlock: () => void }) {
   const { t } = useT();
   const [input, setInput] = useState("");
@@ -227,6 +406,9 @@ export default function SponsorshipPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [removing, setRemoving] = useState<string | null>(null);
+  const [entryType, setEntryType] = useState<"note" | "checklist">("note");
+  const [checklistTitle, setChecklistTitle] = useState("");
+  const [checklistItems, setChecklistItems] = useState<string[]>([""]);
 
   const [sobrietyStartDate, setSobrietyStartDate] = useState<string | null>(null);
   const [sobrietyLoading, setSobrietyLoading] = useState(true);
@@ -437,6 +619,59 @@ export default function SponsorshipPage() {
     }).catch(() => setEntries(prev));
   };
 
+  const handleSubmitChecklist = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    const filled = checklistItems.filter((i) => i.trim());
+    if (!filled.length) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/sponsorship", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          date,
+          type: "checklist",
+          title: checklistTitle.trim() || undefined,
+          items: filled.map((text) => ({ text: text.trim(), checked: false })),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error ?? t.common.somethingWentWrong); return; }
+      setEntries(data.entries ?? []);
+      setChecklistTitle("");
+      setChecklistItems([""]);
+      setDate(todayString());
+    } catch {
+      setError(t.common.couldNotConnect);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleEditChecklist = (id: string, title: string | undefined, items: ChecklistItem[]) => {
+    const prev = entries;
+    setEntries((e) => e.map((entry) => entry.id === id ? { ...entry, title, items } : entry));
+    fetch("/api/sponsorship", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, title, items }),
+    }).then(async (res) => {
+      const data = await res.json();
+      if (data.entries) setEntries(data.entries);
+    }).catch(() => setEntries(prev));
+  };
+
+  const handleUpdateItems = (id: string, items: ChecklistItem[]) => {
+    setEntries((e) => e.map((entry) => entry.id === id ? { ...entry, items } : entry));
+    const entry = entries.find((e) => e.id === id);
+    fetch("/api/sponsorship", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, title: entry?.title, items }),
+    }).catch(() => {});
+  };
+
   return (
     <main className="max-w-2xl mx-auto px-4 sm:px-6 py-10 space-y-8">
       {/* Page header */}
@@ -536,7 +771,27 @@ export default function SponsorshipPage() {
           <BookHeart className="w-4 h-4 text-[var(--accent-sage)]" aria-hidden />
           <h2 className="text-sm font-semibold text-[var(--text-primary)]">{t.sponsorship.newEntry}</h2>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={entryType === "note" ? handleSubmit : handleSubmitChecklist} className="space-y-4">
+          {/* Type toggle */}
+          <div className="flex gap-1.5">
+            {(["note", "checklist"] as const).map((type) => (
+              <button
+                key={type}
+                type="button"
+                onClick={() => setEntryType(type)}
+                className={cn(
+                  "px-3 py-1.5 rounded-xl text-xs font-medium transition-calm",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]",
+                  entryType === type
+                    ? "bg-[var(--accent-sage)] text-white"
+                    : "bg-[var(--bg-muted)] text-[var(--text-secondary)] hover:bg-[var(--border-soft)]"
+                )}
+              >
+                {type === "note" ? "Note" : "Checklist"}
+              </button>
+            ))}
+          </div>
+
           <div>
             <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5" htmlFor="sp-date">
               {t.sponsorship.date}
@@ -555,30 +810,90 @@ export default function SponsorshipPage() {
               )}
             />
           </div>
-          <div>
-            <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5" htmlFor="sp-notes">
-              {t.sponsorship.notes}
-            </label>
-            <RichTextEditor
-              id="sp-notes"
-              value={notes}
-              onChange={setNotes}
-              placeholder={t.sponsorship.notesPlaceholder}
-              rows={6}
-              textareaClassName={cn(
-                "w-full px-3 py-2.5 rounded-xl text-sm resize-none",
-                "bg-[var(--bg-secondary)] border border-[var(--border-soft)]",
-                "text-[var(--text-primary)] placeholder:text-[var(--text-muted)]",
-                "focus:outline-none focus:ring-2 focus:ring-[var(--accent-sage)] transition-calm"
-              )}
-            />
-          </div>
+
+          {entryType === "note" ? (
+            <div>
+              <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5" htmlFor="sp-notes">
+                {t.sponsorship.notes}
+              </label>
+              <RichTextEditor
+                id="sp-notes"
+                value={notes}
+                onChange={setNotes}
+                placeholder={t.sponsorship.notesPlaceholder}
+                rows={6}
+                textareaClassName={cn(
+                  "w-full px-3 py-2.5 rounded-xl text-sm resize-none",
+                  "bg-[var(--bg-secondary)] border border-[var(--border-soft)]",
+                  "text-[var(--text-primary)] placeholder:text-[var(--text-muted)]",
+                  "focus:outline-none focus:ring-2 focus:ring-[var(--accent-sage)] transition-calm"
+                )}
+              />
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5">
+                  Title <span className="font-normal text-[var(--text-muted)]">(optional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={checklistTitle}
+                  onChange={(e) => setChecklistTitle(e.target.value)}
+                  placeholder="e.g. Things to work on this week"
+                  className={cn(
+                    "w-full px-3 py-2.5 rounded-xl text-sm",
+                    "bg-[var(--bg-secondary)] border border-[var(--border-soft)]",
+                    "text-[var(--text-primary)] placeholder:text-[var(--text-muted)]",
+                    "focus:outline-none focus:ring-2 focus:ring-[var(--accent-sage)] transition-calm"
+                  )}
+                />
+              </div>
+              <div className="space-y-2">
+                {checklistItems.map((item, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={item}
+                      onChange={(e) => { const next = [...checklistItems]; next[i] = e.target.value; setChecklistItems(next); }}
+                      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); setChecklistItems((prev) => [...prev, ""]); } }}
+                      placeholder={`Item ${i + 1}`}
+                      className={cn(
+                        "flex-1 px-3 py-2 rounded-xl text-sm",
+                        "bg-[var(--bg-secondary)] border border-[var(--border-soft)]",
+                        "text-[var(--text-primary)] placeholder:text-[var(--text-muted)]",
+                        "focus:outline-none focus:ring-2 focus:ring-[var(--accent-sage)] transition-calm"
+                      )}
+                    />
+                    {checklistItems.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => setChecklistItems((prev) => prev.filter((_, j) => j !== i))}
+                        className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-calm"
+                        aria-label="Remove item"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() => setChecklistItems((prev) => [...prev, ""])}
+                className="flex items-center gap-1.5 text-xs text-[var(--accent-sage)] hover:opacity-80 transition-calm"
+              >
+                <PlusCircle className="w-3.5 h-3.5" aria-hidden />
+                Add item
+              </button>
+            </div>
+          )}
 
           {error && <p className="text-xs text-red-500">{error}</p>}
 
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || (entryType === "checklist" && !checklistItems.some((i) => i.trim()))}
             className={cn(
               "w-full py-2.5 rounded-2xl text-sm font-medium transition-calm",
               "bg-[var(--accent-sage)] text-white hover:opacity-90",
@@ -606,15 +921,26 @@ export default function SponsorshipPage() {
             <p className="text-sm">{t.sponsorship.noEntries}</p>
           </div>
         )}
-        {!loading && entries.map((entry) => (
-          <EntryCard
-            key={entry.id}
-            entry={entry}
-            onRemove={handleRemove}
-            onEdit={handleEdit}
-            removing={removing === entry.id}
-          />
-        ))}
+        {!loading && entries.map((entry) =>
+          entry.type === "checklist" ? (
+            <ChecklistEntryCard
+              key={entry.id}
+              entry={entry}
+              onRemove={handleRemove}
+              onEdit={handleEditChecklist}
+              onUpdateItems={handleUpdateItems}
+              removing={removing === entry.id}
+            />
+          ) : (
+            <EntryCard
+              key={entry.id}
+              entry={entry}
+              onRemove={handleRemove}
+              onEdit={handleEdit}
+              removing={removing === entry.id}
+            />
+          )
+        )}
       </div>
 
       {/* Gratitudes List */}

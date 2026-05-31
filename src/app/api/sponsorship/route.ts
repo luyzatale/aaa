@@ -3,10 +3,18 @@ import { put, get } from "@vercel/blob";
 
 const BLOB_PATH = "sponsorship/entries.json";
 
+interface ChecklistItem {
+  text: string;
+  checked: boolean;
+}
+
 interface SponsorshipEntry {
   id: string;
-  date: string; // "YYYY-MM-DD"
-  notes: string;
+  date: string;
+  type?: "note" | "checklist";
+  notes?: string;
+  title?: string;
+  items?: ChecklistItem[];
 }
 
 async function readEntries(): Promise<{ entries: SponsorshipEntry[]; ok: boolean }> {
@@ -44,20 +52,29 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
-  const { date, notes } = body ?? {};
+  const { date, type, notes, title, items } = body ?? {};
+
   if (!date || typeof date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
     return NextResponse.json({ error: "valid date required" }, { status: 400 });
   }
-  if (!notes || typeof notes !== "string" || !notes.trim()) {
-    return NextResponse.json({ error: "notes required" }, { status: 400 });
+
+  if (type === "checklist") {
+    if (!Array.isArray(items) || items.length === 0) {
+      return NextResponse.json({ error: "items required for checklist" }, { status: 400 });
+    }
+  } else {
+    if (!notes || typeof notes !== "string" || !notes.trim()) {
+      return NextResponse.json({ error: "notes required" }, { status: 400 });
+    }
   }
+
   const { entries, ok } = await readEntries();
   if (!ok) return NextResponse.json({ error: "Storage error" }, { status: 503 });
-  const newEntry: SponsorshipEntry = {
-    id: Date.now().toString(),
-    date,
-    notes: notes.trim(),
-  };
+
+  const newEntry: SponsorshipEntry = type === "checklist"
+    ? { id: Date.now().toString(), date, type: "checklist", title: title?.trim() || undefined, items }
+    : { id: Date.now().toString(), date, notes: (notes as string).trim() };
+
   const updated = [newEntry, ...entries];
   const saved = await writeEntries(updated);
   if (!saved) return NextResponse.json({ error: "Failed to save." }, { status: 500 });
@@ -66,13 +83,22 @@ export async function POST(req: Request) {
 
 export async function PATCH(req: Request) {
   const body = await req.json().catch(() => null);
-  const { id, notes } = body ?? {};
-  if (!id || !notes || typeof notes !== "string" || !notes.trim()) {
-    return NextResponse.json({ error: "id and notes required" }, { status: 400 });
-  }
+  const { id, notes, title, items } = body ?? {};
+
+  if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
+
   const { entries, ok } = await readEntries();
   if (!ok) return NextResponse.json({ error: "Storage error" }, { status: 503 });
-  const updated = entries.map((e) => e.id === id ? { ...e, notes: notes.trim() } : e);
+
+  const updated = entries.map((e) => {
+    if (e.id !== id) return e;
+    if (items !== undefined) {
+      return { ...e, title: title?.trim() || undefined, items };
+    }
+    if (!notes || typeof notes !== "string" || !notes.trim()) return e;
+    return { ...e, notes: notes.trim() };
+  });
+
   const saved = await writeEntries(updated);
   if (!saved) return NextResponse.json({ error: "Failed to save." }, { status: 500 });
   return NextResponse.json({ entries: updated });
