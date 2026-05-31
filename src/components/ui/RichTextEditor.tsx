@@ -89,7 +89,7 @@ export function RichTextEditor({
 }
 
 export function RichTextRenderer({ text, className }: { text: string; className?: string }) {
-  const regex = /(\*\*(.+?)\*\*|_(.+?)_|==(.+?)==)/gs;
+  const regex = /(\*\*(.+?)\*\*|_(.+?)_|==(.+?)==)/g;
   const parts: React.ReactNode[] = [];
   let lastIndex = 0;
   let match: RegExpExecArray | null;
