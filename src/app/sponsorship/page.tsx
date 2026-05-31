@@ -67,9 +67,10 @@ function EntryCard({
   const { t } = useT();
   const [expanded, setExpanded] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [editNotes, setEditNotes] = useState(entry.notes);
-  const isLong = entry.notes.length > NOTE_PREVIEW_LENGTH;
-  const displayText = isLong && !expanded ? entry.notes.slice(0, NOTE_PREVIEW_LENGTH) + "…" : entry.notes;
+  const notes = entry.notes ?? "";
+  const [editNotes, setEditNotes] = useState(notes);
+  const isLong = notes.length > NOTE_PREVIEW_LENGTH;
+  const displayText = isLong && !expanded ? notes.slice(0, NOTE_PREVIEW_LENGTH) + "…" : notes;
 
   const handleSaveEdit = () => {
     if (!editNotes.trim()) return;
@@ -85,7 +86,7 @@ function EntryCard({
         </p>
         <div className="flex items-center gap-1 flex-shrink-0">
           <button
-            onClick={() => { setEditNotes(entry.notes); setEditing(true); }}
+            onClick={() => { setEditNotes(entry.notes ?? ""); setEditing(true); }}
             className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--accent-sage)] hover:bg-[var(--accent-sage-light)] transition-calm focus-visible:outline-none"
             aria-label={t.sponsorship.editReflection}
           >
@@ -130,7 +131,7 @@ function EntryCard({
               {t.sponsorship.saveEdit}
             </button>
             <button
-              onClick={() => { setEditing(false); setEditNotes(entry.notes); }}
+              onClick={() => { setEditing(false); setEditNotes(entry.notes ?? ""); }}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] transition-calm focus-visible:outline-none"
             >
               <X className="w-3 h-3" aria-hidden />
