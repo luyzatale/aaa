@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { BookHeart, Plus, Trash2, ChevronDown, ChevronUp, Phone, Lock, X, Star, PlusCircle, Heart, RefreshCw, Sparkles, Pencil, Check } from "lucide-react";
 import { Card } from "@/components/ui/Card";
+import { RichTextEditor, RichTextRenderer } from "@/components/ui/RichTextEditor";
 import { cn } from "@/lib/utils";
 import { useT } from "@/lib/i18n";
 
@@ -95,12 +96,12 @@ function EntryCard({
 
       {editing ? (
         <div className="space-y-2">
-          <textarea
+          <RichTextEditor
             value={editNotes}
-            onChange={(e) => setEditNotes(e.target.value)}
+            onChange={setEditNotes}
             rows={5}
             autoFocus
-            className={cn(
+            textareaClassName={cn(
               "w-full px-3 py-2.5 rounded-xl text-sm resize-none",
               "bg-[var(--bg-secondary)] border border-[var(--accent-sage)]/30",
               "text-[var(--text-primary)] placeholder:text-[var(--text-muted)]",
@@ -131,7 +132,7 @@ function EntryCard({
         </div>
       ) : (
         <>
-          <p className="text-sm text-[var(--text-secondary)] leading-relaxed whitespace-pre-wrap">{displayText}</p>
+          <RichTextRenderer text={displayText} />
           {isLong && (
             <button
               onClick={() => setExpanded(!expanded)}
@@ -558,13 +559,13 @@ export default function SponsorshipPage() {
             <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5" htmlFor="sp-notes">
               {t.sponsorship.notes}
             </label>
-            <textarea
+            <RichTextEditor
               id="sp-notes"
               value={notes}
-              onChange={(e) => setNotes(e.target.value)}
+              onChange={setNotes}
               placeholder={t.sponsorship.notesPlaceholder}
               rows={6}
-              className={cn(
+              textareaClassName={cn(
                 "w-full px-3 py-2.5 rounded-xl text-sm resize-none",
                 "bg-[var(--bg-secondary)] border border-[var(--border-soft)]",
                 "text-[var(--text-primary)] placeholder:text-[var(--text-muted)]",
@@ -721,13 +722,13 @@ export default function SponsorshipPage() {
 
         {/* Add form */}
         <div className="space-y-2 mb-5">
-          <textarea
+          <RichTextEditor
             value={reflectionText}
-            onChange={(e) => setReflectionText(e.target.value)}
+            onChange={setReflectionText}
             onKeyDown={(e) => { if (e.key === "Enter" && e.metaKey) saveReflection(); }}
             placeholder={t.sponsorship.reflectionPlaceholder}
             rows={3}
-            className={cn(
+            textareaClassName={cn(
               "w-full px-3 py-2.5 rounded-xl text-sm resize-none",
               "bg-[var(--bg-card)] border border-[var(--border-soft)]",
               "text-[var(--text-primary)] placeholder:text-[var(--text-muted)]",
@@ -790,12 +791,12 @@ export default function SponsorshipPage() {
 
                 {editingReflectionId === entry.id ? (
                   <div className="space-y-2">
-                    <textarea
+                    <RichTextEditor
                       value={editingText}
-                      onChange={(e) => setEditingText(e.target.value)}
+                      onChange={setEditingText}
                       rows={3}
                       autoFocus
-                      className={cn(
+                      textareaClassName={cn(
                         "w-full px-3 py-2 rounded-xl text-sm resize-none",
                         "bg-[var(--bg-secondary)] border border-[var(--accent-serenity)]/30",
                         "text-[var(--text-primary)] placeholder:text-[var(--text-muted)]",
@@ -825,7 +826,7 @@ export default function SponsorshipPage() {
                     </div>
                   </div>
                 ) : (
-                  <p className="text-sm text-[var(--text-secondary)] leading-relaxed whitespace-pre-wrap">{entry.text}</p>
+                  <RichTextRenderer text={entry.text} />
                 )}
               </div>
             ))}
