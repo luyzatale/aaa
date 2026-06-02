@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import TTSPlayer from "@/components/features/TTSPlayer";
 import BreathingExercise from "@/components/features/BreathingExercise";
 import { cn } from "@/lib/utils";
 import { Leaf, Wind, Heart, Clock, CheckCircle } from "lucide-react";
@@ -101,7 +100,6 @@ export default function PrayersPage() {
                 </p>
               </div>
 
-              <TTSPlayer text={prayer.text} title={prayer.title} />
             </Card>
           ))}
         </div>
