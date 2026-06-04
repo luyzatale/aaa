@@ -48,7 +48,7 @@ export async function POST(req: Request) {
     date: body.date ?? new Date().toISOString().split("T")[0],
     items: items.filter((i) => i?.trim()),
   };
-  const updated = [newEntry, ...entries];
+  const updated = [...entries, newEntry].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
   try {
     await saveEntries(updated);
   } catch (err) {
@@ -64,7 +64,7 @@ export async function DELETE(req: Request) {
   if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
   const { entries, ok } = await readEntries();
   if (!ok) return NextResponse.json({ error: "Storage unavailable." }, { status: 503 });
-  const updated = entries.filter((e) => e.id !== id);
+  const updated = entries.filter((e) => e.id !== id).sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
   try {
     await saveEntries(updated);
   } catch (err) {

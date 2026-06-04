@@ -75,7 +75,7 @@ export async function POST(req: Request) {
     ? { id: Date.now().toString(), date, type: "checklist", title: title?.trim() || undefined, items }
     : { id: Date.now().toString(), date, notes: (notes as string).trim() };
 
-  const updated = [newEntry, ...entries];
+  const updated = [...entries, newEntry].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
   const saved = await writeEntries(updated);
   if (!saved) return NextResponse.json({ error: "Failed to save." }, { status: 500 });
   return NextResponse.json({ entries: updated });
@@ -99,9 +99,10 @@ export async function PATCH(req: Request) {
     return { ...e, notes: notes.trim() };
   });
 
-  const saved = await writeEntries(updated);
+  const sorted = updated.sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+  const saved = await writeEntries(sorted);
   if (!saved) return NextResponse.json({ error: "Failed to save." }, { status: 500 });
-  return NextResponse.json({ entries: updated });
+  return NextResponse.json({ entries: sorted });
 }
 
 export async function DELETE(req: Request) {
@@ -113,5 +114,5 @@ export async function DELETE(req: Request) {
   const updated = entries.filter((e) => e.id !== id);
   const saved = await writeEntries(updated);
   if (!saved) return NextResponse.json({ error: "Failed to save." }, { status: 500 });
-  return NextResponse.json({ entries: updated });
+  return NextResponse.json({ entries: updated.sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id)) });
 }

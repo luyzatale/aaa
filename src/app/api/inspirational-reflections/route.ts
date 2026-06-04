@@ -55,7 +55,7 @@ export async function POST(req: Request) {
     date: date ?? new Date().toISOString().split("T")[0],
     text: text.trim(),
   };
-  const updated = [newEntry, ...entries];
+  const updated = [...entries, newEntry].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
   const saved = await writeEntries(updated);
   if (!saved) return NextResponse.json({ error: "Failed to save." }, { status: 500 });
   return NextResponse.json({ entries: updated });
@@ -69,7 +69,7 @@ export async function PATCH(req: Request) {
   }
   const { entries, ok } = await readEntries();
   if (!ok) return NextResponse.json({ error: "Storage error" }, { status: 503 });
-  const updated = entries.map((e) => e.id === id ? { ...e, text: text.trim() } : e);
+  const updated = entries.map((e) => e.id === id ? { ...e, text: text.trim() } : e).sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
   const saved = await writeEntries(updated);
   if (!saved) return NextResponse.json({ error: "Failed to save." }, { status: 500 });
   return NextResponse.json({ entries: updated });
@@ -81,7 +81,7 @@ export async function DELETE(req: Request) {
   if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
   const { entries, ok } = await readEntries();
   if (!ok) return NextResponse.json({ error: "Storage error" }, { status: 503 });
-  const updated = entries.filter((e) => e.id !== id);
+  const updated = entries.filter((e) => e.id !== id).sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
   const saved = await writeEntries(updated);
   if (!saved) return NextResponse.json({ error: "Failed to save." }, { status: 500 });
   return NextResponse.json({ entries: updated });

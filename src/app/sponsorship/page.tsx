@@ -331,6 +331,7 @@ function ChecklistEntryCard({
   );
 }
 
+
 function PasswordGate({ onUnlock }: { onUnlock: () => void }) {
   const { t } = useT();
   const [input, setInput] = useState("");
@@ -596,6 +597,9 @@ export default function SponsorshipPage() {
       setSubmitting(false);
     }
   };
+
+  const sortEntries = (arr: SponsorshipEntry[]) =>
+    [...arr].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
 
   const handleRemove = (id: string) => {
     setRemoving(id);
@@ -908,13 +912,13 @@ export default function SponsorshipPage() {
       </Card>
 
       {/* Entries list */}
-      <div className="space-y-3">
+      <div>
         {loading && (
-          <>
+          <div className="space-y-3">
             {[1, 2, 3].map((i) => (
               <div key={i} className="h-28 rounded-2xl bg-[var(--bg-muted)] animate-pulse" />
             ))}
-          </>
+          </div>
         )}
         {!loading && entries.length === 0 && (
           <div className="text-center py-12 text-[var(--text-muted)]">
@@ -922,25 +926,29 @@ export default function SponsorshipPage() {
             <p className="text-sm">{t.sponsorship.noEntries}</p>
           </div>
         )}
-        {!loading && entries.map((entry) =>
-          entry.type === "checklist" ? (
-            <ChecklistEntryCard
-              key={entry.id}
-              entry={entry}
-              onRemove={handleRemove}
-              onEdit={handleEditChecklist}
-              onUpdateItems={handleUpdateItems}
-              removing={removing === entry.id}
-            />
-          ) : (
-            <EntryCard
-              key={entry.id}
-              entry={entry}
-              onRemove={handleRemove}
-              onEdit={handleEdit}
-              removing={removing === entry.id}
-            />
-          )
+        {!loading && entries.length > 0 && (
+          <div className="space-y-3">
+            {entries.map((entry) => (
+              entry.type === "checklist" ? (
+                <ChecklistEntryCard
+                  key={entry.id}
+                  entry={entry}
+                  onRemove={handleRemove}
+                  onEdit={handleEditChecklist}
+                  onUpdateItems={handleUpdateItems}
+                  removing={removing === entry.id}
+                />
+              ) : (
+                <EntryCard
+                  key={entry.id}
+                  entry={entry}
+                  onRemove={handleRemove}
+                  onEdit={handleEdit}
+                  removing={removing === entry.id}
+                />
+              )
+            ))}
+          </div>
         )}
       </div>
 
