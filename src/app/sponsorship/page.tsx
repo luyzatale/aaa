@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { BookHeart, Plus, Trash2, ChevronDown, ChevronUp, Phone, Lock, X, Star, PlusCircle, Heart, RefreshCw, Sparkles, Pencil, Check } from "lucide-react";
+import { BookHeart, Plus, Trash2, ChevronDown, ChevronUp, Phone, Lock, X, Star, PlusCircle, Heart, RefreshCw, Sparkles, Pencil, Check, ListChecks, ScrollText } from "lucide-react";
+import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { RichTextEditor, RichTextRenderer } from "@/components/ui/RichTextEditor";
 import { cn } from "@/lib/utils";
@@ -692,8 +693,40 @@ export default function SponsorshipPage() {
         </div>
       </div>
 
+      {/* Section navigation */}
+      <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1" style={{ scrollbarWidth: "none" }}>
+        {[
+          { label: "Sobriety", id: "section-sobriety" },
+          { label: "Journal", id: "section-journal" },
+          { label: "Gratitudes", id: "section-gratitudes" },
+          { label: "Reflections", id: "section-reflections" },
+        ].map(({ label, id }) => (
+          <button
+            key={id}
+            onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" })}
+            className="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-medium bg-[var(--bg-muted)] text-[var(--text-secondary)] hover:bg-[var(--accent-sage-light)] hover:text-[var(--accent-sage)] transition-calm focus-visible:outline-none"
+          >
+            {label}
+          </button>
+        ))}
+        <Link
+          href="/my-steps"
+          className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-[var(--accent-sage-light)] text-[var(--accent-sage)] hover:opacity-80 transition-calm"
+        >
+          <ListChecks className="w-3.5 h-3.5" aria-hidden />
+          12 Steps
+        </Link>
+        <Link
+          href="/my-traditions"
+          className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-[var(--accent-sage-light)] text-[var(--accent-sage)] hover:opacity-80 transition-calm"
+        >
+          <ScrollText className="w-3.5 h-3.5" aria-hidden />
+          12 Traditions
+        </Link>
+      </div>
+
       {/* Sobriety counter */}
-      <Card padding="lg">
+      <Card id="section-sobriety" padding="lg">
         <div className="flex items-center gap-2 mb-4">
           <Heart className="w-4 h-4 text-[var(--accent-sage)]" aria-hidden />
           <span className="text-sm font-medium text-[var(--text-primary)]">{t.daily.sobrietyCounter}</span>
@@ -771,7 +804,7 @@ export default function SponsorshipPage() {
       </Card>
 
       {/* Sponsor's Learnt Lesson — always-visible entry card */}
-      <Card padding="lg">
+      <Card id="section-journal" padding="lg">
         <div className="flex items-center gap-2 mb-4">
           <BookHeart className="w-4 h-4 text-[var(--accent-sage)]" aria-hidden />
           <h2 className="text-sm font-semibold text-[var(--text-primary)]">{t.sponsorship.newEntry}</h2>
@@ -953,7 +986,7 @@ export default function SponsorshipPage() {
       </div>
 
       {/* Gratitudes List */}
-      <Card variant="amber" padding="lg" className="mt-8">
+      <Card id="section-gratitudes" variant="amber" padding="lg" className="mt-8">
         <div className="flex items-center gap-2 mb-4">
           <Star className="w-4 h-4 text-[var(--accent-amber)]" aria-hidden />
           <span className="text-sm font-medium text-[var(--text-primary)]">{t.sponsorship.gratitudesList}</span>
@@ -1049,7 +1082,7 @@ export default function SponsorshipPage() {
       </Card>
 
       {/* Inspirational Reflections */}
-      <Card variant="serenity" padding="lg" className="mt-8">
+      <Card id="section-reflections" variant="serenity" padding="lg" className="mt-8">
         <div className="flex items-center gap-2 mb-4">
           <Sparkles className="w-4 h-4 text-[var(--accent-serenity)]" aria-hidden />
           <span className="text-sm font-medium text-[var(--text-primary)]">{t.sponsorship.reflectionsTitle}</span>
