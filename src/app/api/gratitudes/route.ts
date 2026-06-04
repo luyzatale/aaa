@@ -32,7 +32,8 @@ async function saveEntries(entries: GratitudeEntry[]): Promise<void> {
 
 export async function GET() {
   const { entries } = await readEntries();
-  return NextResponse.json({ entries });
+  const sorted = [...entries].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+  return NextResponse.json({ entries: sorted });
 }
 
 export async function POST(req: Request) {

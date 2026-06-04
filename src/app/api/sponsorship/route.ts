@@ -47,7 +47,8 @@ async function writeEntries(entries: SponsorshipEntry[]): Promise<boolean> {
 export async function GET() {
   const { entries, ok } = await readEntries();
   if (!ok) return NextResponse.json({ error: "Storage error" }, { status: 503 });
-  return NextResponse.json({ entries });
+  const sorted = [...entries].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+  return NextResponse.json({ entries: sorted });
 }
 
 export async function POST(req: Request) {
