@@ -170,6 +170,103 @@ export default function MeetingsContent({ nlMeetings, todayNLMeetings, todayDayN
         </a>
       </Card>
 
+      {/* Weekly Online Meetings */}
+      <section aria-labelledby="weekly-meetings-heading" className="mb-8">
+        <div className="mb-4">
+          <h2 id="weekly-meetings-heading" className="text-xl font-semibold text-[var(--text-primary)]">
+            Weekly Online Meetings
+          </h2>
+          <p className="text-sm text-[var(--text-secondary)] mt-1">
+            Meeting ID: 835 4775 3733 · Password: 202020
+          </p>
+        </div>
+        <div className="grid sm:grid-cols-3 gap-4">
+          {/* Mon / Tue / Thu / Fri */}
+          <Card padding="md" className="space-y-3">
+            <div>
+              <div className="flex items-center gap-2 mb-2 flex-wrap">
+                <Badge variant="muted">Mon</Badge>
+                <Badge variant="muted">Tue</Badge>
+                <Badge variant="muted">Thu</Badge>
+                <Badge variant="muted">Fri</Badge>
+              </div>
+              <h3 className="font-medium text-[var(--text-primary)] text-sm leading-snug">Meditation &amp; Topic</h3>
+            </div>
+            <div className="flex items-start gap-2 text-xs text-[var(--text-muted)] bg-[var(--bg-muted)] rounded-xl p-2.5">
+              <Info className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" aria-hidden />
+              <span>Meeting ID: 835 4775 3733 · Pass: 202020</span>
+            </div>
+            <a
+              href="https://zoom.us/j/83547753733"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl
+                bg-[var(--accent-sage-light)] text-[var(--accent-sage)] text-sm font-medium
+                hover:bg-[var(--accent-sage)]/20 transition-calm
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
+            >
+              <Video className="w-3.5 h-3.5" aria-hidden />
+              Join via Zoom
+            </a>
+          </Card>
+
+          {/* Saturday */}
+          <Card padding="md" className="space-y-3">
+            <div>
+              <div className="flex items-center gap-2 mb-2 flex-wrap">
+                <Badge variant="muted">Sat</Badge>
+              </div>
+              <h3 className="font-medium text-[var(--text-primary)] text-sm leading-snug">Literature &amp; Meditation Meeting</h3>
+            </div>
+            <div className="flex items-start gap-2 text-xs text-[var(--text-muted)] bg-[var(--bg-muted)] rounded-xl p-2.5">
+              <Info className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" aria-hidden />
+              <span>Meeting ID: 835 4775 3733 · Pass: 202020</span>
+            </div>
+            <a
+              href="https://zoom.us/j/83547753733"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl
+                bg-[var(--accent-sage-light)] text-[var(--accent-sage)] text-sm font-medium
+                hover:bg-[var(--accent-sage)]/20 transition-calm
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
+            >
+              <Video className="w-3.5 h-3.5" aria-hidden />
+              Join via Zoom
+            </a>
+          </Card>
+
+          {/* Sunday */}
+          <Card padding="md" className="space-y-3">
+            <div>
+              <div className="flex items-center gap-2 mb-2 flex-wrap">
+                <span className="text-lg font-light text-[var(--accent-sage)] tabular-nums">16:00</span>
+                <Badge variant="muted">Sun</Badge>
+                <Badge variant="muted">CEST</Badge>
+              </div>
+              <h3 className="font-medium text-[var(--text-primary)] text-sm leading-snug">11th Step Meeting</h3>
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">16:00–17:00 CEST</p>
+            </div>
+            <div className="flex items-start gap-2 text-xs text-[var(--text-muted)] bg-[var(--bg-muted)] rounded-xl p-2.5">
+              <Info className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" aria-hidden />
+              <span>Meeting ID: 835 4775 3733 · Pass: 202020</span>
+            </div>
+            <a
+              href="https://zoom.us/j/83547753733"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl
+                bg-[var(--accent-sage-light)] text-[var(--accent-sage)] text-sm font-medium
+                hover:bg-[var(--accent-sage)]/20 transition-calm
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
+            >
+              <Video className="w-3.5 h-3.5" aria-hidden />
+              Join via Zoom
+            </a>
+          </Card>
+        </div>
+      </section>
+
       {/* AA Nederland Online Meetings – Today */}
       {nlMeetings.length > 0 && (
         <section aria-labelledby="aa-nl-heading" className="mb-12">
