@@ -77,6 +77,39 @@ function HALTCard() {
   );
 }
 
+function FINECard() {
+  const { t } = useT();
+  const items = [
+    { letter: "F", word: t.home.fineF, suggestion: t.home.fineFSug },
+    { letter: "I", word: t.home.fineI, suggestion: t.home.fineISug },
+    { letter: "N", word: t.home.fineN, suggestion: t.home.fineNSug },
+    { letter: "E", word: t.home.fineE, suggestion: t.home.fineESug },
+  ];
+
+  return (
+    <Card padding="md">
+      <div className="flex items-center gap-2 mb-3">
+        <Heart className="w-4 h-4 text-[var(--accent-serenity)]" aria-hidden />
+        <span className="text-sm font-medium text-[var(--text-primary)]">{t.home.fineTitle}</span>
+      </div>
+      <p className="text-xs text-[var(--text-muted)] mb-3">{t.home.fineDesc}</p>
+      <div className="space-y-2">
+        {items.map((item) => (
+          <div key={item.letter} className="flex items-start gap-2.5">
+            <span className="w-6 h-6 rounded-lg bg-[var(--accent-serenity-light)] text-[var(--accent-serenity)] text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5" aria-hidden>
+              {item.letter}
+            </span>
+            <div>
+              <span className="text-sm font-medium text-[var(--text-primary)]">{item.word}</span>
+              <p className="text-xs text-[var(--text-muted)] leading-relaxed">{item.suggestion}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </Card>
+  );
+}
+
 function SerenityCard() {
   const { t } = useT();
   return (
@@ -258,6 +291,7 @@ export default function HomeClient() {
               {t.home.checkIn}
             </h2>
             <HALTCard />
+            <FINECard />
             <SerenityCard />
           </div>
         </div>
