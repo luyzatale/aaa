@@ -38,7 +38,7 @@ const en = {
     openMenu: "Open menu", closeMenu: "Close menu",
     appName: "A@AA Serenity Path", appAriaLabel: "A@AA Serenity Path — AA Recovery Home",
     dailyRecovery: "Daily Recovery", dailyRecoveryDesc: "Check-ins & sobriety tracker",
-    prayers: "Prayers", prayersDesc: "Calming prayers with TTS",
+    prayers: "Prayers and Readings", prayersDesc: "Calming prayers and readings",
     stepWork: "12 Steps", stepWorkDesc: "Private guided journal",
     traditions: "12 Traditions", traditionsDesc: "How AA groups stay together",
     sponsorship: "Sponsee Journal", sponsorshipDesc: "Daily notes & sponsor contact",
