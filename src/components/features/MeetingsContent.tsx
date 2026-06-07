@@ -370,44 +370,34 @@ export default function MeetingsContent({ nlMeetings, todayNLMeetings, todayDayN
           </p>
         </div>
         <div className="grid sm:grid-cols-2 gap-4">
-          {[
-            { day: "Saturday",  time: "17:00" },
-            { day: "Sunday",    time: "17:00" },
-            { day: "Monday",    time: "17:00" },
-            { day: "Tuesday",   time: "17:00" },
-            { day: "Wednesday", time: "17:00" },
-            { day: "Thursday",  time: "17:00" },
-            { day: "Friday",    time: "17:00" },
-          ].map(({ day, time }) => (
-            <Card key={`autism-and-aa-${day}`} padding="md" className="space-y-3">
-              <div>
-                <div className="flex items-center gap-2 mb-2 flex-wrap">
-                  <span className="text-lg font-light text-[var(--accent-sage)] tabular-nums">{time}</span>
-                  <Badge variant="muted">Open</Badge>
-                  <Badge variant="muted">EN</Badge>
-                  <Badge variant="muted">{day}</Badge>
-                </div>
-                <h3 className="font-medium text-[var(--text-primary)] text-sm leading-snug">Autism And AA</h3>
-                <p className="text-xs text-[var(--text-muted)] mt-0.5">4:00pm GMT · 12:00pm EST · 2:00am AEST</p>
+          <Card padding="md" className="space-y-3">
+            <div>
+              <div className="flex items-center gap-2 mb-2 flex-wrap">
+                <span className="text-lg font-light text-[var(--accent-sage)] tabular-nums">17:00</span>
+                <Badge variant="muted">Open</Badge>
+                <Badge variant="muted">EN</Badge>
+                <Badge variant="sage">Every day</Badge>
               </div>
-              <div className="flex items-start gap-2 text-xs text-[var(--text-muted)] bg-[var(--bg-muted)] rounded-xl p-2.5">
-                <Info className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" aria-hidden />
-                <span>MeetingID: 636 252 1979 · Pass: AA · Topic discussion open meeting for anyone interested in the Autistic view of AA. Open 15 min before the meeting.</span>
-              </div>
-              <a
-                href="https://zoom.us/j/6362521979"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl
-                  bg-[var(--accent-sage-light)] text-[var(--accent-sage)] text-sm font-medium
-                  hover:bg-[var(--accent-sage)]/20 transition-calm
-                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
-              >
-                <Video className="w-3.5 h-3.5" aria-hidden />
-                Join via Zoom
-              </a>
-            </Card>
-          ))}
+              <h3 className="font-medium text-[var(--text-primary)] text-sm leading-snug">Autism And AA</h3>
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">4:00pm GMT · 12:00pm EST · 2:00am AEST</p>
+            </div>
+            <div className="flex items-start gap-2 text-xs text-[var(--text-muted)] bg-[var(--bg-muted)] rounded-xl p-2.5">
+              <Info className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" aria-hidden />
+              <span>MeetingID: 636 252 1979 · Pass: AA · Topic discussion open meeting for anyone interested in the Autistic view of AA. Open 15 min before the meeting.</span>
+            </div>
+            <a
+              href="https://zoom.us/j/6362521979"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl
+                bg-[var(--accent-sage-light)] text-[var(--accent-sage)] text-sm font-medium
+                hover:bg-[var(--accent-sage)]/20 transition-calm
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-sage)]"
+            >
+              <Video className="w-3.5 h-3.5" aria-hidden />
+              Join via Zoom
+            </a>
+          </Card>
 
           {/* Autism Friendly AA – Tuesday 01:00 */}
           <Card padding="md" className="space-y-3">
