@@ -174,7 +174,7 @@ export default function MeetingsContent({ nlMeetings, todayNLMeetings, todayDayN
       <section aria-labelledby="weekly-meetings-heading" className="mb-8">
         <div className="mb-4">
           <h2 id="weekly-meetings-heading" className="text-xl font-semibold text-[var(--text-primary)]">
-            Weekly Online Meetings
+            Tea Time Meeting
           </h2>
           <p className="text-sm text-[var(--text-secondary)] mt-1">
             Meeting ID: 835 4775 3733 · Password: 202020
