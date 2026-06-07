@@ -47,7 +47,7 @@ async function writeEntries(entries: SponsorshipEntry[]): Promise<boolean> {
 export async function GET() {
   const { entries, ok } = await readEntries();
   if (!ok) return NextResponse.json({ error: "Storage error" }, { status: 503 });
-  const sorted = [...entries].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+  const sorted = [...entries].sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
   return NextResponse.json({ entries: sorted });
 }
 
@@ -76,7 +76,7 @@ export async function POST(req: Request) {
     ? { id: Date.now().toString(), date, type: "checklist", title: title?.trim() || undefined, items }
     : { id: Date.now().toString(), date, notes: (notes as string).trim() };
 
-  const updated = [...entries, newEntry].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+  const updated = [...entries, newEntry].sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
   const saved = await writeEntries(updated);
   if (!saved) return NextResponse.json({ error: "Failed to save." }, { status: 500 });
   return NextResponse.json({ entries: updated });
@@ -100,7 +100,7 @@ export async function PATCH(req: Request) {
     return { ...e, notes: notes.trim() };
   });
 
-  const sorted = updated.sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+  const sorted = updated.sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
   const saved = await writeEntries(sorted);
   if (!saved) return NextResponse.json({ error: "Failed to save." }, { status: 500 });
   return NextResponse.json({ entries: sorted });
@@ -115,5 +115,5 @@ export async function DELETE(req: Request) {
   const updated = entries.filter((e) => e.id !== id);
   const saved = await writeEntries(updated);
   if (!saved) return NextResponse.json({ error: "Failed to save." }, { status: 500 });
-  return NextResponse.json({ entries: updated.sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id)) });
+  return NextResponse.json({ entries: updated.sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id)) });
 }

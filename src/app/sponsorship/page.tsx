@@ -600,7 +600,7 @@ export default function SponsorshipPage() {
   };
 
   const sortEntries = (arr: SponsorshipEntry[]) =>
-    [...arr].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+    [...arr].sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
 
   const handleRemove = (id: string) => {
     setRemoving(id);
