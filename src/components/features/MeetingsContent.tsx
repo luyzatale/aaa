@@ -185,6 +185,7 @@ export default function MeetingsContent({ nlMeetings, todayNLMeetings, todayDayN
           <Card padding="md" className="space-y-3">
             <div>
               <div className="flex items-center gap-2 mb-2 flex-wrap">
+                <span className="text-lg font-light text-[var(--accent-sage)] tabular-nums">16:00</span>
                 <Badge variant="muted">Mon</Badge>
                 <Badge variant="muted">Tue</Badge>
                 <Badge variant="muted">Thu</Badge>
@@ -214,6 +215,7 @@ export default function MeetingsContent({ nlMeetings, todayNLMeetings, todayDayN
           <Card padding="md" className="space-y-3">
             <div>
               <div className="flex items-center gap-2 mb-2 flex-wrap">
+                <span className="text-lg font-light text-[var(--accent-sage)] tabular-nums">16:00</span>
                 <Badge variant="muted">Sat</Badge>
               </div>
               <h3 className="font-medium text-[var(--text-primary)] text-sm leading-snug">Literature &amp; Meditation Meeting</h3>
