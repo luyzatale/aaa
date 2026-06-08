@@ -83,11 +83,26 @@ function getWeekOfYear(date: Date): number {
   return Math.floor(diff / (7 * 24 * 60 * 60 * 1000));
 }
 
+function TraitPill({ label, desc, color }: { label: string; desc: string; color: "green" | "red" }) {
+  const green = "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300";
+  const red   = "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300";
+  return (
+    <div className="relative group inline-flex">
+      <span className={`px-3 py-1.5 rounded-xl text-sm font-semibold cursor-help underline decoration-dotted underline-offset-2 ${color === "green" ? green : red}`}>
+        {label}
+      </span>
+      <div className="absolute bottom-full left-0 mb-2 w-56 px-3 py-2 rounded-xl bg-[var(--bg-card)] border border-[var(--border,#e5e7eb)] shadow-lg text-xs text-[var(--text-secondary)] leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none z-20">
+        {desc}
+      </div>
+    </div>
+  );
+}
+
 function WeeklyTraitsCard() {
   const { t } = useT();
   const week = getWeekOfYear(new Date());
-  const virtue = t.home.virtues[week % t.home.virtues.length];
-  const defect = t.home.defects[(week * 3 + 17) % t.home.defects.length];
+  const vi = week % t.home.virtues.length;
+  const di = (week * 3 + 17) % t.home.defects.length;
 
   return (
     <Card padding="md">
@@ -98,15 +113,11 @@ function WeeklyTraitsCard() {
       <div className="space-y-2.5">
         <div className="flex items-center gap-3">
           <span className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)] w-14 flex-shrink-0">{t.home.weeklyVirtueLabel}</span>
-          <span className="px-3 py-1.5 rounded-xl bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 text-sm font-semibold">
-            {virtue}
-          </span>
+          <TraitPill label={t.home.virtues[vi]} desc={t.home.virtueDescs[vi]} color="green" />
         </div>
         <div className="flex items-center gap-3">
           <span className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)] w-14 flex-shrink-0">{t.home.weeklyDefectLabel}</span>
-          <span className="px-3 py-1.5 rounded-xl bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300 text-sm font-semibold">
-            {defect}
-          </span>
+          <TraitPill label={t.home.defects[di]} desc={t.home.defectDescs[di]} color="red" />
         </div>
       </div>
     </Card>
