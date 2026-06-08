@@ -77,6 +77,69 @@ function HALTCard() {
   );
 }
 
+const WEEKLY_TRAITS = [
+  { virtue: "Humility",         defect: "Pride" },
+  { virtue: "Honesty",          defect: "Dishonesty" },
+  { virtue: "Patience",         defect: "Impatience" },
+  { virtue: "Forgiveness",      defect: "Resentment" },
+  { virtue: "Courage",          defect: "Fear" },
+  { virtue: "Generosity",       defect: "Greed" },
+  { virtue: "Unselfishness",    defect: "Selfishness" },
+  { virtue: "Love",             defect: "Anger" },
+  { virtue: "Diligence",        defect: "Sloth" },
+  { virtue: "Gratitude",        defect: "Self-pity" },
+  { virtue: "Temperance",       defect: "Excess" },
+  { virtue: "Compassion",       defect: "Envy" },
+  { virtue: "Integrity",        defect: "People-pleasing" },
+  { virtue: "Trust",            defect: "Control" },
+  { virtue: "Acceptance",       defect: "Stubbornness" },
+  { virtue: "Kindness",         defect: "Criticism" },
+  { virtue: "Serenity",         defect: "Anxiety" },
+  { virtue: "Willingness",      defect: "Procrastination" },
+  { virtue: "Simplicity",       defect: "Vanity" },
+  { virtue: "Connection",       defect: "Isolation" },
+  { virtue: "Faith",            defect: "Doubt" },
+  { virtue: "Open-mindedness",  defect: "Intolerance" },
+  { virtue: "Authenticity",     defect: "Manipulation" },
+  { virtue: "Self-compassion",  defect: "Self-hatred" },
+  { virtue: "Moderation",       defect: "Impulsivity" },
+  { virtue: "Contentment",      defect: "Jealousy" },
+];
+
+function getWeekOfYear(date: Date): number {
+  const start = new Date(date.getFullYear(), 0, 1);
+  const diff = date.getTime() - start.getTime();
+  return Math.floor(diff / (7 * 24 * 60 * 60 * 1000));
+}
+
+function WeeklyTraitsCard() {
+  const week = getWeekOfYear(new Date());
+  const { virtue, defect } = WEEKLY_TRAITS[week % WEEKLY_TRAITS.length];
+
+  return (
+    <Card padding="md">
+      <div className="flex items-center gap-2 mb-3">
+        <Star className="w-4 h-4 text-[var(--accent-amber)]" aria-hidden />
+        <span className="text-sm font-medium text-[var(--text-primary)]">Personal Traits I'm working on this week:</span>
+      </div>
+      <div className="space-y-2.5">
+        <div className="flex items-center gap-3">
+          <span className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)] w-14 flex-shrink-0">Virtue</span>
+          <span className="px-3 py-1.5 rounded-xl bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 text-sm font-semibold">
+            {virtue}
+          </span>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)] w-14 flex-shrink-0">Defect</span>
+          <span className="px-3 py-1.5 rounded-xl bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300 text-sm font-semibold">
+            {defect}
+          </span>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
 function FINECard() {
   const { t } = useT();
   const items = [
@@ -290,6 +353,7 @@ export default function HomeClient() {
             <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4">
               {t.home.checkIn}
             </h2>
+            <WeeklyTraitsCard />
             <HALTCard />
             <FINECard />
             <SerenityCard />
