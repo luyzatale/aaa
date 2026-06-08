@@ -77,33 +77,30 @@ function HALTCard() {
   );
 }
 
-const WEEKLY_TRAITS = [
-  { virtue: "Humility",         defect: "Pride" },
-  { virtue: "Honesty",          defect: "Dishonesty" },
-  { virtue: "Patience",         defect: "Impatience" },
-  { virtue: "Forgiveness",      defect: "Resentment" },
-  { virtue: "Courage",          defect: "Fear" },
-  { virtue: "Generosity",       defect: "Greed" },
-  { virtue: "Unselfishness",    defect: "Selfishness" },
-  { virtue: "Love",             defect: "Anger" },
-  { virtue: "Diligence",        defect: "Sloth" },
-  { virtue: "Gratitude",        defect: "Self-pity" },
-  { virtue: "Temperance",       defect: "Excess" },
-  { virtue: "Compassion",       defect: "Envy" },
-  { virtue: "Integrity",        defect: "People-pleasing" },
-  { virtue: "Trust",            defect: "Control" },
-  { virtue: "Acceptance",       defect: "Stubbornness" },
-  { virtue: "Kindness",         defect: "Criticism" },
-  { virtue: "Serenity",         defect: "Anxiety" },
-  { virtue: "Willingness",      defect: "Procrastination" },
-  { virtue: "Simplicity",       defect: "Vanity" },
-  { virtue: "Connection",       defect: "Isolation" },
-  { virtue: "Faith",            defect: "Doubt" },
-  { virtue: "Open-mindedness",  defect: "Intolerance" },
-  { virtue: "Authenticity",     defect: "Manipulation" },
-  { virtue: "Self-compassion",  defect: "Self-hatred" },
-  { virtue: "Moderation",       defect: "Impulsivity" },
-  { virtue: "Contentment",      defect: "Jealousy" },
+const VIRTUES = [
+  "Humility", "Honesty", "Patience", "Courage", "Generosity",
+  "Compassion", "Kindness", "Forgiveness", "Gratitude", "Integrity",
+  "Perseverance", "Empathy", "Wisdom", "Loyalty", "Open-mindedness",
+  "Self-discipline", "Responsibility", "Creativity", "Authenticity", "Resilience",
+  "Hope", "Serenity", "Diligence", "Temperance", "Faith",
+  "Unselfishness", "Acceptance", "Contentment", "Trust", "Willingness",
+  "Love", "Joy", "Moderation", "Self-compassion", "Curiosity",
+  "Reliability", "Mindfulness", "Fairness", "Gentleness", "Enthusiasm",
+  "Sincerity", "Flexibility", "Warmth", "Steadiness", "Encouragement",
+  "Boldness", "Clarity", "Devotion", "Equanimity", "Tenderness",
+];
+
+const DEFECTS = [
+  "Pride", "Dishonesty", "Resentment", "Fear", "Selfishness",
+  "Greed", "Anger", "Envy", "Sloth", "Self-pity",
+  "Impatience", "People-pleasing", "Control", "Manipulation", "Procrastination",
+  "Vanity", "Isolation", "Jealousy", "Stubbornness", "Intolerance",
+  "Doubt", "Impulsivity", "Self-hatred", "Excess", "Criticism",
+  "Anxiety", "Cowardice", "Arrogance", "Bitterness", "Indifference",
+  "Gossiping", "Blame-shifting", "Perfectionism", "Codependency", "Passiveness",
+  "Irritability", "Hypocrisy", "Cynicism", "Recklessness", "Vindictiveness",
+  "Insecurity", "Neediness", "Rigidity", "Entitlement", "Apathy",
+  "Dishonour", "Grandiosity", "Escapism", "Avoidance", "Bossiness",
 ];
 
 function getWeekOfYear(date: Date): number {
@@ -114,7 +111,8 @@ function getWeekOfYear(date: Date): number {
 
 function WeeklyTraitsCard() {
   const week = getWeekOfYear(new Date());
-  const { virtue, defect } = WEEKLY_TRAITS[week % WEEKLY_TRAITS.length];
+  const virtue = VIRTUES[week % VIRTUES.length];
+  const defect = DEFECTS[(week * 3 + 17) % DEFECTS.length];
 
   return (
     <Card padding="md">
