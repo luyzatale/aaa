@@ -1,12 +1,83 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import BreathingExercise from "@/components/features/BreathingExercise";
 import { cn } from "@/lib/utils";
 import { Leaf, Wind, Heart, Clock, CheckCircle } from "lucide-react";
 import { useT } from "@/lib/i18n";
+import type { PrayerData } from "@/lib/i18n/translations";
+
+function PrayerCard({ prayer }: { prayer: PrayerData }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [capturing, setCapturing] = useState(false);
+
+  const handleCapture = useCallback(async () => {
+    if (!cardRef.current || capturing) return;
+    setCapturing(true);
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      const canvas = await html2canvas(cardRef.current, {
+        useCORS: true,
+        scale: 2,
+        backgroundColor: null,
+        logging: false,
+      });
+      canvas.toBlob(async (blob) => {
+        if (!blob) return;
+        const file = new File([blob], `${prayer.title}.png`, { type: "image/png" });
+        if (navigator.canShare?.({ files: [file] })) {
+          await navigator.share({ files: [file], title: prayer.title });
+        } else {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `${prayer.title}.png`;
+          a.click();
+          URL.revokeObjectURL(url);
+        }
+      }, "image/png");
+    } finally {
+      setCapturing(false);
+    }
+  }, [prayer.title, capturing]);
+
+  return (
+    <div ref={cardRef} className="rounded-3xl overflow-hidden">
+      <Card padding="lg" className="space-y-4">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <Badge variant="serenity" className="mb-2">{prayer.category}</Badge>
+            <h3 className="text-xl font-light text-[var(--text-primary)]">{prayer.title}</h3>
+            <p className="text-sm text-[var(--text-muted)] mt-1">{prayer.description}</p>
+          </div>
+          <button
+            onClick={handleCapture}
+            disabled={capturing}
+            aria-label={`Share ${prayer.title}`}
+            className={cn(
+              "flex-shrink-0 mt-1 p-1.5 rounded-xl transition-calm",
+              "hover:bg-[var(--accent-serenity-light)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-serenity)]",
+              capturing && "opacity-40 cursor-not-allowed"
+            )}
+          >
+            <Leaf className="w-5 h-5 text-[var(--accent-serenity)]" />
+          </button>
+        </div>
+
+        <div
+          className="rounded-2xl bg-[var(--bg-secondary)] p-5 border border-[var(--border-soft)]"
+          aria-label={`${prayer.title} text`}
+        >
+          <p className="text-[var(--text-primary)] leading-[2] whitespace-pre-line font-light text-base">
+            {prayer.text}
+          </p>
+        </div>
+      </Card>
+    </div>
+  );
+}
 
 export default function PrayersPage() {
   const { t } = useT();
@@ -81,26 +152,7 @@ export default function PrayersPage() {
         <h2 id="prayers-heading" className="sr-only">Prayers</h2>
         <div className="space-y-6">
           {filtered.map((prayer) => (
-            <Card key={prayer.id} padding="lg" className="space-y-4">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <Badge variant="serenity" className="mb-2">{prayer.category}</Badge>
-                  <h3 className="text-xl font-light text-[var(--text-primary)]">{prayer.title}</h3>
-                  <p className="text-sm text-[var(--text-muted)] mt-1">{prayer.description}</p>
-                </div>
-                <Leaf className="w-5 h-5 text-[var(--accent-serenity)] flex-shrink-0 mt-1" aria-hidden />
-              </div>
-
-              <div
-                className="rounded-2xl bg-[var(--bg-secondary)] p-5 border border-[var(--border-soft)]"
-                aria-label={`${prayer.title} text`}
-              >
-                <p className="text-[var(--text-primary)] leading-[2] whitespace-pre-line font-light text-base">
-                  {prayer.text}
-                </p>
-              </div>
-
-            </Card>
+            <PrayerCard key={prayer.id} prayer={prayer} />
           ))}
         </div>
       </section>
