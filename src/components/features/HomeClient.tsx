@@ -77,32 +77,6 @@ function HALTCard() {
   );
 }
 
-const VIRTUES = [
-  "Humility", "Honesty", "Patience", "Courage", "Generosity",
-  "Compassion", "Kindness", "Forgiveness", "Gratitude", "Integrity",
-  "Perseverance", "Empathy", "Wisdom", "Loyalty", "Open-mindedness",
-  "Self-discipline", "Responsibility", "Creativity", "Authenticity", "Resilience",
-  "Hope", "Serenity", "Diligence", "Temperance", "Faith",
-  "Unselfishness", "Acceptance", "Contentment", "Trust", "Willingness",
-  "Love", "Joy", "Moderation", "Self-compassion", "Curiosity",
-  "Reliability", "Mindfulness", "Fairness", "Gentleness", "Enthusiasm",
-  "Sincerity", "Flexibility", "Warmth", "Steadiness", "Encouragement",
-  "Boldness", "Clarity", "Devotion", "Equanimity", "Tenderness",
-];
-
-const DEFECTS = [
-  "Pride", "Dishonesty", "Resentment", "Fear", "Selfishness",
-  "Greed", "Anger", "Envy", "Sloth", "Self-pity",
-  "Impatience", "People-pleasing", "Control", "Manipulation", "Procrastination",
-  "Vanity", "Isolation", "Jealousy", "Stubbornness", "Intolerance",
-  "Doubt", "Impulsivity", "Self-hatred", "Excess", "Criticism",
-  "Anxiety", "Cowardice", "Arrogance", "Bitterness", "Indifference",
-  "Gossiping", "Blame-shifting", "Perfectionism", "Codependency", "Passiveness",
-  "Irritability", "Hypocrisy", "Cynicism", "Recklessness", "Vindictiveness",
-  "Insecurity", "Neediness", "Rigidity", "Entitlement", "Apathy",
-  "Dishonour", "Grandiosity", "Escapism", "Avoidance", "Bossiness",
-];
-
 function getWeekOfYear(date: Date): number {
   const start = new Date(date.getFullYear(), 0, 1);
   const diff = date.getTime() - start.getTime();
@@ -110,25 +84,26 @@ function getWeekOfYear(date: Date): number {
 }
 
 function WeeklyTraitsCard() {
+  const { t } = useT();
   const week = getWeekOfYear(new Date());
-  const virtue = VIRTUES[week % VIRTUES.length];
-  const defect = DEFECTS[(week * 3 + 17) % DEFECTS.length];
+  const virtue = t.home.virtues[week % t.home.virtues.length];
+  const defect = t.home.defects[(week * 3 + 17) % t.home.defects.length];
 
   return (
     <Card padding="md">
       <div className="flex items-center gap-2 mb-3">
         <Star className="w-4 h-4 text-[var(--accent-amber)]" aria-hidden />
-        <span className="text-sm font-medium text-[var(--text-primary)]">Personal Traits I'm working on this week:</span>
+        <span className="text-sm font-medium text-[var(--text-primary)]">{t.home.weeklyTraitsTitle}</span>
       </div>
       <div className="space-y-2.5">
         <div className="flex items-center gap-3">
-          <span className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)] w-14 flex-shrink-0">Virtue</span>
+          <span className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)] w-14 flex-shrink-0">{t.home.weeklyVirtueLabel}</span>
           <span className="px-3 py-1.5 rounded-xl bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 text-sm font-semibold">
             {virtue}
           </span>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)] w-14 flex-shrink-0">Defect</span>
+          <span className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)] w-14 flex-shrink-0">{t.home.weeklyDefectLabel}</span>
           <span className="px-3 py-1.5 rounded-xl bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300 text-sm font-semibold">
             {defect}
           </span>
