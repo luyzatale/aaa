@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 import { BookOpen, Lock, Save, ChevronDown, ChevronUp, AlertTriangle, Mail, Send, X, Lightbulb } from "lucide-react";
 import { useT } from "@/lib/i18n";
 
@@ -85,14 +86,17 @@ export default function StepWorkPage() {
         </p>
       </div>
 
-      {/* Privacy notice */}
-      <Card variant="sage" padding="md" className="mb-8 flex items-start gap-3">
-        <Lock className="w-4 h-4 text-[var(--accent-sage)] flex-shrink-0 mt-0.5" aria-hidden />
-        <div className="text-sm text-[var(--text-secondary)]">
-          <span className="font-medium text-[var(--text-primary)]">{t.steps.privacyLabel} </span>
-          {t.steps.privacyText}
-        </div>
-      </Card>
+      {/* 12 Steps journey infographic */}
+      <div className="mb-10 rounded-3xl overflow-hidden border border-[var(--border-soft)]">
+        <Image
+          src="/12-steps-journey.png"
+          alt="The 12 Steps of Alcoholics Anonymous: A Journey to Recovery"
+          width={1456}
+          height={816}
+          className="w-full h-auto"
+          priority
+        />
+      </div>
 
       {/* Overwhelm warning */}
       <Card variant="amber" padding="md" className="mb-8 flex items-start gap-3">
@@ -290,6 +294,15 @@ export default function StepWorkPage() {
           })}
         </div>
       </section>
+
+      {/* Privacy notice */}
+      <Card variant="sage" padding="md" className="mt-10 flex items-start gap-3">
+        <Lock className="w-4 h-4 text-[var(--accent-sage)] flex-shrink-0 mt-0.5" aria-hidden />
+        <div className="text-sm text-[var(--text-secondary)]">
+          <span className="font-medium text-[var(--text-primary)]">{t.steps.privacyLabel} </span>
+          {t.steps.privacyText}
+        </div>
+      </Card>
     </div>
   );
 }
